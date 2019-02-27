@@ -54,7 +54,7 @@ def get_card():
 
   return spread
 
-@bot.command(pass_context = True, name="8", aliases=["8ball"])
+@bot.command(pass_context = True, aliases = ["8ball"], description = "Generates a standard 8ball response.")
 async def _8ball(ctx, *, question: str = None):
   '''Reads in a question and returns a standard 8-Ball response.'''
 
@@ -68,7 +68,7 @@ async def _8ball(ctx, *, question: str = None):
     embed = discord.Embed(title=question, description="{}, {}.".format(reading[1], ctx.message.author.mention), color = reading[0])
   await bot.say(embed = embed)
 
-@bot.command(pass_context = True)
+@bot.command(pass_context = True, description = "Generates a spread of tarot cards.")
 async def tarot(ctx):
   '''Returns a major arcana and 3 minor arcana.'''
 

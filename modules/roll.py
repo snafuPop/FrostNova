@@ -11,7 +11,7 @@ def makeColor():
   colour = int(colour, 16)
   return colour
 
-@bot.command(pass_context=True)
+@bot.command(pass_context = True, description = "Generates a random number from 1 to a defined number (by default 100)")
 async def roll(ctx, number: int = 100, *, request: str = ""):
   # rolls a random number between 1 and a user defined max (defaults to 100)
   # also optionally takes in a string input
@@ -40,7 +40,7 @@ async def roll(ctx, number: int = 100, *, request: str = ""):
   # sends the message
   await bot.say(embed=embed)
 
-@bot.command(pass_context=True)
+@bot.command(pass_context = True, description = "Flips a coin")
 async def flip(ctx):
   # flips a coin
   # has a 100/101 chance of being heads or tails, and a 1/100 chance of landing on its side

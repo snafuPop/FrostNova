@@ -7,10 +7,12 @@ from random import choice
 import praw
 import json
 
+from prawcore import NotFound
+
 with open("_config/settings.json") as json_data:
   data = json.load(json_data)
 
-reddit = praw.Reddit(client_id = data["REDDIT_CLIENT_ID"], client_secret = data["REDDIT_CLIENT_SECRET"], user_agent = data["REDDIT_USER_AGENT"])
+r = praw.Reddit(client_id = data["REDDIT_CLIENT_ID"], client_secret = data["REDDIT_CLIENT_SECRET"], user_agent = data["REDDIT_USER_AGENT"])
 
 def makeColor():
   # genereates a random color  
@@ -18,23 +20,25 @@ def makeColor():
   colour = int(colour, 16)
   return colour
 
-@bot.command(pass_context = True, aliases=["reddit"])
-async def __reddit(ctx, *, sub: str = None):
+@bot.command(pass_context = True, description = "Grabs a random image from a defined subreddit. Only pulls from the 100 hottest posts.")
+async def reddit(ctx, *, sub: str = "all"):
+  # pulls a submission randomly from the 100 hottest posts from a specified subreddit.
 
-  if sub is None:
-    embed = discord.Embed(title ="", description = "Try parsing a subreddit with `!reddit <subreddit name>`, {}".format(ctx.message.author.mention), color = 0xe74c3c)
+  # sanitizing input
+  sub = sub.replace(" ", "_")
+
+  # enumerates 100 hottest posts
+  post = list(r.subreddit(sub).hot(limit = 100))
+
+  # if list is empty, then the subreddit does not exist
+  if not post:
+    embed = discord.Embed(title = "", description = "Could not find /r/{}, {}.".format(sub, ctx.message.author.mention))
+
   else:
-    sub = sub.replace(" ", "_")
-    posts = reddit.subreddit(sub).hot(limit=50)
-    post_choose = randint(0,50)
+    post = choice(post)
+    embed = discord.Embed(title = "", description = "Requested by {}".format(ctx.message.author.mention), color = makeColor())
+    embed.set_author(name = post.title, url = post.shortlink, icon_url = "https://i.imgur.com/BWZxWkG.png")
+    embed.set_image(url = post.url)
+    embed.set_footer(text = "Random post from /r/{}\n {:-2}% upvoted ・ Uploaded by /u/{}.".format(sub, post.upvote_ratio*100, post.author))
 
-    for i, post in enumerate(posts):
-      if i == post_choose:
-        title = post.title
-        url = post.url
-        break
-
-    embed = discord.Embed(title = "Random post from /r/{}".format(sub), description = "Requested by {}".format(ctx.message.author.mention), color=makeColor())
-    embed.set_footer(text = title, icon_url = "https://i.imgur.com/BWZxWkG.png")
-    embed.set_image(url = url)
   await bot.say(embed = embed)

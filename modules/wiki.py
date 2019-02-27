@@ -10,12 +10,6 @@ import requests
 
 # Parses wikipedia pages and pulls some information utilizing BeautifulSoup 4
 
-def makeColor():
-  # genereates a random color  
-  colour = ''.join([choice('0123456789ABCDEF') for x in range(6)])
-  colour = int(colour, 16)
-  return colour
-
 def fetchThumbnail(url):
     r = requests.get(url)
     data = r.text
@@ -27,7 +21,7 @@ def fetchThumbnail(url):
     thumb = links[0]
     return thumb;
 
-@bot.command(pass_context=True)
+@bot.command(pass_context=True, description = "Pulls a page from the DFO World Wiki.")
 async def dfopedia(ctx, *, search_terms: str=None):
     '''Searches the DFO Wiki.'''
 

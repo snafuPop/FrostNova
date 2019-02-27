@@ -2,12 +2,7 @@ import discord
 from discord.ext import commands
 from builtins import bot
 
-@bot.command(pass_context=True)
-async def hello(ctx):
-    channel = ctx.message.channel
-    await bot.send_message(channel, "hi")
-
-@bot.command()
+@bot.command(description = "Gives information about the bot.")
 async def about():
   embed = discord.Embed(title = " ", color = 0x0080ff)
   embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
@@ -15,4 +10,4 @@ async def about():
   embed.add_field(name = "Author", value = "snafuPop#0007", inline = True)
   embed.add_field(name = "Language", value = "Python 3.6.x", inline = True)
   embed.set_footer(text = "Use !help to produce a list of commands")
-  await bot.say(embed = embed) 
+  await bot.say(embed = embed)
