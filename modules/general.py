@@ -2,7 +2,22 @@ import discord
 from discord.ext import commands
 from builtins import bot
 
-@bot.command(description = "Gives information about the bot.")
+@bot.command(description = "Checks the status of the bot")
+async def hello():
+  embed = discord.Embed(title = "", description = ":wave:")
+  await bot.say(embed = embed)
+
+@bot.command(pass_context = True, description = "Hugs a user")
+async def hug(ctx, *, user: discord.Member = None):
+  if user is None:
+    embed = discord.Embed(title = "", description = "Let me know who to hug by typing in `!hug <user>`")
+  else:
+    embed = discord.Embed(title = "", description = "{} -> (つ≧▽≦)つ {}".format(ctx.message.author.mention, user.mention), color = ctx.message.author.color)
+
+  await bot.say(embed = embed)
+
+
+@bot.command(description = "Gives information about the bot")
 async def about():
   embed = discord.Embed(title = " ", color = 0x0080ff)
   embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")

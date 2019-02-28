@@ -14,11 +14,13 @@ builtins.bot = bot
 bot.remove_command('help')
 
 from modules.general import *
-from modules.roll import *
+from modules.random import *
 from modules.wiki import *
 from modules.maint import *
 from modules.witchy import *
 from modules.reddit import *
+from modules.info import *
+from modules.translate import *
 
 @bot.event
 async def on_ready():
@@ -27,7 +29,7 @@ async def on_ready():
   print('Logged in as', bot.user.name, bot.user.id)
   print('--------------------------------------------------------')
 
-@bot.command(pass_context=True, description = "Prints a list of commands and what they do.")
+@bot.command(pass_context=True, description = "Prints a list of commands and what they do")
 async def help(ctx):
   # prints commands
 
