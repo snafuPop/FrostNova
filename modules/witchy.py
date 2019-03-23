@@ -11,7 +11,7 @@ class Witchy:
   def __init__(self, bot):
     self.bot = bot
 
-  def get_8ball():
+  def get_8ball(self):
     # returns a random 8-ball response and a color representing its polarity
 
     ball = {
@@ -36,7 +36,7 @@ class Witchy:
 
     return [polarity, reading]
     
-  def get_card():
+  def get_card(self):
     # returns a random major arcana and 3 random minor arcana
 
     spread = []
@@ -53,7 +53,7 @@ class Witchy:
     return spread
 
   @commands.command(pass_context = True, aliases = ["8ball"], description = "Generates a standard 8ball response.")
-  async def _8ball(ctx, *, question: str = None):
+  async def _8ball(self, ctx, *, question: str = None):
     '''Reads in a question and returns a standard 8-Ball response.'''
 
     if question is None:
@@ -67,13 +67,13 @@ class Witchy:
     await self.bot.say(embed = embed)
 
   @commands.command(pass_context = True, description = "Generates a spread of tarot cards.")
-  async def tarot(ctx):
+  async def tarot(self, ctx):
     '''Returns a major arcana and 3 minor arcana.'''
 
     # grabs the spread
     spread = self.get_card()
 
-    embed = discord.Embed(title="", description="{}'s spread...".format(ctx.message.author.mention), color = makeColor())
+    embed = discord.Embed(title="", description="{}'s spread...".format(ctx.message.author.mention), color = ctx.message.author.color)
     embed.add_field(name="Major Arcana", value="[{}](https://www.trustedtarot.com/cards/{})".format(titlecase(spread[0]), spread[0].replace(" ", "-")), inline=False)
     embed.set_thumbnail(url="https://www.trustedtarot.com/img/cards/{}.png".format(spread[0].replace(" ", "-")))
     embed.add_field(name="Minor Arcanas", value="[The {}](https://www.trustedtarot.com/cards/{}), [The {}](https://www.trustedtarot.com/cards/{}), and [The {}](https://www.trustedtarot.com/cards/{})".format(titlecase(spread[1]), spread[1].replace(" ", "-"), titlecase(spread[2]), spread[2].replace(" ", "-"), titlecase(spread[3]), spread[3].replace(" ", "-")))
