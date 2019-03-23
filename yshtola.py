@@ -1,32 +1,41 @@
-import discord
+from os.path import dirname, basename, isfile
+import glob
+import os
 import builtins
-from discord.ext import commands
 import importlib
 import inspect
 from enum import Enum
 import json
 
+# attempt to import discord.py
+try:
+  from discord.ext import commands
+  import discord
+except ImportError:
+  print("discord.py was not found.")
+  sys.exit(1)
+
+# load the token and prefix
 with open("_config/settings.json") as json_data:
   TOKEN = json.load(json_data)["TOKEN"]
-
 bot = commands.Bot(command_prefix='!')
 builtins.bot = bot
 bot.remove_command('help')
 
-from modules.general import *
-from modules.random import *
-from modules.wiki import *
-from modules.maint import *
-from modules.witchy import *
-from modules.reddit import *
-from modules.info import *
-from modules.translate import *
+# imports
+for file in os.listdir("modules/"):
+  filename = os.fsdecode(file)
+  if filename != "__init__.py" and filename.endswith(".py"):
+    try:
+      bot.load_extension("modules." + filename[:-3])
+    except Exception as e:
+      print("(Problem with {}) {}: {}".format(filename[:-3], type(e).__name__, e))
 
 @bot.event
 async def on_ready():
   # runs when the bot is fully functional
 
-  print('Logged in as', bot.user.name, bot.user.id)
+  print("Logged in as {} <{}>".format(bot.user.name, bot.user.id))
   print('--------------------------------------------------------')
 
 @bot.command(pass_context=True, description = "Prints a list of commands and what they do")
