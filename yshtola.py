@@ -23,20 +23,26 @@ builtins.bot = bot
 bot.remove_command('help')
 
 # imports
+successful_imports = 0;
+total_imports = 0;
+print("\n")
 for file in os.listdir("modules/"):
   filename = os.fsdecode(file)
   if filename != "__init__.py" and filename.endswith(".py"):
+    total_imports += 1
     try:
       bot.load_extension("modules." + filename[:-3])
+      print("{} was loaded successfully!".format(filename))
+      successful_imports += 1
     except Exception as e:
-      print("(Problem with {}) {}: {}".format(filename[:-3], type(e).__name__, e))
+      print("{} had some problems ({}: {})".format(filename, type(e).__name__, e))
 
 @bot.event
 async def on_ready():
   # runs when the bot is fully functional
-
+  print("\n{}/{} modules loaded".format(successful_imports, total_imports))
   print("Logged in as {} <{}>".format(bot.user.name, bot.user.id))
-  print('--------------------------------------------------------')
+  print("--------------------------------------------------------")
 
 @bot.command(pass_context=True, description = "Prints a list of commands and what they do")
 async def help(ctx):
