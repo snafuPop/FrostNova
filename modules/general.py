@@ -6,7 +6,7 @@ class General:
   def __init__(self, bot):
     self.bot = bot
 
-  @commands.command(description = "Checks the status of the bot")
+  @commands.command(pass_context = True, description = "Checks the status of the bot")
   async def hello(self):
     embed = discord.Embed(title = "", description = ":wave:")
     await bot.say(embed = embed)
@@ -19,7 +19,6 @@ class General:
       embed = discord.Embed(title = "", description = "{} -> (つ≧▽≦)つ {}".format(ctx.message.author.mention, user.mention), color = ctx.message.author.color)
 
     await bot.say(embed = embed)
-
 
   @commands.command(description = "Gives information about the bot")
   async def about(self):

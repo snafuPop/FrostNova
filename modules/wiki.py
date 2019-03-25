@@ -14,7 +14,7 @@ class Wiki:
   def __init__(self, bot):
     self.bot = bot
 
-  def fetchThumbnail(self, url, num):
+  def fetchThumbnail(self, url):
     r = requests.get(url)
     data = r.text
     soup = BeautifulSoup(data, "html.parser")
@@ -78,7 +78,7 @@ class Wiki:
       thumb = self.fetchThumbnail(result)
 
       # creates the message
-      embed = discord.Embed(title = search_terms, description = "Requested by **" + ctx.message.author.mention + "**\nPowered by the **[DFO World Wiki](http://wiki.dfo.world/view/Main_Page)**.", url = result, color = ctx.message.author.color)
+      embed = discord.Embed(title = search_terms, description = "Requested by **" + ctx.message.author.mention + "**\nPowered by the **[Official Stardew Valley Wiki](https://stardewvalleywiki.com/Stardew_Valley_Wiki)**.", url = result, color = ctx.message.author.color)
       embed.set_thumbnail(url = "https://stardewvalleywiki.com" + thumb)
       
       try:

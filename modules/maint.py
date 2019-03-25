@@ -1,25 +1,24 @@
 import discord
 from discord.ext import commands
 from builtins import bot
-from .utils import perms
+from modules.utils import perms
 
 class Maint:
   def __init__(self, bot):
     self.bot = bot
 
+  # shuts down the bot
+  @perms.is_owner()
   @commands.command(description = "Shuts down the bot.")
   async def shutdown(self):
-    # shuts down the bot
-
     embed = discord.Embed(title = "", description = "Shutting down. Goodbye! :wave:")
     await self.bot.say(embed = embed)
     await self.bot.logout()
 
+  # reloads a module
   @perms.is_owner()
   @commands.command(description = "Reloads a module.")
   async def reload(self, *, module: str = None):
-    # reloads a module
-
     if module is None:
       embed = discord.Embed(title = "", description = "Try loading a module with `!reload <module>`")
     else:
@@ -32,6 +31,8 @@ class Maint:
         embed.add_field(name = type(e).__name__, value = e)
       else:
         embed = discord.Embed(title = "", description = "**{}** was reloaded successfully!".format(module))
+        print("\n\n{} was reloaded.".format(module))
+        print("--------------------------------------------------------")
 
     await self.bot.say(embed = embed)
 
