@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from builtins import bot
+import json
 
 class General:
   def __init__(self, bot):
@@ -9,7 +10,7 @@ class General:
   @commands.command(pass_context = True, description = "Checks the status of the bot")
   async def hello(self):
     embed = discord.Embed(title = "", description = ":wave:")
-    await bot.say(embed = embed)
+    await self.bot.say(embed = embed)
 
   @commands.command(pass_context = True, description = "Hugs a user")
   async def hug(self, ctx, *, user: discord.Member = None):
@@ -17,8 +18,7 @@ class General:
       embed = discord.Embed(title = "", description = "Let me know who to hug by typing in `!hug <user>`")
     else:
       embed = discord.Embed(title = "", description = "{} -> (つ≧▽≦)つ {}".format(ctx.message.author.mention, user.mention), color = ctx.message.author.color)
-
-    await bot.say(embed = embed)
+    await self.bot.say(embed = embed)
 
   @commands.command(description = "Gives information about the bot")
   async def about(self):
@@ -28,7 +28,7 @@ class General:
     embed.add_field(name = "Author", value = "snafuPop#0007", inline = True)
     embed.add_field(name = "Language", value = "Python 3.6.x", inline = True)
     embed.set_footer(text = "Use !help to produce a list of commands")
-    await bot.say(embed = embed)
+    await self.bot.say(embed = embed)
 
 def setup(bot):
   bot.add_cog(General(bot))

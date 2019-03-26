@@ -32,7 +32,7 @@ class Random:
 
       # creates the embed message
       embed = discord.Embed(title=request, description="{} {} rolled a **{:,}**! {}".format(dice, ctx.message.author.mention, result, dice), color = ctx.message.author.color)
-      embed.set_footer(text="...out of {:,}.".format(number))
+      embed.set_footer(text = "...out of {:,}.".format(number))
     
     # sends the message
     await self.bot.say(embed=embed)
@@ -43,14 +43,12 @@ class Random:
     # has a 100/101 chance of being heads or tails, and a 1/100 chance of landing on its side
 
     rand = randint(1, 101)
-
     if rand == 1:
       result = "its side"
     elif rand >= 51:
       result = "tails"
     else:
       result = "heads"
-
     embed = discord.Embed(description="{} flipped a coin and it landed on **{}**!".format(ctx.message.author.mention,result), color=makeColor())
     await self.bot.say(embed=embed)
 
@@ -60,7 +58,6 @@ class Random:
       embed = discord.Embed(title = "", description = "I need more than one option. Try `!choice <option1> <option2> ...`")
     else:
       embed = discord.Embed(title = "", description = "I choose **{}**, {}.".format(choice(choices),ctx.message.author.mention))
-
     await self.bot.say(embed = embed)
 
 def setup(bot):

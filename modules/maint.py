@@ -15,6 +15,44 @@ class Maint:
     await self.bot.say(embed = embed)
     await self.bot.logout()
 
+  # unloads a module
+  @perms.is_owner()
+  @commands.command(description = "Unloads a module.")
+  async def unload(self, *, module: str = None):
+    if module is None:
+      embed = discord.Embed(title = "", description = "Try unloading a module with `!unload <module>`")
+    else:
+      load_module = "modules." + module
+      try:
+        self.bot.unload_extension(load_module)
+      except Exception as e:
+        embed = discord.Embed(title = "", description = "**{}** could not be unloaded. Check the terminal and the message below for more information.".format(module))
+        embed.add_field(name = type(e).__name__, value = e)
+      else:
+        embed = discord.Embed(title = "", description = "**{}** was unloaded successfully.".format(module))
+        print("\n\n{} was unloaded.".format(module))
+        print("--------------------------------------------------------")
+    await self.bot.say(embed = embed)
+
+  # loads a module
+  @perms.is_owner()
+  @commands.command(description = "Loads a module.")
+  async def load(self, *, module: str = None):
+    if module is None:
+      embed = discord.Embed(title = "", description = "Try loading a module with `!load <module>`")
+    else:
+      load_module = "modules." + module
+      try:
+        self.bot.load_extension(load_module)
+      except Exception as e:
+        embed = discord.Embed(title = "", description = "**{}** could not be loaded. Check the terminal and the message below for more information.".format(module))
+        embed.add_field(name = type(e).__name__, value = e)
+      else:
+        embed = discord.Embed(title = "", description = "**{}** was loaded successfully.".format(module))
+        print("\n\n{} was loaded.".format(module))
+        print("--------------------------------------------------------")
+    await self.bot.say(embed = embed)
+
   # reloads a module
   @perms.is_owner()
   @commands.command(description = "Reloads a module.")
@@ -27,13 +65,12 @@ class Maint:
         self.bot.unload_extension(load_module)
         self.bot.load_extension(load_module)
       except Exception as e:
-        embed = discord.Embed(title = "", description = "**{}** could not be reloaded. Check the terminal and the message bellow for more information.".format(module))
+        embed = discord.Embed(title = "", description = "**{}** could not be reloaded. Check the terminal and the message below for more information.".format(module))
         embed.add_field(name = type(e).__name__, value = e)
       else:
-        embed = discord.Embed(title = "", description = "**{}** was reloaded successfully!".format(module))
+        embed = discord.Embed(title = "", description = "**{}** was reloaded successfully.".format(module))
         print("\n\n{} was reloaded.".format(module))
         print("--------------------------------------------------------")
-
     await self.bot.say(embed = embed)
 
 def setup(bot):
