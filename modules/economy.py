@@ -7,6 +7,12 @@ import string
 from enum import Enum
 from modules.utils import perms
 
+class CantDo(Exception):
+  pass
+
+class InvalidArgs(Exception):
+  pass
+
 # enum-type containing list of all possible symbols
 class Slots(Enum):
   cherry = "\N{CHERRIES}"
@@ -138,6 +144,53 @@ class Economy:
     return self.get_balance(user) >= cost
 
 
+  # checks through basic requirements for using economy actions
+  # if everything is okay, we return the money value back
+  async def can_do(self, user, money):
+    if not self.is_registered(user):
+      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))
+      await self.bot.say(embed = embed)
+      raise CantDo
+
+    # checks for strings as input
+    money = self.__interpret_frac(user, money)
+    
+    # nothing particular happens -- should be handled by individual methods through a try-catch    
+    if money == None:
+      raise InvalidArgs
+
+    # if money is a value less than or equal to 0
+    elif money <= 0:
+      embed = discord.Embed(title = "", description = "You need to spend more than 0 {}, {}.".format(self.get_currency_name(), user.mention))
+      await self.bot.say(embed = embed)
+      raise CantDo
+    
+    # if the money is more than the user can spend
+    elif not self.can_spend(user, money):
+      embed = discord.Embed(title = "", description = "You don't have enough {} for that, {}!".format(self.get_currency_name(), user.mention))
+      await self.bot.say(embed = embed)
+      raise CantDo
+
+    return money
+
+
+  # allows users to give fractional strings as arguments and interprets them into integer values
+  def __interpret_frac(self, user, money):
+    if money == None:
+      return
+    if money.isdigit():
+      return int(money)
+    if money == "all":
+      return self.get_balance(user)
+    if money == "half":
+      return self.get_balance(user)//2
+    if money == "fourth":
+      return self.get_balance(user)//4
+    if money == "tenth":
+      return self.get_balance(user)//10
+    return
+
+
   # registers an economy account with the bot
   @commands.command(pass_context = True, description = "Registers an account with the bot")
   async def register(self, ctx):
@@ -149,23 +202,6 @@ class Economy:
       self.update(self.users)
       embed = discord.Embed(title = "", description = "You're now registered on my database, {}!".format(ctx.message.author.mention))
     await self.bot.say(embed = embed)
-
-
-  # allows users to give fractional strings as arguments and interprets them into integer values
-  def __interpret_frac(self, ctx, bid):
-    if bid == None:
-      return
-    if bid.isdigit():
-      return int(bid)
-    if bid == "all":
-      return self.get_balance(ctx.message.author)
-    if bid == "half":
-      return self.get_balance(ctx.message.author)//2
-    if bid == "fourth":
-      return self.get_balance(ctx.message.author)//4
-    if bid == "tenth":
-      return self.get_balance(ctx.message.author)//10
-    return
 
 
   # pays out x credits to a user
@@ -236,109 +272,105 @@ class Economy:
 
   # transfers credits to another user
   @commands.command(pass_context = True, description = "Transfers currency to another user")
-  async def transfer(self, ctx, recipient: discord.Member = None, credits: int = 0):
+  async def transfer(self, ctx, recipient: discord.Member = None, money: int = 0):
     # checks if the user is trying to send currency to themselves
     if ctx.message.author == recipient:
       embed = discord.Embed(title = "", description = "You can't send {} to yourself, {}!".format(self.get_currency_name(), ctx.message.author.mention)) 
-
-    # checks if the recipient is a user
-    elif recipient is None:
-      embed = discord.Embed(title = "", description = "Send {} to another user with `!transfer <recipient> <number of credits>".format(self.get_currency_name()))
-    
-    # checks if the user is registered
-    elif not self.is_registered(ctx.message.author):
-      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(ctx.message.author.mention))
-    
+    try:
+      money = await self.can_do(ctx.message.author, money)
+    except InvalidArgs:
+      embed = discord.Embed(title = "", description = "Send {} to another user with `!transfer <recipient> <number of {}>`".format(self.get_currency_name(), self.get_currency_name()))
+    except CantDo:
+      return
+      
     # checks if the recipient is registered
-    elif not self.is_registered(recipient):
+    if not self.is_registered(recipient):
       embed = discord.Embed(title = "", description = "It looks like **{}** isn't registered in the system, {}".format(recipient.name, ctx.message.author.mention))
     
-    # checks if the amount of currency to be sent is an int and is greater than 0
-    elif type(credits) is not int or credits <= 0:
-      embed = discord.Embed(title = "", description = "You must send at least 1 {}, {}".format(self.get_currency_name(), ctx.message.author.mention))
-    
-    # checks if the user has enough currency to send
-    elif not self.can_spend(ctx.message.author, credits):
-      embed = discord.Embed(title = "", description = "You don't have enough {} for that, {}!".format(self.get_currency_name(), ctx.message.author.mention))
-    
     else:
-      self.add_balance(ctx.message.author, -credits)
-      self.add_balance(recipient, credits)
-      embed = discord.Embed(title = "", description = "{} sent {} {} to {}".format(ctx.message.author.mention, credits, recipient.mention), color = ctx.message.author.color)
+      self.add_balance(ctx.message.author, -money)
+      self.add_balance(recipient, money)
+      embed = discord.Embed(title = "", description = "{} sent {} {} to {}".format(ctx.message.author.mention, money, recipient.mention), color = ctx.message.author.color)
     await self.bot.say(embed = embed)
 
 
   # plays slots
   @commands.command(pass_context = True, aliases = ["slot"], description = "Play some slots!")
   async def slots(self, ctx, bid: str = None):
-    if not self.is_registered(ctx.message.author):
-      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(ctx.message.author.mention))
+    try:
+      bid = await self.can_do(ctx.message.author, bid)
+    except InvalidArgs:
+      embed = discord.Embed(title = "", description = "You can play slots by with `!slots <bid greater than 0>`.")
       await self.bot.say(embed = embed)
       return
-    bid = self.__interpret_frac(ctx, bid)
-    if bid is None:
-      embed = discord.Embed(title = "", description = "You can play slots by with `!slots <bid greater than 0>`.")
-    elif bid <= 0:
-      embed = discord.Embed(title = "", description = "You need to wager more than 0 {}, {}.".format(self.get_currency_name(), ctx.message.author.mention))
-    elif not self.can_spend(ctx.message.author, bid):
-      embed = discord.Embed(title = "", description = "You don't have enough {} for that, {}!".format(self.get_currency_name(), ctx.message.author.mention))
+    except CantDo:
+      return
+
+    # generating reels
+    reel = []
+    reel_list = list(Slots)
+    for row in range(3):
+      # to make the slots realistic, each column contains 3 contiguous icons, rather than 3 completely randomly popped ones
+      rand_choice = random.randint(0,len(list(Slots))-1)
+      reel_row = []
+      reel_row.append(reel_list[(rand_choice-1)%len(reel_list)].value)
+      reel_row.append(reel_list[rand_choice].value)
+      reel_row.append(reel_list[(rand_choice+1)%len(reel_list)].value)
+      reel_row.append(reel_list[rand_choice].name)
+      reel.append(reel_row)
+
+    # starting to create the embed message
+    embed = discord.Embed(title = "", description = ctx.message.author.mention, color = ctx.message.author.color)
+    embed.add_field(name = "\u3164", value = "{} {} {}\n{} {} {} ⬅\n{} {} {}".format(reel[0][0], reel[1][0], reel[2][0], reel[0][1], reel[1][1], reel[2][1], reel[0][2], reel[1][2], reel[2][2]))
+
+    # grabbing initial information for the final embed message
+    initial_balance = self.get_balance(ctx.message.author)
+
+    # checking for a payout
+    reel_key = [reel[0][3], reel[1][3], reel[2][3]]
+    if reel_key[0] == reel_key[1] == reel_key[2]:
+      payout = self.__payouts(reel_key[0])
+    elif (reel_key[0] == reel_key[1] and reel_key[0] == "cherry") or (reel_key[1] == reel_key[2] and reel_key[1] == "cherry"):
+      payout = self.__payouts("2cherry")
+    elif reel_key[0] == "cherry" or reel_key[1] == "cherry" or reel_key[2] == "cherry":
+      payout = self.__payouts("1cherry")
     else:
-      # generating reels
-      reel = []
-      reel_list = list(Slots)
-      for row in range(3):
-        # to make the slots realistic, each column contains 3 contiguous icons, rather than 3 completely randomly popped ones
-        rand_choice = random.randint(0,len(list(Slots))-1)
-        reel_row = []
-        reel_row.append(reel_list[(rand_choice-1)%len(reel_list)].value)
-        reel_row.append(reel_list[rand_choice].value)
-        reel_row.append(reel_list[(rand_choice+1)%len(reel_list)].value)
-        reel_row.append(reel_list[rand_choice].name)
-        reel.append(reel_row)
+      payout = self.__payouts("none")
 
-      # starting to create the embed message
-      embed = discord.Embed(title = "", description = ctx.message.author.mention, color = ctx.message.author.color)
-      embed.add_field(name = "\u3164", value = "{} {} {}\n{} {} {} ⬅\n{} {} {}".format(reel[0][0], reel[1][0], reel[2][0], reel[0][1], reel[1][1], reel[2][1], reel[0][2], reel[1][2], reel[2][2]))
-
-      # grabbing initial information for the final embed message
-      initial_balance = self.get_balance(ctx.message.author)
-
-      # checking for a payout
-      reel_key = [reel[0][3], reel[1][3], reel[2][3]]
-      if reel_key[0] == reel_key[1] == reel_key[2]:
-        payout = self.__payouts(reel_key[0])
-      elif (reel_key[0] == reel_key[1] and reel_key[0] == "cherry") or (reel_key[1] == reel_key[2] and reel_key[1] == "cherry"):
-        payout = self.__payouts("2cherry")
-      elif reel_key[0] == "cherry" or reel_key[1] == "cherry" or reel_key[2] == "cherry":
-        payout = self.__payouts("1cherry")
-      else:
-        payout = self.__payouts("none")
-
-      # paying out
-      final_payout = bid*payout["payout"]
-      self.add_balance(ctx.message.author, -bid)
-      self.add_balance(ctx.message.author, final_payout)
-      
-      # adding payout to embed
-      embed.add_field(name = "Payout:", value = "{}\n{} ⮕ {} {}".format(payout["output"], initial_balance, self.get_balance(ctx.message.author), self.get_currency_name()), inline = False)
-      embed.set_footer(text = "Your bet of {} {} became {}.".format(bid, self.get_currency_name(), final_payout))
+    # paying out
+    final_payout = bid*payout["payout"]
+    self.add_balance(ctx.message.author, -bid)
+    self.add_balance(ctx.message.author, final_payout)
+    
+    # adding payout to embed
+    embed.add_field(name = "Payout:", value = "{}\n{} ⮕ {} {}".format(payout["output"], initial_balance, self.get_balance(ctx.message.author), self.get_currency_name()), inline = False)
+    embed.set_footer(text = "Your bet of {} {} became {}.".format(bid, self.get_currency_name(), final_payout))
     await self.bot.say(embed = embed)
 
+
+  # helper method for slots -- quickly pulls information from the payouts dictionary
   def __payouts(self, key):
     return self.payout[key]
 
+  @commands.command(pass_context = True, description = "Attempt to rob another user")
+  async def rob(self, ctx, user: discord.Member = None, money: str = None):
+    pass
+
+
 
   # error handler that returns an embed message with the remaining time left on a particular command
-  @slots.error
-  @payday.error
-  async def cd_error(self, error, ctx):
-    if isinstance(error, commands.CommandOnCooldown):
-      time_left = error.retry_after
-      time_unit = "seconds"
-      if time_left >= 60:
-        time_left = time_left//60
-        time_unit = "minutes"
-      await self.bot.say(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.message.author.mention, time_left, time_unit)))
+  #@slots.error
+  #@payday.error
+  #async def cd_error(self, error, ctx):
+  #  if isinstance(error, commands.CommandOnCooldown):
+  #    time_left = error.retry_after
+  #    time_unit = "seconds"
+  #    if time_left >= 60:
+  #      time_left = time_left//60
+  #      time_unit = "minutes"
+  #   await self.bot.say(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.message.author.mention, time_left, time_unit)))
+
+
 
 def setup(bot):
   bot.add_cog(Economy(bot))
