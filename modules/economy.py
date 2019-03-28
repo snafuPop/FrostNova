@@ -198,7 +198,10 @@ class Economy:
     if ctx.message.author.id in self.users:
       embed = discord.Embed(title = "", description = "You're already registered on my database, {}.".format(ctx.message.author.mention))
     else:
-      user = {"username": ctx.message.author.name, "balance": 1000}
+      user = {"username": ctx.message.author.name, 
+              "balance": 1000,
+              "slot_winnings": 0,
+              "stolen_money": 0}
       self.users[ctx.message.author.id] = user
       self.update(self.users)
       embed = discord.Embed(title = "", description = "You're now registered on my database, {}!".format(ctx.message.author.mention))
@@ -342,6 +345,10 @@ class Economy:
     final_payout = bid*payout["payout"]
     self.add_balance(ctx.message.author, -bid)
     self.add_balance(ctx.message.author, final_payout)
+
+    # updating stats
+    self.users[ctx.message.author.id]["slot_winnings"] = self.users[ctx.message.author.id]["slot_winnings"] + (final_payout-bid)
+    self.update(self.users)
     
     # adding payout to embed
     embed.add_field(name = "Payout:", value = "{}\n{:,} ⮕ {:,} {}".format(payout["output"], initial_balance, self.get_balance(ctx.message.author), self.get_currency_name()), inline = False)
@@ -398,7 +405,11 @@ class Economy:
 
         embed.add_field(name = ctx.message.author.name, value = "{:,} ⮕ {:,} {}".format(initial_money_robber, self.get_balance(ctx.message.author), self.get_currency_name()), inline = False)
         embed.add_field(name = user.name, value = "{:,} ⮕ {:,} {}".format(initial_money_target, self.get_balance(user), self.get_currency_name()), inline = False)
-      
+
+        # updating stats
+        self.users[ctx.message.author.id]["stolen_money"] = self.users[ctx.message.author.id]["stolen_money"] + (money)
+        self.update(self.users)
+
       # unsuccessful robbery -- user must pay a random percentage of their money equal to the inverse of the success rate
       else:
         loss = int((self.get_balance(ctx.message.author)*(100-success_rate)))
