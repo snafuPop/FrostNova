@@ -99,7 +99,7 @@ class Info:
       with open("modules/_data/users.json") as json_data:
         users = json.load(json_data)
       if user.id in users:
-        embed.add_field(name = "Balance:", value = "{:,}".format(users[user.id]["balance"]), inline = True)
+        embed.add_field(name = "Balance:", value = "{:,}p".format(users[user.id]["balance"]), inline = True)
 
       if user.game is not None:
         embed.set_footer(text = "Currently playing {}".format(user.game))

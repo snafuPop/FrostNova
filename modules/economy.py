@@ -4,6 +4,7 @@ from builtins import bot
 import json
 import random
 import string
+import math
 from enum import Enum
 from modules.utils import perms
 
@@ -210,7 +211,7 @@ class Economy:
   async def payday(self, ctx):
     if self.is_registered(ctx.message.author):
       self.add_balance(ctx.message.author, self.get_payday())
-      embed = discord.Embed(title = "", description = "Here's {} {}, {}.".format(self.get_payday(), self.get_currency_name(), ctx.message.author.mention), color = ctx.message.author.color)
+      embed = discord.Embed(title = "", description = "Here's {:,} {}, {}.".format(self.get_payday(), self.get_currency_name(), ctx.message.author.mention), color = ctx.message.author.color)
     else:
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(ctx.message.author.mention))
     await self.bot.say(embed = embed)
@@ -272,7 +273,7 @@ class Economy:
 
   # transfers credits to another user
   @commands.command(pass_context = True, description = "Transfers currency to another user")
-  async def transfer(self, ctx, recipient: discord.Member = None, money: int = 0):
+  async def transfer(self, ctx, recipient: discord.Member = None, money: str = None):
     # checks if the user is trying to send currency to themselves
     if ctx.message.author == recipient:
       embed = discord.Embed(title = "", description = "You can't send {} to yourself, {}!".format(self.get_currency_name(), ctx.message.author.mention)) 
@@ -282,7 +283,7 @@ class Economy:
       embed = discord.Embed(title = "", description = "Send {} to another user with `!transfer <recipient> <number of {}>`".format(self.get_currency_name(), self.get_currency_name()))
     except CantDo:
       return
-      
+
     # checks if the recipient is registered
     if not self.is_registered(recipient):
       embed = discord.Embed(title = "", description = "It looks like **{}** isn't registered in the system, {}".format(recipient.name, ctx.message.author.mention))
@@ -290,7 +291,7 @@ class Economy:
     else:
       self.add_balance(ctx.message.author, -money)
       self.add_balance(recipient, money)
-      embed = discord.Embed(title = "", description = "{} sent {} {} to {}".format(ctx.message.author.mention, money, recipient.mention), color = ctx.message.author.color)
+      embed = discord.Embed(title = "", description = "{} sent {:,} {} to {}".format(ctx.message.author.mention, money, recipient.mention), color = ctx.message.author.color)
     await self.bot.say(embed = embed)
 
 
@@ -343,8 +344,8 @@ class Economy:
     self.add_balance(ctx.message.author, final_payout)
     
     # adding payout to embed
-    embed.add_field(name = "Payout:", value = "{}\n{} ⮕ {} {}".format(payout["output"], initial_balance, self.get_balance(ctx.message.author), self.get_currency_name()), inline = False)
-    embed.set_footer(text = "Your bet of {} {} became {}.".format(bid, self.get_currency_name(), final_payout))
+    embed.add_field(name = "Payout:", value = "{}\n{:,} ⮕ {:,} {}".format(payout["output"], initial_balance, self.get_balance(ctx.message.author), self.get_currency_name()), inline = False)
+    embed.set_footer(text = "Your bet of {:,} {} became {:,}.".format(bid, self.get_currency_name(), final_payout))
     await self.bot.say(embed = embed)
 
 
@@ -352,23 +353,72 @@ class Economy:
   def __payouts(self, key):
     return self.payout[key]
 
+  # attempts to rob a user 
   @commands.command(pass_context = True, description = "Attempt to rob another user")
+  @commands.cooldown(1, 1800, commands.BucketType.user)
   async def rob(self, ctx, user: discord.Member = None, money: str = None):
-    pass
+    # checks if the user is trying to rob themselves
+    money = self.__interpret_frac(user, money)
+    if ctx.message.author == user:
+      embed = discord.Embed(title = "", description = "You can't rob yourself, {}!".format(ctx.message.author.mention))
+      commands.reset_cooldown(ctx)
+    elif not self.is_registered(user):
+      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))   
+    elif money == None:
+      embed = discord.Embed(title = "", description = "Rob another user with `!rob <user> <number of {}>`".format(self.get_currency_name(), self.get_currency_name()))
+    elif money <= 0:
+      embed = discord.Embed(title = "", description = "You need to steal more than 0 {}, {}.".format(self.get_currency_name(), user.mention))
+    elif not self.is_registered(user):
+      embed = discord.Embed(title = "", description = "It looks like **{}** isn't registered in the system, {}".format(user.name, ctx.message.author.mention))
+    elif not self.can_spend(user, money):
+      embed = discord.Embed(title = "", description = "**{}** doesn't have that much currency (They have {} {})!".format(user.name, self.get_balance(user), self.get_currency_name()))
+    else:
+      # makes it so that the more money you are trying to steal, the harder it is to be successful
+      success_rate = int(math.ceil(100-((money**1.774)/self.get_balance(user))*.94))
 
+      # makes it so that it's never guaranteed to work
+      if success_rate >= 90:
+        success_rate = 90
 
+      # the minimum success rate is 1%
+      if success_rate <= 0:
+        success_rate = 1
+
+      # getting initial data
+      initial_money_robber = self.get_balance(ctx.message.author)
+      initial_money_target = self.get_balance(user)
+      rand_rate = random.randint(1,100)
+
+      # successful robbery -- user is paid out the amount they specified from the target
+      if success_rate >= rand_rate:
+        embed = discord.Embed(title = "", description = "Robbery successful! You stole **{:,} {}** from {}!".format(money, self.get_currency_name(), user.mention), color = ctx.message.author.color)
+
+        self.add_balance(ctx.message.author, money)
+        self.add_balance(user, -money)
+
+        embed.add_field(name = ctx.message.author.name, value = "{:,} ⮕ {:,} {}".format(initial_money_robber, self.get_balance(ctx.message.author), self.get_currency_name()), inline = False)
+        embed.add_field(name = user.name, value = "{:,} ⮕ {:,} {}".format(initial_money_target, self.get_balance(user), self.get_currency_name()), inline = False)
+      
+      # unsuccessful robbery -- user must pay a random percentage of their money equal to the inverse of the success rate
+      else:
+        loss = int((self.get_balance(ctx.message.author)*(100-success_rate)))
+        self.add_balance(ctx.message.author, -(loss))
+        embed = discord.Embed(title = "", description = "You were caught trying to steal from {}! You paid out **{:,} {}** in legal fees".format(user.mention, loss, self.get_currency_name()), color = ctx.message.author.color)
+        embed.add_field(name = ctx.message.author.name, value = "{:,} ⮕ {:,} {}".format(initial_money_robber, self.get_balance(ctx.message.author), self.get_currency_name()))
+      embed.set_footer(text = "You had a {}% success rate".format(success_rate))
+    await self.bot.say(embed = embed)
 
   # error handler that returns an embed message with the remaining time left on a particular command
-  #@slots.error
-  #@payday.error
-  #async def cd_error(self, error, ctx):
-  #  if isinstance(error, commands.CommandOnCooldown):
-  #    time_left = error.retry_after
-  #    time_unit = "seconds"
-  #    if time_left >= 60:
-  #      time_left = time_left//60
-  #      time_unit = "minutes"
-  #   await self.bot.say(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.message.author.mention, time_left, time_unit)))
+  @payday.error
+  @rob.error
+  async def cd_error(self, error, ctx):
+    if isinstance(error, commands.CommandOnCooldown):
+      time_left = error.retry_after
+      time_unit = "seconds"
+      if time_left >= 60:
+        time_left = time_left//60
+        time_unit = "minutes"
+      await self.bot.say(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.message.author.mention, time_left, time_unit)))
 
 
 
