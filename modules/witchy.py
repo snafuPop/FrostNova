@@ -7,7 +7,7 @@ from random import randint
 from random import choice
 from titlecase import titlecase
 
-class Witchy:
+class Witchy(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
@@ -58,13 +58,13 @@ class Witchy:
 
     if question is None:
       # catches empty responses
-      embed = discord.Embed(title = "", description = "Try asking a question with `!8ball <question>`, {}".format(ctx.message.author.mention), color = 0xe74c3c)
+      embed = discord.Embed(title = "", description = "Try asking a question with `!8ball <question>`, {}".format(ctx.author.mention), color = 0xe74c3c)
     else:
       # fetches a response
       reading = self.get_8ball()
 
-      embed = discord.Embed(title=question, description="{}, {}.".format(reading[1], ctx.message.author.mention), color = reading[0])
-    await self.bot.say(embed = embed)
+      embed = discord.Embed(title=question, description="{}, {}.".format(reading[1], ctx.author.mention), color = reading[0])
+    await ctx.send(embed = embed)
 
   @commands.command(pass_context = True, description = "Generates a spread of tarot cards.")
   async def tarot(self, ctx):
@@ -73,11 +73,11 @@ class Witchy:
     # grabs the spread
     spread = self.get_card()
 
-    embed = discord.Embed(title="", description="{}'s spread...".format(ctx.message.author.mention), color = ctx.message.author.color)
+    embed = discord.Embed(title="", description="{}'s spread...".format(ctx.author.mention), color = ctx.author.color)
     embed.add_field(name="Major Arcana", value="[{}](https://www.trustedtarot.com/cards/{})".format(titlecase(spread[0]), spread[0].replace(" ", "-")), inline=False)
     embed.set_thumbnail(url="https://www.trustedtarot.com/img/cards/{}.png".format(spread[0].replace(" ", "-")))
     embed.add_field(name="Minor Arcanas", value="[The {}](https://www.trustedtarot.com/cards/{}), [The {}](https://www.trustedtarot.com/cards/{}), and [The {}](https://www.trustedtarot.com/cards/{})".format(titlecase(spread[1]), spread[1].replace(" ", "-"), titlecase(spread[2]), spread[2].replace(" ", "-"), titlecase(spread[3]), spread[3].replace(" ", "-")))
-    await self.bot.say(embed=embed)
+    await ctx.send(embed=embed)
 
 def setup(bot):
   bot.add_cog(Witchy(bot))

@@ -7,7 +7,7 @@ from googletrans import Translator
 
 translator = Translator()
 
-class Translate:
+class Translate(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
@@ -19,13 +19,13 @@ class Translate:
       language = language[:2]
       output = translator.translate(text, dest = language)
 
-      embed = discord.Embed(title = output.text, description = "Translated for {}.".format(ctx.message.author.mention), color = ctx.message.author.color)
+      embed = discord.Embed(title = output.text, description = "Translated for {}.".format(ctx.author.mention), color = ctx.author.color)
 
       if output.pronunciation is not None:
         embed.add_field(name = "Pronunciation:", value = output.pronunciation)
         
       embed.set_footer(text = "Original text: {}".format(text))
-    await self.bot.say(embed = embed)
+    await ctx.send(embed = embed)
 
 def setup(bot):
   bot.add_cog(Translate(bot))

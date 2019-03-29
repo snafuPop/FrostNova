@@ -4,7 +4,7 @@ from builtins import bot
 import requests
 import json
 
-class Info:
+class Info(commands.Cog):
   def __init__(self, bot):
     self.bot = bot;
     self.regions = {
@@ -23,23 +23,24 @@ class Info:
     }
 
   @commands.command(description = "Prints markdown text utilized by Discord")
-  async def syntax(self):
-    embed.add_field(name = "*italics*", value = "`*italics*` or `_italics_`")
-    embed.add_field(name = "**bold**", value = "`**bold**`", inline = True)
-    embed.add_field(name = "__underline__", value = "`__underline__`", inline = True)
-    embed.add_field(name = "~~strikethrough~~", value = "`~~strikethrough~~`", inline = True)
-    embed.add_field(name = "||spoiler||", value = "`||spoiler||`", inline = True)
+  async def markdown(self, ctx):
+    embed = discord.Embed(title = "List of Markdown")
+    embed.add_field(name = "Italics", value = "`*italitcs*` or `_italics_`")
+    embed.add_field(name = "Bold", value = "`**bold**`")
+    embed.add_field(name = "Underline", value = "`__underline__`")
+    embed.add_field(name = "Strikethrough", value = "`~~strikethrough~~`")
+    embed.add_field(name = "Spoiler", value = "`||spoiler||`")
 
-    embed.add_field(name = "`single-line code`", value = "surround text with `")
-    embed.add_field(name = "```multi-line code```", value = "surround text with 3 `'s. Define a language by typing the name of the language after the three backticks", inline = True)
+    embed.add_field(name = "Single-line Code", value = "surround text with `")
+    embed.add_field(name = "Multi-line Code", value = "surround text with 3 `'s. Define a language by typing the name of the language after the three backticks")
 
-    await self.bot.say(embed = embed)
+    await ctx.send(embed = embed)
 
   @commands.command(pass_context = True, description = "Grabs a user's avatar")
   async def avatar(self, ctx, *, user: discord.Member = None):
     try:
       if user is None:
-        user = ctx.message.author
+        user = ctx.author
 
     except Exception as e:
       embed = discord.Embed(title = "", description = "It doesn't seem like {} is a member of this server. Maybe try mentioning them instead?".format(str(user)))
@@ -54,7 +55,7 @@ class Info:
       else:
         embed.set_image(url = user.default_avatar_url)
 
-    await self.bot.say(embed = embed)
+    await ctx.send(embed = embed)
 
   @commands.command(pass_context = True, description = "Gives information about a user")
   async def user(self, ctx, *, user: discord.Member = None):
@@ -63,7 +64,7 @@ class Info:
     # grabbing the user's username (defaults to the author if a user was not specified)
     try:
       if user is None:
-        user = ctx.message.author
+        user = ctx.author
     except Exception as e:
       embed = discord.Embed(title = "", description = "It doesn't seem like {} is a member of this server. Maybe try mentioning them instead?".format(str(user)))
     else:
@@ -95,29 +96,26 @@ class Info:
       embed.add_field(name = "Discord user since:", value = user.created_at.strftime("%d %b %Y"), inline = True)
       embed.add_field(name = "Joined server at:", value = user.joined_at.strftime("%d %b %Y"), inline = True)
 
-      # gets wallet information (if available)
+      # displays wallet information (if available)
       with open("modules/_data/users.json") as json_data:
         users = json.load(json_data)
-      if user.id in users:
-        embed.add_field(name = "Balance:", value = "{:,}p".format(users[user.id]["balance"]), inline = True)
-        embed.add_field(name = "Slot Winnings:", value = "{:,}p".format(users[user.id]["slot_winnings"]), inline = True)
-        embed.add_field(name = "Pennies Stolen:", value = "{:,}p".format(users[user.id]["stolen_money"]), inline = True)
+      if str(user.id) in users:
+        embed.add_field(name = "Balance:", value = "{:,}p".format(users[str(user.id)]["balance"]), inline = True)
+        embed.add_field(name = "Slot Winnings:", value = "{:,}p".format(users[str(user.id)]["slot_winnings"]), inline = True)
+        embed.add_field(name = "Pennies Stolen:", value = "{:,}p".format(users[str(user.id)]["stolen_money"]), inline = True)
 
-      if user.game is not None:
-        embed.set_footer(text = "Currently playing {}".format(user.game))
-
-    await self.bot.say(embed = embed)
+    await ctx.send(embed = embed)
 
   @commands.command(pass_context = True, description = "Gives information about the current server")
   async def server(self, ctx):
-    server = ctx.message.server
+    server = ctx.guild
     embed = discord.Embed(title = "__**{}**__ ({})".format(str(server.name), self.regions[str(server.region)]), description = "<{}>".format(server.id))
     embed.set_thumbnail(url = server.icon_url)
-    embed.add_field(name = "Number of members:", value = str(len(server.members)), inline = True)
+    embed.add_field(name = "Number of members:", value = str(server.member_count), inline = True)
     embed.add_field(name = "Owner", value = str(server.owner), inline = True)
     embed.set_footer(text = "Server was founded on {}".format(server.created_at.strftime("%d %b %Y")))
 
-    await self.bot.say(embed = embed)
+    await ctx.send(embed = embed)
 
 def setup(bot):
   bot.add_cog(Info(bot))

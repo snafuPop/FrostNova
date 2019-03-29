@@ -23,8 +23,8 @@ builtins.bot = bot
 bot.remove_command('help')
 
 # imports
-successful_imports = 0;
-total_imports = 0;
+successful_imports = 0
+total_imports = 0
 print("\n")
 for file in os.listdir("modules/"):
   filename = os.fsdecode(file)
@@ -37,35 +37,43 @@ for file in os.listdir("modules/"):
     except Exception as e:
       print("{} had some problems ({}: {})".format(filename, type(e).__name__, e))
 
+
 @bot.event
 async def on_ready():
   # runs when the bot is fully functional
   print("\n{}/{} modules loaded".format(successful_imports, total_imports))
   print("Logged in as {} <{}>".format(bot.user.name, bot.user.id))
+  print("Running {}".format(discord.__version__))
   print("--------------------------------------------------------")
 
+
+# prints out a list of commands
 @bot.command(pass_context=True, description = "Prints a list of commands and what they do")
-async def help(ctx):
-  # prints commands
+async def help(ctx, *, cog_name: str = None):
+  # if a cog is not provided or is not an actual cog
+  if cog_name is None or cog_name.title() not in bot.cogs:
+    embed = discord.Embed(title = "List of all modules", description = "Use `!help <module>` for more information")
+    for cog in bot.cogs:
+      embed.add_field(name = cog, value = "`!help {}`".format(cog.lower()))
 
-  embed = discord.Embed(title = "List of all commands", description = "")
+  # if a cog is provided
+  else:
+    # applies title-case to match the names of classes
+    embed = discord.Embed(title = "List of all commands in **{}**".format(cog_name.title()))
+    for cog in bot.cogs.keys():
+      cmds = [c.name for c in discord.Bot().get_cog_commands(cog)]
+      embed.add_field(name = "{cog} ({len(cmds)} Commands)", value=", ".join(cmds))
+    #for command in bot.get_cog_commands(cog_name.title()):
+    #  # prevents aliases
+    #  if (command[0] != "_"):
+    #    desc = bot.get_command(command).description
+    #    # prevents 404 BAD REQUESTS
+    #    if desc == "":
+    #     desc = "oops!"
+    #    embed.add_field(name = "`!{}".format(command), value = desc, inline = True)
+
+  # finalizing the embed
   embed.set_footer(text="Created by snafuPop#0007")
-
-  # iterating through list of commands attached to bot
-  for command in bot.commands:
-
-    # filters out commands aliases
-    if (command[0] != "_"):
-
-      # gives commands without a description a placeholder description so as to not trigger a 400 BAD REQUEST
-      desc = bot.get_command(command).description
-      if desc == "":
-        desc = "does it."
-
-      # appends a field for each command
-      embed.add_field(name = "`!{}`".format(command), value = desc, inline = False)
-
-  # sends a DM to the user who requested !help
-  await bot.send_message(ctx.message.author, embed = embed)
+  await channel.send_message(ctx.message.author, embed = embed)
 
 bot.run(TOKEN)
