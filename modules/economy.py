@@ -175,6 +175,13 @@ class Economy(commands.Cog):
     return money
 
 
+  # grants credits every time a user posts a message
+  @commands.Cog.listener()
+  async def on_message(self, ctx):
+    if ctx.author.id != 547516876851380293:
+      self.add_balance(ctx.author, 10)
+
+
   # allows users to give fractional strings as arguments and interprets them into integer values
   def __interpret_frac(self, user, money):
     if money == None:
@@ -246,7 +253,7 @@ class Economy(commands.Cog):
 
   # generates a coupon that can be cashed in for currency
   @commands.is_owner()
-  @commands.command(description = "Generates a coupon")
+  @commands.command(hidden = True, description = "Generates a coupon")
   async def make_coupon(self, ctx, credits: int = 0):
     # checks for null input
     if credits <= 0:
@@ -419,16 +426,16 @@ class Economy(commands.Cog):
     await ctx.send(embed = embed)
 
   # error handler that returns an embed message with the remaining time left on a particular command
-  @payday.error
-  @rob.error
-  async def cd_error(self, error, ctx):
-    if isinstance(error, commands.CommandOnCooldown):
-      time_left = error.retry_after
-      time_unit = "seconds"
-      if time_left >= 60:
-       time_left = time_left//60
-        time_unit = "minutes"
-     await self.bot.say(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.author.mention, time_left, time_unit)))
+  #@payday.error
+  #@rob.error
+  #async def cd_error(self, error, ctx):
+  #  if isinstance(error, commands.CommandOnCooldown):
+  #    time_left = error.retry_after
+  #    time_unit = "seconds"
+  #    if time_left >= 60:
+  #      time_left = time_left//60
+  #      time_unit = "minutes"
+  #    await self.bot.say(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.author.mention, time_left, time_unit)))
 
 
 def setup(bot):

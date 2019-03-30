@@ -87,10 +87,7 @@ class Info(commands.Cog):
       embed = discord.Embed(title = "__**{}**__ {}".format(str(user), nick), description = "**roles:** {}".format(roles), color = user.color)
 
       # sets the user's avatar as the image (if they have one)
-      if user.avatar_url:
-        embed.set_thumbnail(url = user.avatar_url)
-      else:
-        embed.set_thumbnail(url = user.default_avatar_url)
+      embed.set_thumbnail(url = user.avatar_url)
 
       # displays account age
       embed.add_field(name = "Discord user since:", value = user.created_at.strftime("%d %b %Y"), inline = True)
