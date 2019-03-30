@@ -178,7 +178,7 @@ class Economy(commands.Cog):
   # grants credits every time a user posts a message
   @commands.Cog.listener()
   async def on_message(self, ctx):
-    if ctx.author.id != 547516876851380293:
+    if (ctx.author.id != 547516876851380293) and (self.is_registered(ctx.author)):
       self.add_balance(ctx.author, 10)
 
 
@@ -208,7 +208,8 @@ class Economy(commands.Cog):
       user = {"username": ctx.author.name, 
               "balance": 1000,
               "slot_winnings": 0,
-              "stolen_money": 0}
+              "stolen_money": 0,
+              "inventory": []}
       self.users[str(ctx.author.id)] = user
       self.update(self.users)
       embed = discord.Embed(title = "", description = "You're now registered on my database, {}!".format(ctx.message.author.mention))
@@ -426,17 +427,22 @@ class Economy(commands.Cog):
     await ctx.send(embed = embed)
 
   # error handler that returns an embed message with the remaining time left on a particular command
-  #@payday.error
-  #@rob.error
-  #async def cd_error(self, error, ctx):
-  #  if isinstance(error, commands.CommandOnCooldown):
-  #    time_left = error.retry_after
-  #    time_unit = "seconds"
-  #    if time_left >= 60:
-  #      time_left = time_left//60
-  #      time_unit = "minutes"
-  #    await self.bot.say(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.author.mention, time_left, time_unit)))
-
+  @payday.error
+  @rob.error
+  async def cd_error(self, ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+      time_left = int(error.retry_after)
+      if time_left >= 3600:
+        time_left = time_left//3600
+        time_unit = "hour(s)"
+      elif time_left >= 60:
+        time_left = time_left//60
+        time_unit = "minute(s)"
+      else:
+        time_unit = "second(s)"
+      await ctx.send(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.author.mention, time_left, time_unit)))
+    else:
+      raise error
 
 def setup(bot):
   bot.add_cog(Economy(bot))

@@ -8,6 +8,8 @@ import praw
 import json
 
 from prawcore import NotFound
+import mimetypes
+import urllib
 
 with open("_config/settings.json") as json_data:
   data = json.load(json_data)
@@ -33,16 +35,23 @@ class Reddit(commands.Cog):
 
       # if list is empty, then the subreddit does not exist
       if not post:
-        embed = discord.Embed(title = "", description = "Could not find /r/{}, {}.".format(sub, ctx.author.mention))
+        embed = discord.Embed(title = "", description = "Could not find **/r/{}**, {}.".format(sub, ctx.author.mention))
 
       # creates an embed message for the reddit post
       else:
         post = choice(post)
-        embed = discord.Embed(title = "", description = "Requested by {}".format(ctx.author.mention), color = ctx.author.color)
-        embed.set_author(name = post.title, url = post.shortlink, icon_url = "https://i.imgur.com/BWZxWkG.png")
-        embed.set_image(url = post.url)
-        embed.set_footer(text = "Random post from /r/{}\n {:-2}% upvoted ・ Uploaded by /u/{}.".format(sub, post.upvote_ratio*100, post.author))
 
+        # if the post is tagged as a spoiler, then the content will be wrapped by spoiler tags
+        title = post.title
+        text = post.selftext
+        if post.spoiler:
+          title = "||{}||".format(title)
+          text = "||{}||".format(text)
+
+        embed = discord.Embed(title = title, description = text, color = ctx.author.color)
+        embed.set_author(name = post.author.name, url = post.shortlink, icon_url = post.author.icon_img)
+        embed.set_footer(text = "Random post from /r/{}\n {:-2}% upvoted".format(sub, post.upvote_ratio*100))
+        embed.set_image(url = post.url)
     await ctx.send(embed = embed)
 
 def setup(bot):

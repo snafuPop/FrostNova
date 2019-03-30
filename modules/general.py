@@ -27,7 +27,7 @@ class General(commands.Cog):
     embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/482726823776485392/548612049953882143/rhuul.png")
     embed.add_field(name = "Author:", value = "snafuPop#0007", inline = True)
     embed.add_field(name = "Language:", value = "Python 3.6.x", inline = True)
-    embed.add_field(name = "Discord.py:", value = )
+    embed.add_field(name = "Discord.py:", value = "rewrite")
     embed.set_footer(text = "Use !help to produce a list of commands")
     await ctx.send(embed = embed)
 
