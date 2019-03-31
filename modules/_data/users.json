@@ -1,66 +1,66 @@
 {
   "94236862280892416": {
-    "username": "snafuPop",
-    "text_posts": 105,
-    "balance": 110,
-    "inventory": [],
     "slot_winnings": -1058611,
-    "stolen_money": 0
-  },
-  "88087496189022208": {
-    "username": "boophis boppa",
-    "text_posts": 65,
-    "balance": 76,
-    "inventory": [],
-    "slot_winnings": -50906,
-    "stolen_money": 200
-  },
-  "94237420404342784": {
-    "username": "Argoninium",
-    "text_posts": 42,
-    "balance": 30,
-    "inventory": [],
-    "slot_winnings": -1596,
-    "stolen_money": 300
-  },
-  "547516876851380293": {
-    "username": "y'shtola",
-    "text_posts": 154,
-    "balance": 2136482537,
-    "inventory": [],
-    "slot_winnings": 0,
-    "stolen_money": 0
+    "text_posts": 108,
+    "balance": 140,
+    "username": "snafuPop",
+    "stolen_money": 0,
+    "inventory": []
   },
   "94945718405431296": {
-    "username": "Maggron",
+    "slot_winnings": 0,
     "text_posts": 1,
     "balance": 1010,
-    "inventory": [],
-    "slot_winnings": 0,
-    "stolen_money": 0
-  },
-  "94524239243120640": {
-    "username": "JustCallMeJick",
-    "text_posts": 1,
-    "balance": 10,
-    "inventory": [],
-    "slot_winnings": -2000,
-    "stolen_money": 0
-  },
-  "214190128862593026": {
-    "username": "ttblb",
-    "text_posts": 0,
-    "balance": 0,
-    "inventory": [],
-    "slot_winnings": 0,
-    "stolen_money": 0
+    "username": "Maggron",
+    "stolen_money": 0,
+    "inventory": []
   },
   "94518072219545600": {
-    "username": "Capri",
+    "slot_winnings": -500,
     "text_posts": 2,
     "balance": 80,
-    "inventory": [],
-    "slot_winnings": -500,
-    "stolen_money": 0
+    "username": "Capri",
+    "stolen_money": 0,
+    "inventory": []
+  },
+  "88087496189022208": {
+    "slot_winnings": -50906,
+    "text_posts": 65,
+    "balance": 76,
+    "username": "boophis boppa",
+    "stolen_money": 200,
+    "inventory": []
+  },
+  "94524239243120640": {
+    "slot_winnings": -2520,
+    "text_posts": 3,
+    "balance": 10,
+    "username": "JustCallMeJick",
+    "stolen_money": 0,
+    "inventory": []
+  },
+  "547516876851380293": {
+    "slot_winnings": 0,
+    "text_posts": 159,
+    "balance": 2136482537,
+    "username": "y'shtola",
+    "stolen_money": 0,
+    "inventory": []
+  },
+  "214190128862593026": {
+    "slot_winnings": 0,
+    "text_posts": 0,
+    "balance": 0,
+    "username": "ttblb",
+    "stolen_money": 0,
+    "inventory": []
+  },
+  "94237420404342784": {
+    "slot_winnings": -1596,
+    "text_posts": 42,
+    "balance": 30,
+    "username": "Argoninium",
+    "stolen_money": 300,
+    "inventory": []
   }
 }

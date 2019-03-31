@@ -66,7 +66,7 @@ class Witchy(commands.Cog):
       embed = discord.Embed(title=question, description="{}, {}.".format(reading[1], ctx.author.mention), color = reading[0])
     await ctx.send(embed = embed)
 
-  @commands.command(pass_context = True, description = "Generates a spread of tarot cards.")
+  @commands.command(description = "Generates a spread of tarot cards.")
   async def tarot(self, ctx):
     '''Returns a major arcana and 3 minor arcana.'''
 

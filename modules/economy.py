@@ -447,6 +447,9 @@ class Economy(commands.Cog):
       embed.set_footer(text = "You had a {}% success rate".format(success_rate))
     await ctx.send(embed = embed)
 
+  @commands.command(aliases = ["Rochambeau"], description = "Play rock-paper-scissors against the me!"
+  async def rps(self
+
   # error handler that returns an embed message with the remaining time left on a particular command
   @payday.error
   @rob.error
