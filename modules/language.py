@@ -16,7 +16,7 @@ class Language(commands.Cog):
   async def translate(self, ctx, language: str = None, *, text: str = None):
     if text is None:
       embed = discord.Embed(title = "", description = "Try translating text using `!translate <target language> <text>`, {}.".format(ctx.author.mention))
-    else: 
+    else:
       language = language[:2]
       output = translator.translate(text, dest = language)
 
@@ -24,15 +24,15 @@ class Language(commands.Cog):
 
       if output.pronunciation is not None:
         embed.add_field(name = "Pronunciation:", value = output.pronunciation)
-        
+
       embed.set_footer(text = "Original text: {}".format(text))
     await ctx.send(embed = embed)
 
   @commands.command(aliases = ["jp"], description = "Looks up a word on Jisho.org")
   async def jisho(self, ctx, term: str = None, max_entries: int = 1):
     if term is None:
-      embed = discord.Embed(title = "", description = "Try searching a word on Jisho using `jisho <word>`., {}".format(ctx.author.mention))
-    else:     
+      embed = discord.Embed(title = "", description = "Try searching a word on Jisho using `jisho <word> <number of entries>`, {}".format(ctx.author.mention))
+    else:
       url = "http://jisho.org/api/v1/search/words?keyword=" + urllib.parse.quote(term, encoding = "utf-8")
       try:
           async with aiohttp.ClientSession() as session:
@@ -72,7 +72,7 @@ class Language(commands.Cog):
         else:
           word = ""
           reading = entries["japanese"][0]["reading"]
-        
+
         # grabbing all definitions and particles
         entry_list = []
         last_particle = ""
@@ -102,7 +102,7 @@ class Language(commands.Cog):
         embed.add_field(name = "**{}.** {} {}".format(count, word, reading), value = info, inline = False)
         count += 1
 
-      await ctx.send(embed = embed)
+    await ctx.send(embed = embed)
 
 
 def setup(bot):

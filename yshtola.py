@@ -1,4 +1,5 @@
 from os.path import dirname, basename, isfile
+import sys
 import glob
 import os
 import builtins
@@ -9,14 +10,14 @@ import json
 
 # attempt to import discord.py
 try:
-  from discord.ext import commands
   import discord
+  from discord.ext import commands
 except ImportError:
   print("discord.py was not found.")
   sys.exit(1)
 
 # load the token and prefix
-with open("_config/settings.json") as json_data:
+with open("/home/snafuPop/yshtola/_config/settings.json") as json_data:
   TOKEN = json.load(json_data)["TOKEN"]
 bot = commands.Bot(command_prefix='!')
 builtins.bot = bot
@@ -26,7 +27,7 @@ bot.remove_command('help')
 successful_imports = 0
 total_imports = 0
 print("\n")
-for file in os.listdir("modules/"):
+for file in os.listdir("/home/snafuPop/yshtola/modules/"):
   filename = os.fsdecode(file)
   if filename != "__init__.py" and filename.endswith(".py"):
     total_imports += 1

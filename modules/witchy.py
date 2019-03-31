@@ -35,7 +35,7 @@ class Witchy(commands.Cog):
       polarity = 0xe74c3c
 
     return [polarity, reading]
-    
+
   def get_card(self):
     # returns a random major arcana and 3 random minor arcana
 
@@ -52,7 +52,7 @@ class Witchy(commands.Cog):
 
     return spread
 
-  @commands.command(pass_context = True, aliases = ["8ball"], description = "Generates a standard 8ball response.")
+  @commands.command(aliases = ["8ball"], description = "Generates a standard 8ball response.")
   async def _8ball(self, ctx, *, question: str = None):
     '''Reads in a question and returns a standard 8-Ball response.'''
 

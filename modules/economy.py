@@ -46,14 +46,14 @@ class Payout(commands.Cog):
 
   @commands.command(pass_context = True, description = "Returns a list of possible payouts")
   async def payouts(self, ctx):
-    await ctx.send(ctx.author, embed = self.get_payouts())
+    await ctx.author.send(embed = self.get_payouts())
 
 class Economy(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
     self.name = "pennies"
     self.payday_amount = 500
-    with open("modules/_data/users.json") as json_data:
+    with open("/home/snafuPop/yshtola/modules/_data/users.json") as json_data:
       self.users = json.load(json_data)
     self.payout = {
       "gun": {
@@ -105,12 +105,12 @@ class Economy(commands.Cog):
 
   # updates the .json with new values and creates a back-up
   def update(self, user):
-    with open("modules/_data/users.json", "w") as json_out:
+    with open("/home/snafuPop/yshtola/modules/_data/users.json", "w") as json_out:
       json.dump(user, json_out, indent = 2)
 
 
   # get a dict object of all possible payouts for slots
-  def get_payout_dict(self):  
+  def get_payout_dict(self):
     return self.payout
 
 
@@ -155,8 +155,8 @@ class Economy(commands.Cog):
 
     # checks for strings as input
     money = self.__interpret_frac(user, money)
-    
-    # nothing particular happens -- should be handled by individual methods through a try-catch    
+
+    # nothing particular happens -- should be handled by individual methods through a try-catch
     if money == None:
       raise InvalidArgs
 
@@ -165,7 +165,7 @@ class Economy(commands.Cog):
       embed = discord.Embed(title = "", description = "You need to spend more than 0 {}, {}.".format(self.get_currency_name(), user.mention))
       await ctx.send(embed = embed)
       raise CantDo
-    
+
     # if the money is more than the user can spend
     elif not self.can_spend(user, money):
       embed = discord.Embed(title = "", description = "You don't have enough {} for that, {}!".format(self.get_currency_name(), user.mention))
@@ -178,8 +178,11 @@ class Economy(commands.Cog):
   # grants credits every time a user posts a message
   @commands.Cog.listener()
   async def on_message(self, ctx):
-    if (ctx.author.id != 547516876851380293) and (self.is_registered(ctx.author)):
-      self.add_balance(ctx.author, 10)
+    if (self.is_registered(ctx.author)):
+      if (ctx.author.id != 547516876851380293):
+        self.add_balance(ctx.author, 10)
+      self.users[str(ctx.author.id)]["text_posts"] = self.users[str(ctx.author.id)]["text_posts"] + 1
+      self.update(self.users)
 
 
   # allows users to give fractional strings as arguments and interprets them into integer values
@@ -205,10 +208,11 @@ class Economy(commands.Cog):
     if str(ctx.author.id) in self.users:
       embed = discord.Embed(title = "", description = "You're already registered on my database, {}.".format(ctx.message.author.mention))
     else:
-      user = {"username": ctx.author.name, 
+      user = {"username": ctx.author.name,
               "balance": 1000,
               "slot_winnings": 0,
               "stolen_money": 0,
+              "text_posts": 0,
               "inventory": []}
       self.users[str(ctx.author.id)] = user
       self.update(self.users)
@@ -238,7 +242,7 @@ class Economy(commands.Cog):
     else:
 
       # opening the list of coupons
-      with open("modules/_data/coupons.json") as json_coupons:
+      with open("/home/snafuPop/yshtola/modules/_data/coupons.json") as json_coupons:
         coupons = json.load(json_coupons)
 
       if coupon_code not in coupons:
@@ -246,9 +250,23 @@ class Economy(commands.Cog):
       else:
         value = coupons.pop(coupon_code)
         self.add_balance(ctx.message.author, value)
-        with open("modules/_data/coupons.json", "w") as json_out_coupon:
+        with open("/home/snafuPop/yshtola/modules/_data/coupons.json", "w") as json_out_coupon:
           json.dump(coupons, json_out_coupon, indent = 2)
         embed = discord.Embed(title = "", description = "Successfully cashed in coupon for {} {}, {}".format(value, self.get_currency_name(), ctx.message.author.mention), color = ctx.message.author.color)
+    await ctx.send(embed = embed)
+
+
+  @commands.is_owner()
+  @commands.command(hidden = True, description = "Sets the currency of a user")
+  async def set_balance(self, ctx, user: discord.Member = None, credits: int = -1):
+    if user is None:
+      embed = discord.Embed(title = "", description = "Invalid user")
+    if credits < 0:
+      embed = discord.Embed(title = "", description = "Invaid balance")
+    else:
+      self.users[str(user.id)]["balance"] = credits
+      self.update(self.users)
+      embed = discord.Embed(title = "", description = "Successfully set {}'s balance to {}.".format(user.mention, credits))
     await ctx.send(embed = embed)
 
 
@@ -262,7 +280,7 @@ class Economy(commands.Cog):
     else:
 
       # opening the list of coupons
-      with open("modules/_data/coupons.json") as json_coupons:
+      with open("/home/snafuPop/yshtola/modules/_data/coupons.json") as json_coupons:
         coupons = json.load(json_coupons)
 
       # generating a random coupon code and makes sure it doesn't already exists
@@ -287,7 +305,7 @@ class Economy(commands.Cog):
   async def transfer(self, ctx, recipient: discord.Member = None, money: str = None):
     # checks if the user is trying to send currency to themselves
     if ctx.author == recipient:
-      embed = discord.Embed(title = "", description = "You can't send {} to yourself, {}!".format(self.get_currency_name(), ctx.author.mention)) 
+      embed = discord.Embed(title = "", description = "You can't send {} to yourself, {}!".format(self.get_currency_name(), ctx.author.mention))
     try:
       money = await self.can_do(ctx, ctx.author, money)
     except InvalidArgs:
@@ -298,7 +316,7 @@ class Economy(commands.Cog):
     # checks if the recipient is registered
     if not self.is_registered(recipient):
       embed = discord.Embed(title = "", description = "It looks like **{}** isn't registered in the system, {}".format(recipient.name, ctx.author.mention))
-    
+
     else:
       self.add_balance(ctx.author, -money)
       self.add_balance(recipient, money)
@@ -318,6 +336,9 @@ class Economy(commands.Cog):
     except CantDo:
       return
 
+    if bid < 100:
+        await ctx.send(embed = discord.Embed(title = "", description = "You have to bet at least **100 {}**, {}.".format(self.get_currency_name(), ctx.author.mention)))
+        return
     # generating reels
     reel = []
     reel_list = list(Slots)
@@ -357,7 +378,7 @@ class Economy(commands.Cog):
     # updating stats
     self.users[str(ctx.author.id)]["slot_winnings"] = self.users[str(ctx.author.id)]["slot_winnings"] + (final_payout-bid)
     self.update(self.users)
-    
+
     # adding payout to embed
     embed.add_field(name = "Payout:", value = "{}\n{:,} ⮕ {:,} {}".format(payout["output"], initial_balance, self.get_balance(ctx.author), self.get_currency_name()), inline = False)
     embed.set_footer(text = "Your bet of {:,} {} became {:,}.".format(bid, self.get_currency_name(), final_payout))
@@ -368,7 +389,7 @@ class Economy(commands.Cog):
   def __payouts(self, key):
     return self.payout[key]
 
-  # attempts to rob a user 
+  # attempts to rob a user
   @commands.command(description = "Attempt to rob another user")
   @commands.cooldown(1, 1800, commands.BucketType.user)
   async def rob(self, ctx, user: discord.Member = None, money: str = None):
@@ -377,7 +398,7 @@ class Economy(commands.Cog):
     if ctx.author == user:
       embed = discord.Embed(title = "", description = "You can't rob yourself, {}!".format(ctx.author.mention))
     elif not self.is_registered(user):
-      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))   
+      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))
     elif money == None:
       embed = discord.Embed(title = "", description = "Rob another user with `!rob <user> <number of {}>`".format(self.get_currency_name(), self.get_currency_name()))
     elif money <= 0:
@@ -419,8 +440,8 @@ class Economy(commands.Cog):
 
       # unsuccessful robbery -- user must pay a random percentage of their money equal to the inverse of the success rate
       else:
-        loss = int((self.get_balance(ctx.author)*(100-success_rate)))
-        self.add_balance(ctx.author, -(loss))
+        loss = int((self.get_balance(ctx.author)*((100-success_rate)/100)))
+        self.add_balance(ctx.author, -loss)
         embed = discord.Embed(title = "", description = "You were caught trying to steal from {}! You paid out **{:,} {}** in legal fees".format(user.mention, loss, self.get_currency_name()), color = ctx.author.color)
         embed.add_field(name = ctx.author.name, value = "{:,} ⮕ {:,} {}".format(initial_money_robber, self.get_balance(ctx.author), self.get_currency_name()))
       embed.set_footer(text = "You had a {}% success rate".format(success_rate))

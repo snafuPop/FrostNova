@@ -13,7 +13,7 @@ class Info(commands.Cog):
       "us-south": ":flag_us: US South",
       "us-west": ":flag_us: US West",
       "eu-central": ":flag_eu: Central Europe",
-      "eu-west": ":flag_eu: Western Europe", 
+      "eu-west": ":flag_eu: Western Europe",
       "braziL": ":flag_br: Brazil",
       "japan": ":flag_jp: Japan",
       "russia": ":flag_ru: Russia",
@@ -44,7 +44,7 @@ class Info(commands.Cog):
 
     except Exception as e:
       embed = discord.Embed(title = "", description = "It doesn't seem like {} is a member of this server. Maybe try mentioning them instead?".format(str(user)))
-    
+
     else:
       embed = discord.Embed(title = "{}'s avatar".format(str(user)), description = "", color = user.color)
 
@@ -93,10 +93,11 @@ class Info(commands.Cog):
       embed.add_field(name = "Discord user since:", value = user.created_at.strftime("%d %b %Y"), inline = True)
       embed.add_field(name = "Joined server at:", value = user.joined_at.strftime("%d %b %Y"), inline = True)
 
-      # displays wallet information (if available)
-      with open("modules/_data/users.json") as json_data:
+      # displays register information (if available)
+      with open("/home/snafuPop/yshtola/modules/_data/users.json") as json_data:
         users = json.load(json_data)
       if str(user.id) in users:
+        embed.add_field(name = "Text Posts:", value = "{:,} posts".format(users[str(user.id)]["text_posts"]), inline = True)
         embed.add_field(name = "Balance:", value = "{:,}p".format(users[str(user.id)]["balance"]), inline = True)
         embed.add_field(name = "Slot Winnings:", value = "{:,}p".format(users[str(user.id)]["slot_winnings"]), inline = True)
         embed.add_field(name = "Pennies Stolen:", value = "{:,}p".format(users[str(user.id)]["stolen_money"]), inline = True)

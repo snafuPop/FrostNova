@@ -62,8 +62,7 @@ class Maint(commands.Cog):
     else:
       load_module = "modules." + module
       try:
-        self.bot.unload_extension(load_module)
-        self.bot.load_extension(load_module)
+        self.bot.reload_extension(load_module)
       except Exception as e:
         embed = discord.Embed(title = "", description = "**{}** could not be reloaded. Check the terminal and the message below for more information.".format(module))
         embed.add_field(name = type(e).__name__, value = e)
