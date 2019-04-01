@@ -7,11 +7,14 @@ class General(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
+  # ping pong!
   @commands.command(pass_context = True, description = "Checks the status of the bot")
   async def hello(self, ctx):
     embed = discord.Embed(title = "", description = ":wave:")
     await ctx.send(embed = embed)
 
+
+  # hugs another user
   @commands.command(pass_context = True, description = "Hugs a user")
   async def hug(self, ctx, *, user: discord.Member = None):
     if user is None:
@@ -20,15 +23,24 @@ class General(commands.Cog):
       embed = discord.Embed(title = "", description = "{} -> (つ≧▽≦)つ {}".format(ctx.author.mention, user.mention), color = ctx.author.color)
     await ctx.send(embed = embed)
 
+
+  # gives some details about the bot
   @commands.command(alias = "[bot]", description = "Gives information about the bot")
   async def about(self, ctx):
     embed = discord.Embed(title = " ", color = 0x0080ff)
     embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
     embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/482726823776485392/548612049953882143/rhuul.png")
     embed.add_field(name = "Author:", value = "snafuPop#0007", inline = True)
-    embed.add_field(name = "Language:", value = "Python 3.6.x", inline = True)
+    embed.add_field(name = "Language:", value = "Python 3.5.x", inline = True)
     embed.add_field(name = "Discord.py:", value = "rewrite")
     embed.set_footer(text = "Use !help to produce a list of commands")
+    await ctx.send(embed = embed)
+
+  # byork
+  @commands.command(hidden = True, description = "byork")
+  async def byork(self, ctx):
+    embed = discord.Embed(title = "", description = ctx.author.mention, color = ctx.author.color)
+    embed.set_image(url = "https://i.imgur.com/ubjESVr.png")
     await ctx.send(embed = embed)
 
   # prints out a list of commands
