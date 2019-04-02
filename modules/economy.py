@@ -447,8 +447,49 @@ class Economy(commands.Cog):
       embed.set_footer(text = "You had a {}% success rate".format(success_rate))
     await ctx.send(embed = embed)
 
-  @commands.command(aliases = ["Rochambeau"], description = "Play rock-paper-scissors against the me!"
-  async def rps(self
+  @commands.command(aliases = ["Rochambeau"], description = "Play rock-paper-scissors against the me!")
+  async def rps(self, ctx, user_move: str = None, bid: str = None):
+    try:
+      bid = await self.can_do(ctx, ctx.author, bid)
+    except InvalidArgs:
+      await ctx.send(embed = discord.Embed(title = "", description = "You can start a rock-paper-scissor game with me by typing `!rps <rock, paper, or scissors> <bet>`, {}.".format(ctx.author.mention)))
+      return
+    except CantDo:
+      return
+
+    move_list = {
+      "rock": ":fist:",
+      "paper": ":raised_hand:",
+      "scissors": ":v:"}
+
+    if user_move not in move_list.keys():
+      await ctx.send(embed = discord.Embed(title = "", description = "You can start a rock-paper-scissor game with me by typing `!rps <rock, paper, or scissors> <bet>`, {}.".format(ctx.author.mention)))
+      return
+
+    # choosing the bot's move
+    bot_move = random.choice(list(move_list))
+
+    # grabbing initial bet
+    initial_money = self.get_balance(ctx.author)
+
+    # end conditions
+    output = ["", ""]
+    if user_move == bot_move:
+      output[0] = "It's a tie!"
+      output[1] = "Your bet is returned."
+      bid = 0
+    elif (user_move == "rock" and bot_move == "scissors") or (user_move == "paper" and bot_move == "rock") or (user_move == "scissors" and bot_move == "paper"):
+      output[0] = "{} won!".format(ctx.author.name)
+      output[1] = "You earned your bet!"
+    else:
+      output[0] = "{} lost!".format(ctx.author.name)
+      output[1] = "You lost your bet!"
+      bid = -bid
+
+    self.add_balance(ctx.author, bid)
+    embed = discord.Embed(title = output[0], description = "{} {} :boom: {}".format(ctx.author.mention, move_list[user_move], move_list[bot_move]))
+    embed.add_field(name = "Payout:", value = "{}\n{:,} ⮕ {:,} {}".format(output[1] ,initial_money, self.get_balance(ctx.author), self.get_currency_name()), inline = False)
+    await ctx.send(embed = embed)
 
   # error handler that returns an embed message with the remaining time left on a particular command
   @payday.error
