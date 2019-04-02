@@ -32,7 +32,8 @@ class General(commands.Cog):
     embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/482726823776485392/548612049953882143/rhuul.png")
     embed.add_field(name = "Author:", value = "snafuPop#0007", inline = True)
     embed.add_field(name = "Language:", value = "Python 3.5.x", inline = True)
-    embed.add_field(name = "Discord.py:", value = "rewrite")
+    embed.add_field(name = "Discord Version", value = discord.__version__)
+    embed.add_field(name = "Servers:", value = "Supporting **{}** servers".format(len(bot.guilds)))
     embed.set_footer(text = "Use !help to produce a list of commands")
     await ctx.send(embed = embed)
 
