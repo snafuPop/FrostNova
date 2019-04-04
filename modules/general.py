@@ -2,9 +2,12 @@ import discord
 from discord.ext import commands
 from builtins import bot
 import json
+import time
+import datetime
 
 class General(commands.Cog):
   def __init__(self, bot):
+    self.time_alive = time.time()
     self.bot = bot
 
   # ping pong!
@@ -30,12 +33,21 @@ class General(commands.Cog):
     embed = discord.Embed(title = " ", color = 0x0080ff)
     embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
     embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/482726823776485392/548612049953882143/rhuul.png")
-    embed.add_field(name = "Author:", value = "snafuPop#0007", inline = True)
-    embed.add_field(name = "Language:", value = "Python 3.5.x", inline = True)
-    embed.add_field(name = "Discord Version", value = discord.__version__)
-    embed.add_field(name = "Servers:", value = "Supporting **{}** servers".format(len(bot.guilds)))
+    embed.add_field(name = "**Author:**", value = "snafuPop#0007", inline = True)
+    embed.add_field(name = "**Language:**", value = "Python 3.5.x", inline = True)
+    embed.add_field(name = "**Discord.py Version**", value = discord.__version__)
+    embed.add_field(name = "**Servers:**", value = "Supporting **{}** servers".format(len(bot.guilds)))
+    embed.add_field(name = "**Current Uptime:**", value = self.get_uptime(), inline = True)
+    embed.add_field(name = "**Want y'shtola on _your_ server?**", value = "[Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot)", inline = False)
     embed.set_footer(text = "Use !help to produce a list of commands")
     await ctx.send(embed = embed)
+
+
+  def get_uptime(self):
+    current_time = time.time()
+    difference = int(current_time - self.time_alive)
+    return str(datetime.timedelta(seconds=difference))
+
 
   # byork
   @commands.command(hidden = True, description = "byork")
