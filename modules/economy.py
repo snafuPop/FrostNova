@@ -19,7 +19,7 @@ class Economy(commands.Cog):
   # grants credits every time a user posts a message
   @commands.Cog.listener()
   async def on_message(self, ctx):
-    if (self.is_registered(ctx.author)):
+    if (user_json.is_registered(ctx.author)):
       if (ctx.author.id != 547516876851380293):
         user_json.add_balance(ctx.author, 10)
       user_dict = user_json.get_users()
