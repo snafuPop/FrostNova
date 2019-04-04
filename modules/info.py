@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from builtins import bot
 import requests
-import json
+from modules.utils import user_json
 
 class Info(commands.Cog):
   def __init__(self, bot):
@@ -22,6 +22,7 @@ class Info(commands.Cog):
       "sydney": ":flag_au: Sydney"
     }
 
+
   @commands.command(description = "Prints markdown text utilized by Discord")
   async def markdown(self, ctx):
     embed = discord.Embed(title = "List of Markdown")
@@ -35,6 +36,7 @@ class Info(commands.Cog):
     embed.add_field(name = "Multi-line Code", value = "surround text with 3 `'s. Define a language by typing the name of the language after the three backticks")
 
     await ctx.send(embed = embed)
+
 
   @commands.command(pass_context = True, description = "Grabs a user's avatar")
   async def avatar(self, ctx, *, user: discord.Member = None):
@@ -57,10 +59,9 @@ class Info(commands.Cog):
 
     await ctx.send(embed = embed)
 
-  @commands.command(pass_context = True, description = "Gives information about a user")
-  async def user(self, ctx, *, user: discord.Member = None):
-    # prints information about a user
 
+  @commands.command(description = "Gives information about a user")
+  async def user(self, ctx, *, user: discord.Member = None):
     # grabbing the user's username (defaults to the author if a user was not specified)
     try:
       if user is None:
@@ -94,17 +95,18 @@ class Info(commands.Cog):
       embed.add_field(name = "Joined server at:", value = user.joined_at.strftime("%d %b %Y"), inline = True)
 
       # displays register information (if available)
-      with open("/home/snafuPop/yshtola/modules/_data/users.json") as json_data:
-        users = json.load(json_data)
-      if str(user.id) in users:
-        embed.add_field(name = "Text Posts:", value = "{:,} posts".format(users[str(user.id)]["text_posts"]), inline = True)
-        embed.add_field(name = "Balance:", value = "{:,}p".format(users[str(user.id)]["balance"]), inline = True)
-        embed.add_field(name = "Slot Winnings:", value = "{:,}p".format(users[str(user.id)]["slot_winnings"]), inline = True)
-        embed.add_field(name = "Pennies Stolen:", value = "{:,}p".format(users[str(user.id)]["stolen_money"]), inline = True)
+      users_dict = user_json.get_users()
+      if str(user.id) in users_dict:
+        user_key = users_dict[str(user.id)]
+        embed.add_field(name = "Text Posts:", value = "{:,} posts".format(user_key["text_posts"]), inline = True)
+        embed.add_field(name = "Balance:", value = "{:,}p".format(user_key["balance"]), inline = True)
+        embed.add_field(name = "Slot Winnings:", value = "{:,}p".format(user_key["slot_winnings"]), inline = True)
+        embed.add_field(name = "Pennies Stolen:", value = "{:,}p".format(user_key["stolen_money"]), inline = True)
 
     await ctx.send(embed = embed)
 
-  @commands.command(pass_context = True, description = "Gives information about the current server")
+
+  @commands.command(description = "Gives information about the current server")
   async def server(self, ctx):
     server = ctx.guild
     embed = discord.Embed(title = "__**{}**__ ({})".format(str(server.name), self.regions[str(server.region)]), description = "<{}>".format(server.id))
@@ -114,6 +116,7 @@ class Info(commands.Cog):
     embed.set_footer(text = "Server was founded on {}".format(server.created_at.strftime("%d %b %Y")))
 
     await ctx.send(embed = embed)
+
 
 def setup(bot):
   bot.add_cog(Info(bot))

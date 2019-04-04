@@ -35,7 +35,7 @@ class General(commands.Cog):
     embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/482726823776485392/548612049953882143/rhuul.png")
     embed.add_field(name = "**Author:**", value = "snafuPop#0007", inline = True)
     embed.add_field(name = "**Language:**", value = "Python 3.5.x", inline = True)
-    embed.add_field(name = "**Discord.py Version**", value = discord.__version__)
+    embed.add_field(name = "**Discord.py Version:**", value = discord.__version__)
     embed.add_field(name = "**Servers:**", value = "Supporting **{}** servers".format(len(bot.guilds)))
     embed.add_field(name = "**Current Uptime:**", value = self.get_uptime(), inline = True)
     embed.add_field(name = "**Want y'shtola on _your_ server?**", value = "[Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot)", inline = False)

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from builtins import bot
 from modules.utils import perms
+import json
 
 class Maint(commands.Cog):
   def __init__(self, bot):
@@ -71,6 +72,9 @@ class Maint(commands.Cog):
         print("\n\n{} was reloaded.".format(module))
         print("--------------------------------------------------------")
     await ctx.send(embed = embed)
+
+
+
 
 def setup(bot):
   bot.add_cog(Maint(bot))
