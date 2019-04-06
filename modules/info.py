@@ -67,45 +67,56 @@ class Info(commands.Cog):
       if user is None:
         user = ctx.author
     except Exception as e:
-      embed = discord.Embed(title = "", description = "It doesn't seem like {} is a member of this server. Maybe try mentioning them instead?".format(str(user)))
+      await ctx.send(embed = discord.Embed(title = "", description = "It doesn't seem like {} is a member of this server. Maybe try mentioning them instead?".format(str(user))))
+      return
     else:
-      # grabs all of the user's roles (except the default role) and converts it to a string
-      roles = []
-      for role in user.roles:
-        if role.name != "@everyone":
-          roles.append(role.name)
-      if roles:
-        roles = ", ".join(roles)
-      else:
-        roles = "None"
-
-      if user.nick is not None:
-        nick = '(' + user.nick + ')'
-      else:
-        nick = ""
-
-      # sets user information as the title
-      embed = discord.Embed(title = "__**{}**__ {}".format(str(user), nick), description = "**roles:** {}".format(roles), color = user.color)
-
-      # sets the user's avatar as the image (if they have one)
-      embed.set_thumbnail(url = user.avatar_url)
-
       # displays register information (if available)
-      users_dict = user_json.get_users()
-      if str(user.id) in users_dict:
-        user_key = users_dict[str(user.id)]
-        embed.add_field(name = "Level:", value = "{:,} ({:,})".format(user_key["level"], user_key["exp"]), inline = True)
-        embed.add_field(name = "Text Posts:", value = "{:,} posts".format(user_key["text_posts"]), inline = True)
-        embed.add_field(name = "Balance:", value = "{:,}p".format(user_key["balance"]), inline = True)
-        embed.add_field(name = "Slot Winnings:", value = "{:,}p".format(user_key["slot_winnings"]), inline = True)
-        embed.add_field(name = "Pennies Stolen:", value = "{:,}p".format(user_key["stolen_money"]), inline = True)
+      user_dict = user_json.get_users()
+      if str(user.id) in user_dict:
+        await ctx.send(embed = self.get_reg_user(user, user_dict))
+      else:
+        await ctx.send(embed = self.get_non_reg_user(user))
 
-      # displays account age
-      embed.add_field(name = "Discord user since:", value = user.created_at.strftime("%d %b %Y"), inline = True)
-      embed.add_field(name = "Joined server at:", value = user.joined_at.strftime("%d %b %Y"), inline = True)
+  def get_non_reg_user(self, user):
+    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "**roles:** {}".format(self.get_roles(user)), color = user.color)
+    embed.set_thumbnail(url = user.avatar_url)
+    embed.set_footer(text = "Joined Discord on {}, joined server on {}".format(user.created_at.strftime("%b %d, %Y"), user.joined_at.strftime("%b %d, %Y")))
+    return embed
 
-    await ctx.send(embed = embed)
+  def get_reg_user(self, user, user_dict):
+    user_key = user_dict[str(user.id)]
 
+    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "***Level {:,} Adventurer*** (**{:,}**/{:,} exp)".format(user_key["level"], user_key["exp"], user_json.get_req_exp(user, user_dict)), color = user.color)
+    embed.set_thumbnail(url = user.avatar_url)
+    embed.add_field(name = "**Text Posts:**", value = "{:,} posts".format(user_key["text_posts"]), inline = True)
+    embed.add_field(name = "**Balance:**", value = "{:,} {}".format(user_key["balance"], user_json.get_currency_name()), inline = True)
+
+    currency_name = user_json.get_currency_name()
+    stats = []
+    stats.append("**Successful Raids:** {:,}".format(user_key["raids"]))
+    stats.append("**Money From Adventures:** {:,} {}".format(user_key["loot_earnings"], currency_name))
+    stats.append("**Slot Winnings:** {:,} {}".format(user_key["slot_winnings"], currency_name))
+    stats.append("**Pennies Stolen:** {:,} {}".format(user_key["stolen_money"], currency_name))
+    embed.add_field(name = "\u3164", value = "\n".join(stats), inline = False)
+    embed.set_footer(text = "Joined Discord on {}, joined server on {}".format(user.created_at.strftime("%b %d, %Y"), user.joined_at.strftime("%b %d, %Y")))
+    return embed
+
+  def get_nickname(self, user):
+    if user.nick is not None:
+      return "(" + user.nick + ")"
+    else:
+      return ""
+
+  def get_roles(self, user):
+    # grabs all of the user's roles (except the default role) and converts it to a string
+    roles = []
+    for role in user.roles:
+      if role.name != "@everyone":
+        roles.append(role.name)
+    if roles:
+      roles = ", ".join(roles)
+    else:
+      roles = "None"
 
   @commands.command(description = "Gives information about the current server")
   async def server(self, ctx):

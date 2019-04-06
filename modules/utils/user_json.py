@@ -93,22 +93,26 @@ async def can_do(ctx, user, money):
 
   return money
 
+def add_loot_earnings(user, money):
+  user_dict = get_users()
+  user_dict[str(user.id)]["loot_earnings"] = user_dict[str(user.id)]["loot_earnings"] + money
+  update(user_dict)
+
 async def add_exp(ctx, user, exp):
   user_dict = get_users()
   user_dict[str(user.id)]["exp"] = user_dict[str(user.id)]["exp"] + exp
   update(user_dict)
-  if await level_up(user):
-    embed = discord.Embed(title = "***Level Up!***", description = "{} has leveled up from {} to {}!".format(user.mention, user_dict[str(user.id)]["level"]-1, user_dict[str(user.id)]["level"]))
+  if level_up(user):
+    embed = discord.Embed(title = "***Level Up!***", description = "{} has leveled up from {} to ***{}***!".format(user.mention, user_dict[str(user.id)]["level"], user_dict[str(user.id)]["level"]+1), color = user.color)
     embed.set_footer(text = "Overflow EXP has been converted to {}.".format(get_currency_name()))
     await ctx.send(embed = embed)
 
 
-async def level_up(user):
+def level_up(user):
   user_dict = get_users()
-  req_exp = int((user_dict[str(user.id)]["level"]**2.1)+15)
+  req_exp = get_req_exp(user, user_dict)
   print(req_exp)
   if user_dict[str(user.id)]["exp"] >= req_exp:
-
     # incrementing the level
     user_dict[str(user.id)]["level"] = user_dict[str(user.id)]["level"] + 1
 
@@ -117,6 +121,10 @@ async def level_up(user):
     update(user_dict)
     return True
   return False
+
+
+def get_req_exp(user, user_dict):
+  return int((user_dict[str(user.id)]["level"]**2.1)+15)
 
 # allows users to give fractional strings as arguments and interprets them into integer values
 def interpret_frac(user, money):

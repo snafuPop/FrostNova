@@ -24,9 +24,6 @@ class Adventure(commands.Cog):
       user_dict[str(ctx.author.id)]["text_posts"] = user_dict[str(ctx.author.id)]["text_posts"] + 1
       user_json.update(user_dict)
 
-################################################################################
-# adventure
-################################################################################
 
   @commands.command(description = "Go on an adventure!")
   @commands.cooldown(1, 1800, commands.BucketType.user)
@@ -76,6 +73,7 @@ class Adventure(commands.Cog):
       embed = discord.Embed(title = "**Adventure successful!**", description = "{} embarked on an adventure to **{}** and succeeded!".format(ctx.author.mention, dungeon), color = ctx.author.color)
       embed.add_field(name = "**Loot found:**", value = ', '.join(loot_list), inline = False)
       embed.add_field(name = "**Payout:**", value = "Sold **{}** piece(s) of loot for **{:,} {}**".format(str(len(loot_list)), payout, user_json.get_currency_name()), inline = False)
+      user_json.add_loot_earnings(ctx.author, payout)
     else:
       embed = discord.Embed(title = "**Adventure failed...**", description = "{} embarked on an adventure to **{}** and failed!".format(ctx.author.mention, dungeon), color = ctx.author.color)
       if success_rate == 0:
@@ -117,12 +115,10 @@ class Adventure(commands.Cog):
     for dungeon in dungeon_list:
       if dungeon_dict["dungeons"][str(dungeon)]["level"]-4 <= user_dict[str(ctx.author.id)]["level"]:
         low_dungeon.append(dungeon)
-      #else:
-      #  break
 
     stop = 0
     while len(low_dungeon) >= 1:
-      highest = low_dungeon.pop()
+      highest = low_dungeon.pop(0)
       embed.add_field(name = "**{}** (Recommended Level: **{}**)".format(str(highest), dungeon_dict["dungeons"][str(highest)]["level"]), value = "_{}_".format(dungeon_dict["dungeons"][str(highest)]["description"]))
       stop += 1
       if stop == 2:

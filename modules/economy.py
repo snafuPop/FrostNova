@@ -65,7 +65,9 @@ class Economy(commands.Cog):
               "text_posts": 0,
               "inventory": [],
               "level": 1,
-              "exp": 0}
+              "exp": 0,
+              "raids": 0,
+              "loot_earnings": 0}
       user_dict[str(ctx.author.id)] = user
       user_json.update(user_dict)
       embed = discord.Embed(title = "", description = "You're now registered on my database, {}!".format(ctx.message.author.mention))
