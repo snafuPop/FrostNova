@@ -104,22 +104,22 @@ class Economy(commands.Cog):
     money = user_json.interpret_frac(user, money)
     if ctx.author == user:
       embed = discord.Embed(title = "", description = "You can't rob yourself, {}!".format(ctx.author.mention))
-      self.bot.get_command("rob").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
     elif not user_json.is_registered(user):
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))
-      self.bot.get_command("rob").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
     elif money == None or user is None:
       embed = discord.Embed(title = "", description = "Rob another user with `!rob <user> <number of {}>`".format(user_json.get_currency_name(), user_json.get_currency_name()))
-      self.bot.get_command("rob").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
     elif money <= 0:
       embed = discord.Embed(title = "", description = "You need to steal more than 0 {}, {}.".format(user_json.get_currency_name(), user.mention))
-      self.bot.get_command("rob").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
     elif not user_json.is_registered(user):
       embed = discord.Embed(title = "", description = "It looks like **{}** isn't registered in the system, {}".format(user.name, ctx.author.mention))
-      self.bot.get_command("rob").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
     elif not user_json.can_spend(user, money):
       embed = discord.Embed(title = "", description = "**{}** doesn't have that much currency (They have {} {})!".format(user.name, user_json.get_balance(user), user_json.get_currency_name()))
-      self.bot.get_command("rob").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
     else:
       # makes it so that the more money you are trying to steal, the harder it is to be successful
       success_rate = int(math.ceil(100-((money**1.774)/user_json.get_balance(user))*.94))
@@ -163,7 +163,6 @@ class Economy(commands.Cog):
 
 
   # error handler that returns an embed message with the remaining time left on a particular command
-  @payday.error
   @rob.error
   async def cd_error(self, ctx, error):
     if isinstance(error, commands.CommandOnCooldown):

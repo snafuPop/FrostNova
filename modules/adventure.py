@@ -22,30 +22,27 @@ class Adventure(commands.Cog):
 
       # incrementing text posts
       user_dict[str(ctx.author.id)]["text_posts"] = user_dict[str(ctx.author.id)]["text_posts"] + 1
-
-      # adding exp
-      await user_json.add_exp(ctx, ctx.author, 5)
       user_json.update(user_dict)
 
 ################################################################################
 # adventure
 ################################################################################
 
-  @commands.cooldown(1, 1800, commands.BucketType.user)
   @commands.command(description = "Go on an adventure!")
+  @commands.cooldown(1, 1800, commands.BucketType.user)
   async def adventure(self, ctx, *, dungeon: str = None):
     dungeon_dict = user_json.get_dungeons()
     if dungeon is None or titlecase(dungeon) not in dungeon_dict["dungeons"]:
       embed = discord.Embed(title = "", description = "You can explore dungeons by using `!adventure <dungeon name>`, {}.".format(ctx.author.mention))
       embed.set_footer(text = "You can also get a list of dungeons by using !dungeons")
       await ctx.send(embed = embed)
-      self.bot.get_command("adventure").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
       return
 
     if not user_json.is_registered(ctx.author):
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(ctx.author.mention))
       await ctx.send(embed = embed)
-      self.bot.get_command("adventure").reset_cooldown(ctx)
+      ctx.command.reset_cooldown(ctx)
       return
 
     # prepping dicts and keys
@@ -76,12 +73,16 @@ class Adventure(commands.Cog):
 
 
       # creating embed
-      embed = discord.Embed(title = "**Adventure successful!**", description = "{} embarked on an adventure to {} and succeeded!".format(ctx.author.mention, dungeon), color = ctx.author.color)
+      embed = discord.Embed(title = "**Adventure successful!**", description = "{} embarked on an adventure to **{}** and succeeded!".format(ctx.author.mention, dungeon), color = ctx.author.color)
       embed.add_field(name = "**Loot found:**", value = ', '.join(loot_list), inline = False)
-      embed.add_field(name = "**Payout:**", value = "Sold **{}** pieces of loot for **{} {:,}**".format(str(len(loot_list)), str(payout), user_json.get_currency_name()), inline = False)
-      embed.set_footer(text = "{}% success rate".format(success_rate))
+      embed.add_field(name = "**Payout:**", value = "Sold **{}** piece(s) of loot for **{:,} {}**".format(str(len(loot_list)), payout, user_json.get_currency_name()), inline = False)
     else:
-      embed = discord.Embed(title = "Adventure failed...", description = "{} embarked on an adventure to {} and failed!".format(ctx.author.mention, dungeon), color = ctx.author.color)
+      embed = discord.Embed(title = "**Adventure failed...**", description = "{} embarked on an adventure to **{}** and failed!".format(ctx.author.mention, dungeon), color = ctx.author.color)
+      if success_rate == 0:
+        embed.add_field(name = "**Forgiveness Cooldown:**", value = "Because your chance to succeed was 0%, your cooldown timer has been reset.")
+        ctx.command.reset_cooldown(ctx)
+
+    embed.set_footer(text = "{}% success rate".format(success_rate))
     await ctx.send(embed = embed)
 
 
@@ -102,12 +103,34 @@ class Adventure(commands.Cog):
 
   @commands.command(description = "Returns a list of explorable dungeons.")
   async def dungeons(self, ctx):
+    if not user_json.is_registered(ctx.author):
+      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(ctx.author.mention))
+      await ctx.send(embed = embed)
+      return
+
     user_dict = user_json.get_users()
     dungeon_dict = user_json.get_dungeons()
     dungeon_list = list(dungeon_dict["dungeons"])
-    embed = discord.Embed(title = "**Dungeon List**", description = "**{}'s current level:** {:,}".format(ctx.author.mention, user_dict[str(ctx.author.id)]["level"]), color = ctx.author.color)
+
+    embed = discord.Embed(title = "**Explorable Dungeon List**", description = "**{}'s current level:** {:,}".format(ctx.author.mention, user_dict[str(ctx.author.id)]["level"]), color = ctx.author.color)
+    low_dungeon = []
     for dungeon in dungeon_list:
-      embed.add_field(name = "**{}** (Recommended Level: **{}**)".format(str(dungeon), dungeon_dict["dungeons"][str(dungeon)]["level"]), value = "_{}_".format(dungeon_dict["dungeons"][str(dungeon)]["description"]))
+      if dungeon_dict["dungeons"][str(dungeon)]["level"]-4 <= user_dict[str(ctx.author.id)]["level"]:
+        low_dungeon.append(dungeon)
+      #else:
+      #  break
+
+    stop = 0
+    while len(low_dungeon) >= 1:
+      highest = low_dungeon.pop()
+      embed.add_field(name = "**{}** (Recommended Level: **{}**)".format(str(highest), dungeon_dict["dungeons"][str(highest)]["level"]), value = "_{}_".format(dungeon_dict["dungeons"][str(highest)]["description"]))
+      stop += 1
+      if stop == 2:
+        break
+
+    if len(low_dungeon) != 0:
+      embed.add_field(name = "**Other Dungeons:**", value = "\n".join(low_dungeon))
+
     await ctx.author.send(embed = embed)
 
 

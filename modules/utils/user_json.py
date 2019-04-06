@@ -94,19 +94,21 @@ async def can_do(ctx, user, money):
   return money
 
 async def add_exp(ctx, user, exp):
-    user_dict = get_users()
-    user_dict[str(user.id)]["exp"] = user_dict[str(user.id)]["exp"] + exp
-    if await level_up(user):
-      embed = discord.Embed(title = "Level Up!", description = "{} has leveled up from {} to {}!".format(user.mention, user_dict[str(user.id)]["level"]-1, user_dict[str(user.id)]["level"]))
-      embed.set_footer(text = "Overflow EXP has been converted to {}.".format(get_currency_name()))
-      await ctx.send(embed = embed)
-    update(user_dict)
+  user_dict = get_users()
+  user_dict[str(user.id)]["exp"] = user_dict[str(user.id)]["exp"] + exp
+  update(user_dict)
+  if await level_up(user):
+    embed = discord.Embed(title = "***Level Up!***", description = "{} has leveled up from {} to {}!".format(user.mention, user_dict[str(user.id)]["level"]-1, user_dict[str(user.id)]["level"]))
+    embed.set_footer(text = "Overflow EXP has been converted to {}.".format(get_currency_name()))
+    await ctx.send(embed = embed)
 
 
 async def level_up(user):
   user_dict = get_users()
   req_exp = int((user_dict[str(user.id)]["level"]**2.1)+15)
+  print(req_exp)
   if user_dict[str(user.id)]["exp"] >= req_exp:
+
     # incrementing the level
     user_dict[str(user.id)]["level"] = user_dict[str(user.id)]["level"] + 1
 
