@@ -17,6 +17,13 @@ def get_users():
   return users_dict
 
 
+# get dictionary of dungeons
+def get_dungeons():
+  with open("/home/snafuPop/yshtola/modules/_data/adventure.json") as json_data:
+    dungeon_dict = json.load(json_data)
+  return dungeon_dict
+
+
 # updates the .json with new values and creates a back-up
 def update(user_dict):
   with open("/home/snafuPop/yshtola/modules/_data/users.json", "w") as json_out:
@@ -86,6 +93,28 @@ async def can_do(ctx, user, money):
 
   return money
 
+async def add_exp(ctx, user, exp):
+    user_dict = get_users()
+    user_dict[str(user.id)]["exp"] = user_dict[str(user.id)]["exp"] + exp
+    if await level_up(user):
+      embed = discord.Embed(title = "Level Up!", description = "{} has leveled up from {} to {}!".format(user.mention, user_dict[str(user.id)]["level"]-1, user_dict[str(user.id)]["level"]))
+      embed.set_footer(text = "Overflow EXP has been converted to {}.".format(get_currency_name()))
+      await ctx.send(embed = embed)
+    update(user_dict)
+
+
+async def level_up(user):
+  user_dict = get_users()
+  req_exp = int((user_dict[str(user.id)]["level"]**2.1)+15)
+  if user_dict[str(user.id)]["exp"] >= req_exp:
+    # incrementing the level
+    user_dict[str(user.id)]["level"] = user_dict[str(user.id)]["level"] + 1
+
+    # dealing with overflow EXP
+    user_dict[str(user.id)]["exp"] = 0
+    update(user_dict)
+    return True
+  return False
 
 # allows users to give fractional strings as arguments and interprets them into integer values
 def interpret_frac(user, money):

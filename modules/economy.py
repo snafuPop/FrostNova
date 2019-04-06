@@ -5,26 +5,10 @@ import random
 import math
 from modules.utils import user_json
 
-class CantDo(Exception):
-  pass
-
-class InvalidArgs(Exception):
-  pass
-
 class Economy(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
-
-  # grants credits every time a user posts a message
-  @commands.Cog.listener()
-  async def on_message(self, ctx):
-    if (user_json.is_registered(ctx.author)):
-      if (ctx.author.id != 547516876851380293):
-        user_json.add_balance(ctx.author, 10)
-      user_dict = user_json.get_users()
-      user_dict[str(ctx.author.id)]["text_posts"] = user_dict[str(ctx.author.id)]["text_posts"] + 1
-      user_json.update(user_dict)
 
 # ----------------------------------------------------------------------------------------------------
 # owner commands
@@ -80,22 +64,11 @@ class Economy(commands.Cog):
               "stolen_money": 0,
               "text_posts": 0,
               "inventory": [],
-              "horse_winnings": 0}
+              "level": 1,
+              "exp": 0}
       user_dict[str(ctx.author.id)] = user
       user_json.update(user_dict)
       embed = discord.Embed(title = "", description = "You're now registered on my database, {}!".format(ctx.message.author.mention))
-    await ctx.send(embed = embed)
-
-
-  # pays out x credits to a user
-  @commands.command(description = "Gives some currency every so often")
-  @commands.cooldown(1, 1800, commands.BucketType.user)
-  async def payday(self, ctx):
-    if user_json.is_registered(ctx.author):
-      user_json.add_balance(ctx.author, user_json.get_payday())
-      embed = discord.Embed(title = "", description = "Here's {:,} {}, {}.".format(user_json.get_payday(), user_json.get_currency_name(), ctx.author.mention), color = ctx.author.color)
-    else:
-      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(ctx.author.mention))
     await ctx.send(embed = embed)
 
 
@@ -125,22 +98,28 @@ class Economy(commands.Cog):
 
   # attempts to rob a user
   @commands.command(description = "Attempt to rob another user")
-  #@commands.cooldown(1, 1800, commands.BucketType.user)
+  @commands.cooldown(1, 1800, commands.BucketType.user)
   async def rob(self, ctx, user: discord.Member = None, money: str = None):
     # checks if the user is trying to rob themselves
     money = user_json.interpret_frac(user, money)
     if ctx.author == user:
       embed = discord.Embed(title = "", description = "You can't rob yourself, {}!".format(ctx.author.mention))
+      self.bot.get_command("rob").reset_cooldown(ctx)
     elif not user_json.is_registered(user):
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))
-    elif money == None:
+      self.bot.get_command("rob").reset_cooldown(ctx)
+    elif money == None or user is None:
       embed = discord.Embed(title = "", description = "Rob another user with `!rob <user> <number of {}>`".format(user_json.get_currency_name(), user_json.get_currency_name()))
+      self.bot.get_command("rob").reset_cooldown(ctx)
     elif money <= 0:
       embed = discord.Embed(title = "", description = "You need to steal more than 0 {}, {}.".format(user_json.get_currency_name(), user.mention))
+      self.bot.get_command("rob").reset_cooldown(ctx)
     elif not user_json.is_registered(user):
       embed = discord.Embed(title = "", description = "It looks like **{}** isn't registered in the system, {}".format(user.name, ctx.author.mention))
+      self.bot.get_command("rob").reset_cooldown(ctx)
     elif not user_json.can_spend(user, money):
       embed = discord.Embed(title = "", description = "**{}** doesn't have that much currency (They have {} {})!".format(user.name, user_json.get_balance(user), user_json.get_currency_name()))
+      self.bot.get_command("rob").reset_cooldown(ctx)
     else:
       # makes it so that the more money you are trying to steal, the harder it is to be successful
       success_rate = int(math.ceil(100-((money**1.774)/user_json.get_balance(user))*.94))

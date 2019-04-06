@@ -23,7 +23,6 @@ bot = commands.Bot(command_prefix='!')
 builtins.bot = bot
 bot.remove_command('help')
 
-
 # imports
 successful_imports = 0
 total_imports = 0

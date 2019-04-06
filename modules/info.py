@@ -90,18 +90,19 @@ class Info(commands.Cog):
       # sets the user's avatar as the image (if they have one)
       embed.set_thumbnail(url = user.avatar_url)
 
-      # displays account age
-      embed.add_field(name = "Discord user since:", value = user.created_at.strftime("%d %b %Y"), inline = True)
-      embed.add_field(name = "Joined server at:", value = user.joined_at.strftime("%d %b %Y"), inline = True)
-
       # displays register information (if available)
       users_dict = user_json.get_users()
       if str(user.id) in users_dict:
         user_key = users_dict[str(user.id)]
+        embed.add_field(name = "Level:", value = "{:,} ({:,})".format(user_key["level"], user_key["exp"]), inline = True)
         embed.add_field(name = "Text Posts:", value = "{:,} posts".format(user_key["text_posts"]), inline = True)
         embed.add_field(name = "Balance:", value = "{:,}p".format(user_key["balance"]), inline = True)
         embed.add_field(name = "Slot Winnings:", value = "{:,}p".format(user_key["slot_winnings"]), inline = True)
         embed.add_field(name = "Pennies Stolen:", value = "{:,}p".format(user_key["stolen_money"]), inline = True)
+
+      # displays account age
+      embed.add_field(name = "Discord user since:", value = user.created_at.strftime("%d %b %Y"), inline = True)
+      embed.add_field(name = "Joined server at:", value = user.joined_at.strftime("%d %b %Y"), inline = True)
 
     await ctx.send(embed = embed)
 

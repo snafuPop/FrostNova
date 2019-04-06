@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
 from builtins import bot
-import json
 import time
 import datetime
+from modules.utils import user_json
+
 
 class General(commands.Cog):
   def __init__(self, bot):
@@ -54,6 +55,14 @@ class General(commands.Cog):
   async def byork(self, ctx):
     embed = discord.Embed(title = "", description = ctx.author.mention, color = ctx.author.color)
     embed.set_image(url = "https://i.imgur.com/ubjESVr.png")
+    await ctx.send(embed = embed)
+
+
+  # glue
+  @commands.command(hidden = True, description = "glue")
+  async def glue(self, ctx):
+    embed = discord.Embed(title = "", description = ctx.author.mention, color = ctx.author.color)
+    embed.set_image(url = "https://i.imgur.com/CyTsoeL.png")
     await ctx.send(embed = embed)
 
   # prints out a list of commands

@@ -33,7 +33,7 @@ class Wiki(commands.Cog):
       # catches null-answer
       embed = discord.Embed(title ="", description = "Try asking a question with `!dfopedia <search_term>`, {}".format(ctx.author.mention))
       await ctx.send(embed = embed)
-    
+
     else:
       # sanitizes the search term to make it URL friendly
 
@@ -47,7 +47,7 @@ class Wiki(commands.Cog):
       # creates the message
       embed = discord.Embed(title = search_terms, description = "Requested by **" + ctx.author.mention + "**\nPowered by the **[DFO World Wiki](http://wiki.dfo.world/view/Main_Page)**.", url = result, color = ctx.message.author.color)
       embed.set_thumbnail(url = "http://wiki.dfo.world" + thumb)
-      
+
       try:
         await ctx.send(embed = embed)
 
@@ -66,7 +66,7 @@ class Wiki(commands.Cog):
       # catches null-answer
       embed = discord.Embed(title ="", description = "Try asking a question with `!stardew <search_term>`, {}".format(ctx.author.mention))
       await ctx.send(embed = embed)
-    
+
     else:
       # sanitizes the search term to make it URL friendly
 
@@ -80,7 +80,7 @@ class Wiki(commands.Cog):
       # creates the message
       embed = discord.Embed(title = search_terms, description = "Requested by **" + ctx.author.mention + "**\nPowered by the **[Official Stardew Valley Wiki](https://stardewvalleywiki.com/Stardew_Valley_Wiki)**.", url = result, color = ctx.message.author.color)
       embed.set_thumbnail(url = "https://stardewvalleywiki.com" + thumb)
-      
+
       try:
         await ctx.send(embed = embed)
 

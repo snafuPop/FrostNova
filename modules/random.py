@@ -15,26 +15,24 @@ class Random(commands.Cog):
   async def roll(self, ctx, number: int = 100, *, request: str = ""):
 
     if number <= 1:
-      embed = discord.Embed(title = "", description = "Maybe roll a value greater than 1, {}? (｀Д´)".format(ctx.author.mention), color=makeColor())
+      await ctx.send(embed = discord.Embed(title = "", description = "Maybe roll a value greater than 1, {}? (｀Д´)".format(ctx.author.mention)))
+      return
+    result = randint(1, number)
+
+    # rolls a bonus modifier that determines the appearance of special dice or not
+    bonus = randint(1,1000000)
+    if bonus == 1:
+      dice = ":diamond_shape_with_a_dot_inside:"
     else:
-      result = randint(1, number)
+      dice = ":game_die:"
 
-      # rolls a bonus modifier that determines the appearance of special dice or not
-      bonus = randint(1,1000000)
-      if bonus == 1:
-        dice = ":diamond_shape_with_a_dot_inside:"
-      else:
-        dice = ":game_die:"
+    # parses the request
+    if request is not "":
+      request = "\"" + request + "\""
 
-      # parses the request
-      if request is not "":
-        request = "\"" + request + "\""
-
-      # creates the embed message
-      embed = discord.Embed(title = request, description = "{} {} rolled a **{:,}**! {}".format(dice, ctx.author.mention, result, dice), color = ctx.author.color)
-      embed.set_footer(text = "...out of {:,}.".format(number))
-    
-    # sends the message
+    # creates the embed message
+    embed = discord.Embed(title = request, description = "{} {} rolled a **{:,}**! {}".format(dice, ctx.author.mention, result, dice), color = ctx.author.color)
+    embed.set_footer(text = "...out of {:,}.".format(number))
     await ctx.send(embed=embed)
 
   # flips a coin
