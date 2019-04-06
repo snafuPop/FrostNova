@@ -1,0 +1,21 @@
+{
+  "dungeons": {
+    "Border Woods": {
+      "description": "Off to the south of Primum lies the Border Woods, a frigid landscape that divides the Primum Highlands from the Macha Lowlands. These woods provide good and valuable game for fledging hunters, with some boars marked for death by the Primum Principality.",
+      "level": 1,
+      "exp": 20,
+      "loot": {
+        "Boar Tusk": 50,
+        "Spruce Log": 70,
+        "Boar Meat": 100,
+        "Boar Hide": 150,
+        "Combat Knife": 150,
+        "Survival Garbs": 200,
+        "Mother Boar Hode": 400,
+        "Bronze Sword": 400,
+        "Mother Boar Tusk": 500,
+        "Mother Boar Meat": 800
+      }
+    }
+  }
+}
