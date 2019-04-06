@@ -1,0 +1,149 @@
+{
+  "dungeons": {
+    "Border Woods": {
+      "description": "Off to the south of Primum lies the Border Woods, a frigid landscape that divides the Primum Highlands from the Macha Lowlands. These woods provide good and valuable game for fledging hunters, with some boars marked for death by the Primum Principality.",
+      "level": 1,
+      "exp": 20,
+      "loot": {
+        "Boar Tusk": 50,
+        "Spruce Log": 70,
+        "Boar Meat": 100,
+        "Boar Hide": 150,
+        "Combat Knife": 150,
+        "Survival Garbs": 200,
+        "Mother Boar Hide": 400,
+        "Bronze Sword": 400,
+        "Mother Boar Tusk": 500,
+        "Mother Boar Meat": 800
+      }
+    },
+
+    "Outer Oldewood": {
+      "description": "To the east of Primum lies the wide expanse that is Oldewood -- a seemingly endless thicket of trees. Within the forest lies a tall wall, which marks the borders between Hume-kind and Mumblis -- land of the goblins.",
+      "level": 9,
+      "exp": 70,
+      "loot": {
+        "Oak Lumber": 100,
+        "Mana Grass": 150,
+        "Vimroot": 250,
+        "Spell-Leaf": 250,
+        "Vigor Flower": 250,
+        "Goblin Knife": 350,
+        "Goblin Leather": 500,
+        "Mandrake": 900
+      }
+    },
+
+    "Silent-Tide Grotto": {
+      "description": "Off the bustling ports of Newport lies the Silent-Tide Grotto, a underground cave system that can only be accessed from underwater. Within it lies numerous Sahagin, fish-like humanoids that aim to rule to seas of Empyrean.",
+      "level": 18,
+      "exp": 150,
+      "loot": {
+        "Sahagin Scale": 150,
+        "Kelp": 200,
+        "Barnacled Spear": 230,
+        "Mussel Meat": 250,
+        "Salvageable Ship Part": 400,
+        "Salvageable Bullets": 400,
+        "Wormy Musket": 500,
+        "Small Pearl": 600,
+        "Ambergris": 700,
+        "Mother-of-Pearl": 1000,
+        "Intact Whale Baleen": 1500
+      }
+    },
+
+    "Upper Alfeim": {
+      "description": "Centuries ago, counted among the great races of Empyrean were the Elves, who resided in their capital nation of Alfeim. However, the Elves have long since left this realm. But yet, their capital still remains somewhere... and it seems archaeologists have uncovered its remains...",
+      "level": 25,
+      "exp": 250,
+      "loot": {
+        "Sandstone": 200,
+        "Amber": 250,
+        "Opal": 350,
+        "Garnet": 450,
+        "Elven Potsherd": 500,
+        "Ebony Shard": 600,
+        "Elven Armor Scrap": 800,
+        "Scimitar": 900,
+        "Ancient Coins": 1200,
+        "Ancient Staff": 1500,
+        "Ancient Tome": 1500,
+        "Royal Elven Armor": 2700
+      }
+    },
+
+    "Dialcrest Tower": {
+      "description": "Across the Ocean of Lyr from Primum lays the three greater islands: Dunbarton, Eirigh Na, and Dun Scaith. Dunbarton is home to legendary astrologians and thus lies Dialcrest Tower, a modern marvel of astronomy that pre-dates Hume-kind. However, recently the tower's interior seems to rustle...",
+      "level": 29,
+      "exp": 380,
+      "loot": {
+        "Electrum Nut": 300,
+        "Electrum Screw": 350,
+        "Electrum Cog": 500,
+        "Electrum Axle": 700,
+        "Magic Oil": 800,
+        "Solar Essence": 1000,
+        "Clockwork Rifle": 1500,
+        "Unspent Gauss Rounds": 1900,
+        "Fine-Tuned Chronometer": 2500,
+        "Unknown Mage's Datalogue": 3400
+      }
+    },
+
+    "Cave of Swords": {
+      "description": "Within the foothills of Eirigh Na lies the Cave of Swords, which earned its name from the deadly organization of swordsmen and protectors of Milesian knowledge -- Owl Eye. By decree of Eirigh Na stewards, bounties are awarded for every member seized -- dead or alive.",
+      "level": 35,
+      "exp": 430,
+      "loot": {
+        "Durasteel Ingot": 500,
+        "Unfinished Katana Pommel": 700,
+        "Unfinished Katana Blade": 900,
+        "Black Swordsman Robes": 1500,
+        "Stolen Tome": 1500,
+        "Brilliant Katana": 2300,
+        "Eldritch Scroll": 2600,
+        "Swordsman's Severed Head": 3500,
+        "Milesian Tome": 5000
+      }
+    },
+
+    "Macha Lowlands": {
+      "description": "Unlike its warmer northern neighbor, the Macha Lowlands are brutally cold with seemingly unending winters. Here, in the kingdom of Emain Macha, resides the divine Knights of the Round. Squires who aspire to become such noble knights tend to train on the various creatures hardened by the lowlands.",
+      "level": 42,
+      "exp": 550,
+      "loot": {
+        "Snow Bear's Fur": 800,
+        "Snow Bear's Meat": 1000,
+        "Crystal Tear": 1400,
+        "Frost Giant's Toe": 1600,
+        "Frost Giant's Flesh": 1600,
+        "Frost Giant's Club": 2000,
+        "Fallen Knight's Armor": 2500,
+        "Fallen Knight's Greatsword": 3500,
+        "Ice Wraith's Essence": 4000,
+        "Ice Wraith's Ectoplasm": 5000,
+        "Diamond Dust": 7500
+      }
+    },
+
+    "Inner Oldewood": {
+      "description": "Mumblis, the Goblin Kingdom, lives the ruthless Goblins, protectors of the great tree Yggdrasil and the surrounding magical woods. They treat all non-kin as threats to the woods and do not hesitate to kill on sight.",
+      "level": 50,
+      "exp": 800,
+      "loot": {
+        "Goblin's Toe": 1000,
+        "Goblin's Staff": 1500,
+        "Goblin's Tome": 1500,
+        "Oldewood Log": 2000,
+        "Vitaroot": 3000,
+        "Spelltongue Sprig": 3000,
+        "Ferocity Flower": 3000,
+        "Oldewood Bow": 5000,
+        "Oldewood Staff": 6500,
+        "Twig of Yggdrasil": 7300,
+        "Royal Goblin Crown": 9000
+      }
+    }
+  }
+}
