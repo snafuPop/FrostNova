@@ -3,6 +3,7 @@ from discord.ext import commands
 from builtins import bot
 import requests
 from modules.utils import user_json
+from titlecase import titlecase
 
 class Info(commands.Cog):
   def __init__(self, bot):
@@ -86,7 +87,7 @@ class Info(commands.Cog):
   def get_reg_user(self, user, user_dict):
     user_key = user_dict[str(user.id)]
 
-    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "***Level {:,} Adventurer*** (**{:,}**/{:,} exp)".format(user_key["level"], user_key["exp"], user_json.get_req_exp(user, user_dict)), color = user.color)
+    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "***Level {:,} {}*** (**{:,}**/{:,} exp)".format(user_key["level"], titlecase(str(user.top_role)), user_key["exp"], user_json.get_req_exp(user, user_dict)), color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
     embed.add_field(name = "**Text Posts:**", value = "{:,} posts".format(user_key["text_posts"]), inline = True)
     embed.add_field(name = "**Balance:**", value = "{:,} {}".format(user_key["balance"], user_json.get_currency_name()), inline = True)
