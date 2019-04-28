@@ -4,7 +4,7 @@ from builtins import bot
 import random
 from modules.utils import user_json
 
-class RPS(commands.Cog):
+class Rps(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
     self.move_list = {
@@ -50,4 +50,4 @@ class RPS(commands.Cog):
     await ctx.send(embed = embed)
 
 def setup(bot):
-  bot.add_cog(RPS(bot))
+  bot.add_cog(Rps(bot))
