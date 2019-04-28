@@ -101,29 +101,32 @@ class General(commands.Cog):
     await ctx.send(embed = embed)
 
   # prints out a list of commands
-  @commands.command(description = "Prints a list of commands and what they do")
-  async def help(self, ctx, *, cog_name: str = None):
-    # if a cog is not provided or is not an actual cog
-    if cog_name is None or cog_name.title() not in bot.cogs:
-      embed = discord.Embed(title = "List of all modules", description = "Use `!help <module>` for more information")
-      for cog in bot.cogs:
-        embed.add_field(name = cog, value = "`!help {}`".format(cog.lower()))
-
-    # if a cog is provided
+  @commands.command(hidden = True, description = "Prints a list of commands and what they do")
+  async def help(self, ctx, *, cog_name: str = ""):
+    embed = discord.Embed(title = "**Help Menu**", description = "Current prefix: `{}`".format(bot.command_prefix))
+    if cog_name.title() in bot.cogs:
+      self.get_list_of_commands(embed, cog_name)
+      if len(embed.fields) == 0:
+        for cogs in bot.cogs:
+          self.get_list_of_commands(embed, cogs)
     else:
-      # applies title-case to match the names of classes
-      embed = discord.Embed(title = "List of all commands in **{}**".format(cog_name.title()))
+      for cogs in bot.cogs:
+        self.get_list_of_commands(embed, cogs)
+    await ctx.author.send(embed = embed)
+
+  # helper method for getting desc of commands
+  def get_list_of_commands(self, embed, cog_name):
+    command_text = ""
+    if cog_name.title() in bot.cogs:
       for command in bot.get_cog(cog_name.title()).get_commands():
         if not command.hidden:
           desc = command.description
-          # prevents 404 BAD REQUESTS
           if desc == "":
-           desc = "oops!"
-          embed.add_field(name = "`!{}`".format(str(command).replace("_", "")), value = "*{}*".format(desc), inline = False)
+            desc = "Description not provided."
+          command_text += "**\u3164\u25A0 {}:** {}\n".format(str(command).replace("_", ""), desc)
+      if command_text != "":
+        embed.add_field(name = "__Commands in **{}**__".format(cog_name.lower()), value = command_text, inline = False)
 
-    # finalizing the embed
-    embed.set_footer(text="Created by snafuPop#0007")
-    await ctx.author.send(embed = embed)
 
 def setup(bot):
   bot.add_cog(General(bot))
