@@ -73,8 +73,28 @@ class Maint(commands.Cog):
         print("--------------------------------------------------------")
     await ctx.send(embed = embed)
 
+  # flushes logs
+  @commands.is_owner()
+  @commands.command(hidden = True, description = "Flushes output to the console.")
+  async def flush(self, ctx):
+    print("Flushing!\n----------------------------\n", flush = True)
+    await ctx.send(embed = discord.Embed(title = "", description = "Flushed logs."))
 
+  @commands.is_owner()
+  @commands.command(hidden = True, description = "Changes the bot's name.")
+  async def rename(self, ctx, *, new_name: str = None):
+    if new_name is None:
+      await ctx.send(embed = discord.Embed(title = "", description = "Invalid name."))
+    else:
+      original_name = self.bot.user.name
+      await self.bot.user.edit(username = new_name)
+      await ctx.send(embed = discord.Embed(title = "", description = "Changed my name from **{}** to **{}**".format(original_name, bot.user.name)))
 
+  @commands.is_owner()
+  @commands.command(hidden = True, description = "Changes the bot's avatar.")
+  async def reavatar(self, ctx, image: discord.Attachment):
+    await self.bot.user.edit(avatar = ctx.message.attachments[0])
+    await ctx.send(embed = discord.Embed(title = "", description = "Changed avatar."))
 
 def setup(bot):
   bot.add_cog(Maint(bot))

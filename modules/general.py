@@ -14,9 +14,9 @@ class General(commands.Cog):
     self.bot = bot
 
   # ping pong!
-  @commands.command(pass_context = True, description = "Checks the status of the bot")
+  @commands.command(aliases = ["wave", "ping"], description = "Checks the status of the bot")
   async def hello(self, ctx):
-    embed = discord.Embed(title = "", description = ":wave:")
+    embed = discord.Embed(title = "", description = "Hi, {}! :wave:".format(ctx.author.mention))
     await ctx.send(embed = embed)
 
 
@@ -53,21 +53,23 @@ class General(commands.Cog):
   # gives some details about the bot
   @commands.command(aliases = ["bot", "info"], description = "Gives information about the bot")
   async def about(self, ctx):
-    embed = discord.Embed(title = " ", color = 0x0080ff)
+    embed = discord.Embed(title = " ", color = bot.user.color)
     embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
-    embed.set_thumbnail(url = "https://cdn.discordapp.com/attachments/482726823776485392/548612049953882143/rhuul.png")
+    embed.set_thumbnail(url = self.bot.user.avatar_url)
 
     # storing info onto a string to make things a little more readable
-    info  = "**Author:** snafuPop#0007\n"
-    info += "**Language:** Python {}.{}.{}\n".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
-    info += "**Discord.py Version:** {}\n".format(discord.__version__)
-    info += "**CPU Usage:** {}%\n".format(psutil.cpu_percent())
-    info += "**Disk Usage:** {}%\n".format(psutil.disk_usage('/')[3])
-    info += "**Current Uptime:** {}\n".format(self.get_uptime())
-    info += "**Servers:** {:,} ({:,} users)\n".format(len(bot.guilds), len(bot.users))
+    info  = "**\u3164\u25A0 Author:** {}\n".format(await self.bot.fetch_user(self.bot.owner_id))
+    info += "**\u3164\u25A0 Language:** Python {}.{}.{}\n".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
+    info += "**\u3164\u25A0 Discord.py Version:** {}\n".format(discord.__version__)
+    info += "**\u3164\u25A0 Host:** [PythonAnywhere](https://www.pythonanywhere.com/)\n"
+    info += "**\u3164\u25A0 Latency:** {:.4f} ms\n".format(self.bot.latency)
+    info += "**\u3164\u25A0 CPU Usage:** {}%\n".format(psutil.cpu_percent())
+    info += "**\u3164\u25A0 Disk Usage:** {}%\n".format(psutil.disk_usage('/')[3])
+    info += "**\u3164\u25A0 Current Uptime:** {}\n".format(self.get_uptime())
+    info += "**\u3164\u25A0 Servers:** {:,} ({:,} users)\n".format(len(bot.guilds), len(bot.users))
     info += "\nWant y'shtola on _your_ server? [Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot)\n"
 
-    embed.add_field(name = "\u3164", value = info)
+    embed.add_field(name ="**__Bot Statistics__**", value = info)
     embed.set_footer(text = "Use !help to produce a list of commands")
     await ctx.send(embed = embed)
 
@@ -106,12 +108,12 @@ class General(commands.Cog):
     embed = discord.Embed(title = "**Help Menu**", description = "Current prefix: `{}`".format(bot.command_prefix))
     if cog_name.title() in bot.cogs:
       self.get_list_of_commands(embed, cog_name)
-      if len(embed.fields) == 0:
-        for cogs in bot.cogs:
-          self.get_list_of_commands(embed, cogs)
+      embed.set_footer(text = "A \u2605 indicates a owner-only command")
     else:
+      output = ""
       for cogs in bot.cogs:
-        self.get_list_of_commands(embed, cogs)
+        output += "**{}**\n".format(cogs)
+      embed.add_field(name = "__**Cogs**__", value = output)
     await ctx.author.send(embed = embed)
 
   # helper method for getting desc of commands
@@ -119,10 +121,12 @@ class General(commands.Cog):
     command_text = ""
     if cog_name.title() in bot.cogs:
       for command in bot.get_cog(cog_name.title()).get_commands():
-        if not command.hidden:
-          desc = command.description
-          if desc == "":
-            desc = "Description not provided."
+        desc = command.description
+        if desc == "":
+          desc = "Description not provided."
+        if command.hidden:
+          command_text += "**\u3164\u2605 {}:** {}\n".format(str(command).replace("_", ""), desc)
+        else:
           command_text += "**\u3164\u25A0 {}:** {}\n".format(str(command).replace("_", ""), desc)
       if command_text != "":
         embed.add_field(name = "__Commands in **{}**__".format(cog_name.lower()), value = command_text, inline = False)
