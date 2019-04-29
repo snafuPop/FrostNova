@@ -33,19 +33,18 @@ for file in os.listdir("/home/snafuPop/yshtola/modules/"):
     total_imports += 1
     try:
       bot.load_extension("modules." + filename[:-3])
-      print("{} was loaded successfully!".format(filename))
+      print("{} was loaded successfully!".format(filename), flush = True)
       successful_imports += 1
     except Exception as e:
-      print("{} had some problems ({}: {})".format(filename, type(e).__name__, e))
-
+      print("{} had some problems ({}: {})".format(filename, type(e).__name__, e), flush = True)
 
 @bot.event
 async def on_ready():
   # runs when the bot is fully functional
-  print("\n{}/{} modules loaded".format(successful_imports, total_imports))
-  print("Logged in as {} <{}>".format(bot.user.name, bot.user.id))
-  print("Running {}".format(discord.__version__))
-  print("--------------------------------------------------------")
+  print("\n{}/{} modules loaded".format(successful_imports, total_imports), flush = True)
+  print("Logged in as {} <{}>".format(bot.user.name, bot.user.id), flush = True)
+  print("Running {}".format(discord.__version__), flush = True)
+  print("--------------------------------------------------------", flush = True)
 
 
 bot.run(TOKEN)
