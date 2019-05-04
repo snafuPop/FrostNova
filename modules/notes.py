@@ -19,6 +19,9 @@ class Notes(commands.Cog):
 
   @commands.command(aliases = ["notebook"], description = "Browse through all saved notes (saved by guild).")
   async def notes(self, ctx):
+    if ctx.guild is None:
+      await ctx.send(embed = discord.Embed(title = "Not in a server", description = "You need to be in a server to read notes, {}.".format(ctx.author.mention)))
+      return
     guild_id = str(ctx.guild.id)
     notebook = self.get_notebook()
     if guild_id not in notebook["server"] or not notebook["server"][guild_id]:
@@ -29,7 +32,7 @@ class Notes(commands.Cog):
         page += "**{}**, ".format(str(key))
       embed = discord.Embed(title = "**Notebook for {}**".format(ctx.guild), description = "Requested by {}.".format(ctx.author.mention), color = ctx.author.color)
       embed.add_field(name = "\u3164", value = page[:-2])
-      embed.set_footer(text = "Use {}read to read a note".format(self.bot.command_prefix))
+      embed.set_footer(text = "Use {}read to read a note".format(ctx.prefix))
       await ctx.send(embed = embed)
 
   @commands.command(aliases = ["bulletin"], description = "Browse through all saved announcements (viewable by everyone).")
@@ -43,11 +46,14 @@ class Notes(commands.Cog):
         page += "**{}**, ".format(str(key))
       embed = discord.Embed(title = "**Public Announcements**".format(ctx.guild), description = "Requested by {}.".format(ctx.author.mention), color = ctx.author.color)
       embed.add_field(name = "\u3164", value = page[:-2])
-      embed.set_footer(text = "Use {}view to read an announcement".format(self.bot.command_prefix))
+      embed.set_footer(text = "Use {}view to read an announcement".format(ctx.prefix))
       await ctx.send(embed = embed)
 
   @commands.command(description = "Read a note.")
   async def read(self, ctx, *, title: str = None):
+    if ctx.guild is None:
+      await ctx.send(embed = discord.Embed(title = "Not in a server", description = "You need to be in a server to read notes, {}.".format(ctx.author.mention)))
+      return
     if title is None:
       await ctx.send(embed = discord.Embed(title = "", description = "You can read a note by using `{}read <title of note>`, {}.".format(ctx.prefix, ctx.author.mention)))
     else:
@@ -79,6 +85,9 @@ class Notes(commands.Cog):
 
   @commands.command(description = "Write a note.")
   async def write(self, ctx, *args):
+    if ctx.guild is None:
+      await ctx.send(embed = discord.Embed(title = "Not in a server", description = "You need to be in a server to write notes, {}.".format(ctx.author.mention)))
+      return
     if len(args) != 2:
       embed = discord.Embed(title = "", description = "You can write a note with `{}write \"<title>\" \"<body>\"`, {}".format(ctx.prefix, ctx.author.mention))
       embed.set_footer(text = "These notes can only be read by members of this server.")
@@ -116,6 +125,9 @@ class Notes(commands.Cog):
 
   @commands.command(description = "Erase a note.")
   async def erase(self, ctx, title: str = None):
+    if ctx.guild is None:
+      await ctx.send(embed = discord.Embed(title = "Not in a server", description = "You need to be in a server to erase notes, {}.".format(ctx.author.mention)))
+      return
     if title is None:
       await ctx.send(embed = discord.Embed(title = "", description = "You can delete an existing note by using `{}erase <title of note>`, {}.".format(ctx.prefix, ctx.author.mention)))
     else:
