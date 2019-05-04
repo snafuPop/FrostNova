@@ -75,7 +75,7 @@ class General(commands.Cog):
     self.top_five(embed, 'balance', 'Richest Users')
     self.top_five(embed, 'text_posts', 'Chattiest Users')
     self.top_five(embed, 'level', 'Highest Levels')
-    embed.set_footer(text = "Only registered users are tracked. Type !register to start tracking your records (and more)!")
+    embed.set_footer(text = "Only registered users are tracked. Type {}register to start tracking your records (and more)!".format(ctx.prefix))
     await ctx.send(embed = embed)
 
   # helper method to append a field that contains leaderboard information
