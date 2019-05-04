@@ -16,10 +16,25 @@ except ImportError:
   print("discord.py was not found.")
   sys.exit(1)
 
+# opening initial settings
+def get_config():
+  with open("/home/snafuPop/yshtola/_config/settings.json") as json_data:
+    return json.load(json_data)
+
+def update_config(config):
+  with open("/home/snafuPop/yshtola/_config/settings.json") as json_out:
+    json.dump(config, json_out, indent = 2)
+
+def get_prefix(bot, ctx):
+  if not ctx.server:
+    return ""
+  prefixes = get_config()["PREFIXES"]
+  guild = str(ctx.guild.id)
+  return (prefixes[guild] if guild in prefixes else "!")
+
 # load the token and prefix
-with open("/home/snafuPop/yshtola/_config/settings.json") as json_data:
-  TOKEN = json.load(json_data)["TOKEN"]
-bot = commands.Bot(command_prefix='!')
+TOKEN = get_config()["TOKEN"]
+bot = commands.Bot(command_prefix = get_prefix)
 builtins.bot = bot
 bot.remove_command('help')
 
