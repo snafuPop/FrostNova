@@ -90,6 +90,7 @@ class Maint(commands.Cog):
       await self.bot.user.edit(username = new_name)
       await ctx.send(embed = discord.Embed(title = "", description = "Changed my name from **{}** to **{}**".format(original_name, bot.user.name)))
 
+  @commands.has_permissions(administrator = True)
   @commands.command(description = "Changes the server's custom prefix for this bot. Must have administrator privileges.")
   async def prefix(self, ctx, prefix: str = None):
     with open("/home/snafuPop/yshtola/_config/settings.json") as json_data:
