@@ -19,12 +19,51 @@ class General(commands.Cog):
     embed = discord.Embed(title = "", description = "Hi, {}! :wave:".format(ctx.author.mention))
     await ctx.send(embed = embed)
 
+  # rates a user's nickname
+  @commands.command(description = "Rate a username!")
+  async def nickometer(self, ctx, *, user: discord.Member = None):
+    if user is None:
+      user = ctx.author
+    rating = 100
+    marks = ""
+
+    # loss for generic user ID
+    if user.discriminator in ["0000", "0001", "6969", "4200", "9999"]:
+      marks += "\u3164**-50** Edgy discriminator ({})\n".format(user.discriminator)
+      rating -= 50
+
+    # loss for weeb
+    if any(i in user.display_name.lower() for i in ["chan", "sama", "hime", "kitsune", "tsuki", "neko", "senpai"]):
+      marks += "\u3164**-40** Weeaboo\n"
+      rating -= 40
+
+    # loss for number in name
+    if any(char.isdigit() for char in user.display_name):
+      marks += "\u3164**-20** Numbers in username\n"
+      rating -= 20
+
+    # loss for non single-word name
+    if " " in user.display_name:
+      marks += "\u3164**-10** Space in name\n"
+      rating -= 10
+
+    # loss for name ending with an "a"
+    if user.display_name.lower().endswith("a"):
+      marks += "\u3164**-10** Name ends with an \"a\"\n"
+      rating -= 10
+
+    if marks == "":
+      marks = "\u3164No negative marks! Good job!"
+
+    embed = discord.Embed(title = "**Nickometer Rating**", description = "Rating {}'s name".format(user.mention), color = user.color)
+    embed.add_field(name = "**Overall Rating:** {}".format(rating), value = marks)
+    await ctx.send(embed = embed)
 
   # hugs another user
   @commands.command(pass_context = True, description = "Hugs a user")
   async def hug(self, ctx, *, user: discord.Member = None):
     if user is None:
-      embed = discord.Embed(title = "", description = "Let me know who to hug by typing in `!hug <user>`")
+      embed = discord.Embed(title = "", description = "Let me know who to hug by typing in `{}hug <user>`, {}.".format(ctx.prefix, ctx.author.mention))
     else:
       embed = discord.Embed(title = "", description = "{} -> (つ≧▽≦)つ {}".format(ctx.author.mention, user.mention), color = ctx.author.color)
     await ctx.send(embed = embed)
@@ -105,15 +144,15 @@ class General(commands.Cog):
   # prints out a list of commands
   @commands.command(hidden = True, description = "Prints a list of commands and what they do")
   async def help(self, ctx, *, cog_name: str = ""):
-    embed = discord.Embed(title = "**Help Menu**", description = "Current prefix: `{}`".format(bot.command_prefix))
+    embed = discord.Embed(title = "**Help Menu**")
     if cog_name.title() in bot.cogs:
       self.get_list_of_commands(embed, cog_name)
-      embed.set_footer(text = "A \u2605 indicates a owner-only command")
     else:
       output = ""
       for cogs in bot.cogs:
         output += "**{}**\n".format(cogs)
       embed.add_field(name = "__**Cogs**__", value = output)
+    embed.set_footer(text = "No prefix is required when speaking to me through direct messages.")
     await ctx.author.send(embed = embed)
 
   # helper method for getting desc of commands
@@ -124,12 +163,14 @@ class General(commands.Cog):
         desc = command.description
         if desc == "":
           desc = "Description not provided."
-        if command.hidden:
-          command_text += "**\u3164\u2605 {}:** {}\n".format(str(command).replace("_", ""), desc)
-        else:
+        if not command.hidden:
+          if not (desc.endswith(".") or desc.endswith("!")):
+            desc += "."
           command_text += "**\u3164\u25A0 {}:** {}\n".format(str(command).replace("_", ""), desc)
       if command_text != "":
         embed.add_field(name = "__Commands in **{}**__".format(cog_name.lower()), value = command_text, inline = False)
+      else:
+        embed.add_field(name = "__Huh? It's empty here...__", value = "It looks like all of the commands here are not for you...")
 
 
 def setup(bot):

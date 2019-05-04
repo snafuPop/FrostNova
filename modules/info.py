@@ -24,7 +24,7 @@ class Info(commands.Cog):
     }
 
 
-  @commands.command(description = "Prints markdown text utilized by Discord")
+  @commands.command(description = "Prints markdown text utilized by Discord.")
   async def markdown(self, ctx):
     embed = discord.Embed(title = "List of Markdown")
     embed.add_field(name = "Italics", value = "`*italitcs*` or `_italics_`")
@@ -39,7 +39,7 @@ class Info(commands.Cog):
     await ctx.send(embed = embed)
 
 
-  @commands.command(pass_context = True, description = "Grabs a user's avatar")
+  @commands.command(pass_context = True, description = "Grabs a user's avatar.")
   async def avatar(self, ctx, *, user: discord.Member = None):
     try:
       if user is None:
@@ -61,7 +61,7 @@ class Info(commands.Cog):
     await ctx.send(embed = embed)
 
 
-  @commands.command(description = "Gives information about a user")
+  @commands.command(description = "Gives information about a user.")
   async def user(self, ctx, *, user: discord.Member = None):
     # grabbing the user's username (defaults to the author if a user was not specified)
     try:
@@ -119,7 +119,7 @@ class Info(commands.Cog):
     else:
       roles = "None"
 
-  @commands.command(description = "Gives information about the current server")
+  @commands.command(description = "Gives information about the current server.")
   async def server(self, ctx):
     server = ctx.guild
     embed = discord.Embed(title = "__**{}**__ ({})".format(str(server.name), self.regions[str(server.region)]), description = "<{}>".format(server.id))

@@ -54,7 +54,7 @@ class Random(commands.Cog):
   @commands.command(pass_context = True, description = "Chooses from a list of options")
   async def choose(self, ctx, *choices):
     if len(choices) < 2:
-      embed = discord.Embed(title = "", description = "I need more than one option. Try `!choice <option1> <option2> ...`")
+      embed = discord.Embed(title = "", description = "I need more than one option. Try `{}choice <option1> <option2> ...`, {}".format(ctx.prefix, ctx.author.mention))
     else:
       embed = discord.Embed(title = "", description = "I choose **{}**, {}.".format(choice(choices), ctx.author.mention), color = ctx.author.color)
     await ctx.send(embed = embed)

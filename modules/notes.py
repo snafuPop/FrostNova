@@ -29,6 +29,7 @@ class Notes(commands.Cog):
         page += "**{}**, ".format(str(key))
       embed = discord.Embed(title = "**Notebook for {}**".format(ctx.guild), description = "Requested by {}.".format(ctx.author.mention), color = ctx.author.color)
       embed.add_field(name = "\u3164", value = page[:-2])
+      embed.set_footer(text = "Use {}read to read a note".format(self.bot.command_prefix))
       await ctx.send(embed = embed)
 
   @commands.command(aliases = ["bulletin"], description = "Browse through all saved announcements (viewable by everyone).")
@@ -42,12 +43,13 @@ class Notes(commands.Cog):
         page += "**{}**, ".format(str(key))
       embed = discord.Embed(title = "**Public Announcements**".format(ctx.guild), description = "Requested by {}.".format(ctx.author.mention), color = ctx.author.color)
       embed.add_field(name = "\u3164", value = page[:-2])
+      embed.set_footer(text = "Use {}view to read an announcement".format(self.bot.command_prefix))
       await ctx.send(embed = embed)
 
   @commands.command(description = "Read a note.")
-  async def read(self, ctx, title: str = None):
+  async def read(self, ctx, *, title: str = None):
     if title is None:
-      await ctx.send(embed = discord.Embed(title = "", description = "You can read a note by using `!read <title of note>`, {}.".format(ctx.author.mention)))
+      await ctx.send(embed = discord.Embed(title = "", description = "You can read a note by using `{}read <title of note>`, {}.".format(ctx.prefix, ctx.author.mention)))
     else:
       guild_id = str(ctx.guild.id)
       notebook = self.get_notebook()
@@ -61,9 +63,9 @@ class Notes(commands.Cog):
         await ctx.send(embed = embed)
 
   @commands.command(description = "Read an announcement.")
-  async def view(self, ctx, title: str = None):
+  async def view(self, ctx, *, title: str = None):
     if title is None:
-      await ctx.send(embed = discord.Embed(title = "", description = "You can view an announcement by using `!announce <title of announcement>`, {}.".format(ctx.author.mention)))
+      await ctx.send(embed = discord.Embed(title = "", description = "You can view an announcement by using `{}announce <title of announcement>`, {}.".format(ctx.prefix, ctx.author.mention)))
     else:
       notebook = self.get_notebook()
       if title not in notebook["public"]:
@@ -78,7 +80,7 @@ class Notes(commands.Cog):
   @commands.command(description = "Write a note.")
   async def write(self, ctx, *args):
     if len(args) != 2:
-      embed = discord.Embed(title = "", description = "You can write a note by typing `\"<title>\" \"<body>\"`, {}".format(ctx.author.mention))
+      embed = discord.Embed(title = "", description = "You can write a note with `{}write \"<title>\" \"<body>\"`, {}".format(ctx.prefix, ctx.author.mention))
       embed.set_footer(text = "These notes can only be read by members of this server.")
       await ctx.send(embed = embed)
     else:
@@ -98,7 +100,7 @@ class Notes(commands.Cog):
   @commands.command(description = "Write an announcement.")
   async def announce(self, ctx, *args):
     if len(args) != 2:
-      embed = discord.Embed(title = "", description = "You can announce something by typing `\"<title>\" \"<body>\"`, {}".format(ctx.author.mention))
+      embed = discord.Embed(title = "", description = "You can announce something with `{}announce \"<title>\" \"<body>\"`, {}".format(ctx.prefix, ctx.author.mention))
       embed.set_footer(text = "Announcements are saved across all servers, and can be read by anybody.")
       await ctx.send(embed = embed)
     else:
@@ -115,7 +117,7 @@ class Notes(commands.Cog):
   @commands.command(description = "Erase a note.")
   async def erase(self, ctx, title: str = None):
     if title is None:
-      await ctx.send(embed = discord.Embed(title = "", description = "You can delete an existing note by using `!erase <title of note>`, {}.".format(ctx.author.mention)))
+      await ctx.send(embed = discord.Embed(title = "", description = "You can delete an existing note by using `{}erase <title of note>`, {}.".format(ctx.prefix, ctx.author.mention)))
     else:
       guild_id = str(ctx.guild.id)
       notebook = self.get_notebook()
@@ -129,7 +131,7 @@ class Notes(commands.Cog):
   @commands.command(description = "Erase an announcement.")
   async def unannounce(self, ctx, title: str = None):
     if title is None:
-      await ctx.send(embed = discord.Embed(title = "", description = "You can delete an existing announcement by using `!unannounce <title of announcement>`, {}.".format(ctx.author.mention)))
+      await ctx.send(embed = discord.Embed(title = "", description = "You can delete an existing announcement by using `{}unannounce <title of announcement>`, {}.".format(ctx.prefix, ctx.author.mention)))
     else:
       notebook = self.get_notebook()
       if title not in notebook["public"]:

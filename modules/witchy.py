@@ -58,12 +58,12 @@ class Witchy(commands.Cog):
 
     if question is None:
       # catches empty responses
-      embed = discord.Embed(title = "", description = "Try asking a question with `!8ball <question>`, {}".format(ctx.author.mention), color = 0xe74c3c)
+      embed = discord.Embed(title = "", description = "Try asking a question with `{}8ball <question>`, {}".format(ctx.prefix, ctx.author.mention), color = 0xe74c3c)
     else:
       # fetches a response
       reading = self.get_8ball()
 
-      embed = discord.Embed(title=question, description="{}, {}.".format(reading[1], ctx.author.mention), color = reading[0])
+      embed = discord.Embed(title = question, description="{}, {}.".format(reading[1], ctx.author.mention), color = reading[0])
     await ctx.send(embed = embed)
 
   @commands.command(description = "Generates a spread of tarot cards.")

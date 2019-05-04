@@ -15,7 +15,7 @@ class Language(commands.Cog):
   @commands.command(description = "Translates given text")
   async def translate(self, ctx, language: str = None, *, text: str = None):
     if text is None:
-      embed = discord.Embed(title = "", description = "Try translating text using `!translate <target language> <text>`, {}.".format(ctx.author.mention))
+      embed = discord.Embed(title = "", description = "Try translating text using `{}translate <target language> <text>`, {}.".format(ctx.prefix, ctx.author.mention))
     else:
       language = language[:2]
       output = translator.translate(text, dest = language)
@@ -31,7 +31,7 @@ class Language(commands.Cog):
   @commands.command(aliases = ["jp"], description = "Looks up a word on Jisho.org")
   async def jisho(self, ctx, term: str = None, max_entries: int = 1):
     if term is None:
-      embed = discord.Embed(title = "", description = "Try searching a word on Jisho using `jisho <word> <number of entries>`, {}".format(ctx.author.mention))
+      embed = discord.Embed(title = "", description = "Try searching a word on Jisho using `{}jisho <word> <number of entries>`, {}".format(ctx.prefix, ctx.author.mention))
     else:
       url = "http://jisho.org/api/v1/search/words?keyword=" + urllib.parse.quote(term, encoding = "utf-8")
       try:

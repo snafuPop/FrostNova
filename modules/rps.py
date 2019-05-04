@@ -17,11 +17,11 @@ class Rps(commands.Cog):
     try:
       bid = await user_json.can_do(ctx, ctx.author, bid)
     except:
-      await ctx.send(embed = discord.Embed(title = "", description = "You can start a rock-paper-scissor game with me by typing `!rps <rock, paper, or scissors> <bet>`, {}.".format(ctx.author.mention)))
+      await ctx.send(embed = discord.Embed(title = "", description = "You can start a rock-paper-scissor game with me by typing `{}rps <rock, paper, or scissors> <bet>`, {}.".format(ctx.prefix, ctx.author.mention)))
       return
 
     if user_move not in self.move_list.keys():
-      await ctx.send(embed = discord.Embed(title = "", description = "You can start a rock-paper-scissor game with me by typing `!rps <rock, paper, or scissors> <bet>`, {}.".format(ctx.author.mention)))
+      await ctx.send(embed = discord.Embed(title = "", description = "You can start a rock-paper-scissor game with me by typing `{}rps <rock, paper, or scissors> <bet>`, {}.".format(ctx.prefix, ctx.author.mention)))
       return
 
     # choosing the bot's move

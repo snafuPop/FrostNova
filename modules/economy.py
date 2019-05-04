@@ -16,7 +16,7 @@ class Economy(commands.Cog):
 
   # adds new keys to all users
   @commands.is_owner()
-  @commands.command(hidden = True)
+  @commands.command(hidden = True, description = "Adds a key to the user dictionary.")
   async def add_dict(self, ctx, *, new_key: str = None):
     if new_key is None:
       await ctx.send(embed = discord.Embed(title = "", description = "Invalid key"))
@@ -31,10 +31,25 @@ class Economy(commands.Cog):
     user_json.update(user_dict)
     await ctx.send(embed = discord.Embed(title = "", description = "**{}** added to **{}** users".format(new_key, logger)))
 
+  # remove key from all users
+  @commands.is_owner()
+  @commands.command(hidden = True, description = "Removes a key from the user dictionary.")
+  async def remove_dict(self, ctx, *, dict_key: str = None):
+    if dict_key is None:
+      await ctx.send(embed = discord.Embed(title = "", description = "Invalid key"))
+      return
+    logger = 0
+    user_dict = user_json.get_users()
+    for user_id in user_dict:
+      if user_dict[user_id].pop(dict_key, None) is not None:
+        logger += 1
+    user_json.update(user_dict)
+    await ctx.send(embed = discord.Embed(title = "", description = "**{}** removed from **{}** users".format(dict_key, logger)))
+
 
   # sets a new balance to a user
   @commands.is_owner()
-  @commands.command(hidden = True, description = "Sets the currency of a user")
+  @commands.command(hidden = True, description = "Sets the currency of a user.")
   async def set_balance(self, ctx, user: discord.Member = None, credits: int = -1):
     if user is None:
       embed = discord.Embed(title = "", description = "Invalid user")
@@ -52,7 +67,7 @@ class Economy(commands.Cog):
 # ----------------------------------------------------------------------------------------------------
 
   # registers an economy account with the bot
-  @commands.command(description = "Registers an account with the bot")
+  @commands.command(description = "Registers an account with the bot.")
   async def register(self, ctx):
     user_dict = user_json.get_users()
     if str(ctx.author.id) in user_dict:
@@ -75,7 +90,7 @@ class Economy(commands.Cog):
 
 
   # transfers credits to another user
-  @commands.command(description = "Transfers currency to another user")
+  @commands.command(description = "Transfers currency to another user.")
   async def transfer(self, ctx, recipient: discord.Member = None, money: str = None):
     # checks if the user is trying to send currency to themselves
     if ctx.author == recipient:
@@ -99,7 +114,7 @@ class Economy(commands.Cog):
 
 
   # attempts to rob a user
-  @commands.command(description = "Attempt to rob another user")
+  @commands.command(description = "Attempt to rob another user.")
   @commands.cooldown(1, 1800, commands.BucketType.user)
   async def rob(self, ctx, user: discord.Member = None, money: str = None):
     # checks if the user is trying to rob themselves
@@ -111,7 +126,7 @@ class Economy(commands.Cog):
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))
       ctx.command.reset_cooldown(ctx)
     elif money == None or user is None:
-      embed = discord.Embed(title = "", description = "Rob another user with `!rob <user> <number of {}>`".format(user_json.get_currency_name(), user_json.get_currency_name()))
+      embed = discord.Embed(title = "", description = "Rob another user with `{}rob <user> <number of {}>`".format(ctx.prefix, user_json.get_currency_name(), user_json.get_currency_name()))
       ctx.command.reset_cooldown(ctx)
     elif money <= 0:
       embed = discord.Embed(title = "", description = "You need to steal more than 0 {}, {}.".format(user_json.get_currency_name(), user.mention))

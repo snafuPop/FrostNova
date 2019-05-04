@@ -74,7 +74,7 @@ class Slots(commands.Cog):
     try:
       bid = await user_json.can_do(ctx, ctx.author, bid)
     except:
-      embed = discord.Embed(title = "", description = "You can play slots by with `!slots <bid greater than 0>`.")
+      embed = discord.Embed(title = "", description = "You can play slots by with `{}slots <bid greater than 0>`, {}.".format(ctx.prefix, ctx.author.mention))
       await ctx.send(embed = embed)
       return
 
