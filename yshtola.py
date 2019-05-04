@@ -26,11 +26,12 @@ def update_config(config):
     json.dump(config, json_out, indent = 2)
 
 def get_prefix(bot, ctx):
-  if not ctx.server:
+  try:
+    guild = str(ctx.guild.id)
+  except:
     return ""
   prefixes = get_config()["PREFIXES"]
-  guild = str(ctx.guild.id)
-  return (prefixes[guild] if guild in prefixes else "!")
+  return prefixes.get(guild, "!")
 
 # load the token and prefix
 TOKEN = get_config()["TOKEN"]
