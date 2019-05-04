@@ -106,7 +106,8 @@ class General(commands.Cog):
     info += "**\u3164\u25A0 Disk Usage:** {}%\n".format(psutil.disk_usage('/')[3])
     info += "**\u3164\u25A0 Current Uptime:** {}\n".format(self.get_uptime())
     info += "**\u3164\u25A0 Servers:** {:,} ({:,} users)\n".format(len(bot.guilds), len(bot.users))
-    info += "\nWant y'shtola on _your_ server? [Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot)\n"
+    info += "\nWant y'shtola on _your_ server? [Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot).\n"
+    info += "Like this bot? [Consider donating a dollar or two](https://www.patreon.com/yshtolabot)."
 
     embed.add_field(name ="**__Bot Statistics__**", value = info)
     embed.set_footer(text = "Use !help to produce a list of commands")
