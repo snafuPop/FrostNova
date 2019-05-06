@@ -110,7 +110,7 @@ class General(commands.Cog):
     info += "Like this bot? [Consider donating a dollar or two](https://www.patreon.com/yshtolabot)."
 
     embed.add_field(name ="**__Bot Statistics__**", value = info)
-    embed.set_footer(text = "Use !help to produce a list of commands")
+    embed.set_footer(text = "Use {}help to produce a list of commands".format(ctx.prefix))
     await ctx.send(embed = embed)
 
 
