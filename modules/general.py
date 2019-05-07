@@ -142,6 +142,14 @@ class General(commands.Cog):
     embed.set_image(url = "https://66.media.tumblr.com/09d760e5a4d8ba210642394dbeff578c/tumblr_otihzoKUwR1qhzw8jo2_500.png")
     await ctx.send(embed = embed)
 
+  # :b: emoji
+  @commands.command(description = ":b:")
+  async def b(self, ctx, *, input: str = None):
+    if input is None:
+      await ctx.send(embed = discord.Embed(title = "", description = "Try using `{}b <words>`".format(ctx.prefix)))
+      return
+    await ctx.send(embed = discord.Embed(title = "", description = "{}\n{}".format(ctx.author.mention, input.replace("b", ":b:"))))
+
   # prints out a list of commands
   @commands.command(hidden = True, description = "Prints a list of commands and what they do")
   async def help(self, ctx, *, cog_name: str = ""):
