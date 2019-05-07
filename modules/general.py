@@ -6,6 +6,7 @@ import datetime
 import sys
 import psutil
 from modules.utils import user_json
+from random import randint
 
 
 class General(commands.Cog):
@@ -148,7 +149,11 @@ class General(commands.Cog):
     if input is None:
       await ctx.send(embed = discord.Embed(title = "", description = "Try using `{}b <words>`".format(ctx.prefix)))
       return
-    await ctx.send(embed = discord.Embed(title = "", description = "{}\n{}".format(ctx.author.mention, input.replace("b", ":b:"))))
+    new_line = ""
+    for character in input:
+      new_line += ":b:" if character is 'b' or (character not in "aeioug" and randint(1, 10) == 10) else character
+    new_line.replace("gg", ":b::b:")
+    await ctx.send(embed = discord.Embed(title = "", description = "{}\n{}".format(ctx.author.mention, new_line), color = ctx.author.color))
 
   # prints out a list of commands
   @commands.command(hidden = True, description = "Prints a list of commands and what they do")
