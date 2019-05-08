@@ -151,7 +151,7 @@ class General(commands.Cog):
       return
     new_line = ""
     for character in input:
-      new_line += ":b:" if character is 'b' or (character not in "aeioug" and randint(1, 10) == 10) else character
+      new_line += ":b:" if character in "bp" or (character not in "aeioug" and randint(1, 10) == 10) else character
     new_line.replace("gg", ":b::b:")
     await ctx.send(embed = discord.Embed(title = "", description = "{}\n{}".format(ctx.author.mention, new_line), color = ctx.author.color))
 
