@@ -14,6 +14,18 @@ class General(commands.Cog):
     self.time_alive = time.time()
     self.bot = bot
 
+  # this is a listener that sends a welcome message when the bot joins a guild
+  @commands.Cog.listener()
+  async def on_guild_join(self, guild):
+    for channel in guild.text_channels:
+      if channel.permissions_for(guild.me).send_messages:
+        embed = discord.Embed(title = "**Hello!** :wave:", description = "Thank you for inviting me to your server. For a list of commands, type `!help`.")
+        embed.set_thumbnail(url = self.bot.user.avatar_url)
+        embed.set_footer(text = "As an admin, you can also change the prefix used by using !prefix <prefix>.")
+        await channel.send(embed = embed)
+        break
+
+
   # ping pong!
   @commands.command(aliases = ["wave", "ping"], description = "Checks the status of the bot")
   async def hello(self, ctx):
@@ -136,12 +148,14 @@ class General(commands.Cog):
     embed.set_image(url = "https://i.imgur.com/CyTsoeL.png")
     await ctx.send(embed = embed)
 
+
   # undertale
   @commands.command(hidden = True, description = "undertale")
   async def undertale(self, ctx):
     embed = discord.Embed(title = "", description = ctx.author.mention, color = ctx.author.color)
     embed.set_image(url = "https://66.media.tumblr.com/09d760e5a4d8ba210642394dbeff578c/tumblr_otihzoKUwR1qhzw8jo2_500.png")
     await ctx.send(embed = embed)
+
 
   # :b: emoji
   @commands.command(description = ":b:")
@@ -154,6 +168,7 @@ class General(commands.Cog):
       new_line += ":b:" if character in "bp" or (character.isalpha() and character not in "aeioug" and randint(1, 10) == 10) else character
     new_line.replace("gg", ":b::b:")
     await ctx.send(embed = discord.Embed(title = "", description = "{}\n{}".format(ctx.author.mention, new_line), color = ctx.author.color))
+
 
   # prints out a list of commands
   @commands.command(hidden = True, description = "Prints a list of commands and what they do")
@@ -168,6 +183,7 @@ class General(commands.Cog):
       embed.add_field(name = "__**Cogs**__", value = output)
     embed.set_footer(text = "No prefix is required when speaking to me through direct messages.")
     await ctx.author.send(embed = embed)
+
 
   # helper method for getting desc of commands
   def get_list_of_commands(self, embed, cog_name):
