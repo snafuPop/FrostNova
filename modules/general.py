@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from builtins import bot
 import time
-import datetime
+from datetime import timedelta, datetime
 import sys
 import psutil
 from modules.utils import user_json
@@ -110,7 +110,7 @@ class General(commands.Cog):
     embed.set_thumbnail(url = self.bot.user.avatar_url)
 
     # storing info onto a string to make things a little more readable
-    info  = "**\u3164\u25A0 Author:** {}\n".format(await self.bot.fetch_user(self.bot.owner_id))
+    info  = "**\u3164\u25A0 Author:** {}\n".format(await self.bot.fetch_user(94236862280892416))
     info += "**\u3164\u25A0 Language:** Python {}.{}.{}\n".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
     info += "**\u3164\u25A0 Discord.py Version:** {}\n".format(discord.__version__)
     info += "**\u3164\u25A0 Host:** [PythonAnywhere](https://www.pythonanywhere.com/)\n"
@@ -128,9 +128,9 @@ class General(commands.Cog):
 
 
   def get_uptime(self):
-    current_time = time.time()
-    difference = int(current_time - self.time_alive)
-    return str(datetime.timedelta(seconds=difference))
+    uptime = timedelta(seconds = time.time() - self.time_alive)
+    uptime = datetime(1,1,1) + uptime
+    return "{}d {}h {}m {}s".format(uptime.day-1, uptime.hour, uptime.minute, uptime.second)
 
 
   # byork
