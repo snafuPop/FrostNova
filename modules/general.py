@@ -1,17 +1,11 @@
 import discord
 from discord.ext import commands
 from builtins import bot
-import time
-from datetime import timedelta, datetime
-import sys
-import psutil
 from modules.utils import user_json
 from random import randint
 
-
 class General(commands.Cog):
   def __init__(self, bot):
-    self.time_alive = time.time()
     self.bot = bot
 
   # this is a listener that sends a welcome message when the bot joins a guild
@@ -102,36 +96,6 @@ class General(commands.Cog):
       top_users += "\u3164{} **{}**: {:,}\n".format(medals[i], users[user_list[i]]['username'], users[user_list[i]][parameter])
     embed.add_field(name = "**__{}__**".format(title), value = top_users, inline = True)
 
-  # gives some details about the bot
-  @commands.command(aliases = ["bot", "info"], description = "Gives information about the bot")
-  async def about(self, ctx):
-    embed = discord.Embed(title = " ", color = bot.user.color)
-    embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
-    embed.set_thumbnail(url = self.bot.user.avatar_url)
-
-    # storing info onto a string to make things a little more readable
-    info  = "**\u3164\u25A0 Author:** {}\n".format(await self.bot.fetch_user(94236862280892416))
-    info += "**\u3164\u25A0 Language:** Python {}.{}.{}\n".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
-    info += "**\u3164\u25A0 Discord.py Version:** {}\n".format(discord.__version__)
-    info += "**\u3164\u25A0 Host:** [PythonAnywhere](https://www.pythonanywhere.com/)\n"
-    info += "**\u3164\u25A0 Latency:** {:.4f} ms\n".format(self.bot.latency)
-    info += "**\u3164\u25A0 CPU Usage:** {}%\n".format(psutil.cpu_percent())
-    info += "**\u3164\u25A0 Disk Usage:** {}%\n".format(psutil.disk_usage('/')[3])
-    info += "**\u3164\u25A0 Current Uptime:** {}\n".format(self.get_uptime())
-    info += "**\u3164\u25A0 Servers:** {:,} ({:,} users)\n".format(len(bot.guilds), len(bot.users))
-    info += "\nWant y'shtola on _your_ server? [Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot).\n"
-    info += "Like this bot? [Consider donating a dollar or two](https://www.patreon.com/yshtolabot)."
-
-    embed.add_field(name ="**__Bot Statistics__**", value = info)
-    embed.set_footer(text = "Use {}help to produce a list of commands".format(ctx.prefix))
-    await ctx.send(embed = embed)
-
-
-  def get_uptime(self):
-    uptime = timedelta(seconds = time.time() - self.time_alive)
-    uptime = datetime(1,1,1) + uptime
-    return "{}d {}h {}m {}s".format(uptime.day-1, uptime.hour, uptime.minute, uptime.second)
-
 
   # byork
   @commands.command(hidden = True, description = "byork")
@@ -170,6 +134,14 @@ class General(commands.Cog):
     await ctx.send(embed = discord.Embed(title = "", description = "{}\n{}".format(ctx.author.mention, new_line), color = ctx.author.color))
 
 
+  # color picker
+  @commands.command(description = "Returns some data about a specified color. Leave color blank to get a random color.")
+  async def color(self, ctx, *, input: str = None):
+    if input is None:
+      r = lambda: randint(0,255)
+      input_color = '%02x%02x%02x' % (r(),r(),r())
+      await ctx.send(input_color)
+
   # prints out a list of commands
   @commands.command(hidden = True, description = "Prints a list of commands and what they do")
   async def help(self, ctx, *, cog_name: str = ""):
@@ -201,6 +173,7 @@ class General(commands.Cog):
         embed.add_field(name = "__Commands in **{}**__".format(cog_name.lower()), value = command_text, inline = False)
       else:
         embed.add_field(name = "__Huh? It's empty here...__", value = "It looks like all of the commands here are not for you...")
+
 
 
 def setup(bot):
