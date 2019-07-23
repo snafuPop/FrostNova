@@ -4,24 +4,15 @@ from builtins import bot
 import requests
 from modules.utils import user_json
 from titlecase import titlecase
+import sys
+import psutil
+import time
+from datetime import timedelta, datetime
 
 class Info(commands.Cog):
   def __init__(self, bot):
+    self.time_alive = time.time()
     self.bot = bot;
-    self.regions = {
-      "us-central": ":flag_us: US Central",
-      "us-east": ":flag_us: US East",
-      "us-south": ":flag_us: US South",
-      "us-west": ":flag_us: US West",
-      "eu-central": ":flag_eu: Central Europe",
-      "eu-west": ":flag_eu: Western Europe",
-      "braziL": ":flag_br: Brazil",
-      "japan": ":flag_jp: Japan",
-      "russia": ":flag_ru: Russia",
-      "singapore": ":flag_sg: Singapore",
-      "south-africa": ":flag_za: South Africa",
-      "sydney": ":flag_au: Sydney"
-    }
 
 
   @commands.command(description = "Prints markdown text utilized by Discord.")
@@ -81,7 +72,9 @@ class Info(commands.Cog):
   def get_non_reg_user(self, user):
     embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "**roles:** {}".format(self.get_roles(user)), color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
-    embed.set_footer(text = "Joined Discord on {}, joined server on {}".format(user.created_at.strftime("%b %d, %Y"), user.joined_at.strftime("%b %d, %Y")))
+    embed.add_field(name = "**Joined Discord on:**", value = str(user.created_at.strftime("%b %d, %Y")))
+    embed.add_field(name = "**Joined Server on:**", value = str(user.joined_at.strftime("%b %d, %Y")))
+    embed.set_footer(text = "User ID: {}".format(str(user.id)))
     return embed
 
   def get_reg_user(self, user, user_dict):
@@ -91,6 +84,8 @@ class Info(commands.Cog):
     embed.set_thumbnail(url = user.avatar_url)
     embed.add_field(name = "**Text Posts:**", value = "{:,} posts".format(user_key["text_posts"]), inline = True)
     embed.add_field(name = "**Balance:**", value = "{:,} {}".format(user_key["balance"], user_json.get_currency_name()), inline = True)
+    embed.add_field(name = "**Joined Discord on:**", value = str(user.created_at.strftime("%b %d, %Y")))
+    embed.add_field(name = "**Joined Server on:**", value = str(user.joined_at.strftime("%b %d, %Y")))
 
     currency_name = user_json.get_currency_name()
     stats = []
@@ -99,7 +94,7 @@ class Info(commands.Cog):
     stats.append("**Slot Winnings:** {:,} {}".format(user_key["slot_winnings"], currency_name))
     stats.append("**Pennies Stolen:** {:,} {}".format(user_key["stolen_money"], currency_name))
     embed.add_field(name = "\u3164", value = "\n".join(stats), inline = False)
-    embed.set_footer(text = "Joined Discord on {}, joined server on {}".format(user.created_at.strftime("%b %d, %Y"), user.joined_at.strftime("%b %d, %Y")))
+    embed.set_footer(text = "User ID: {}".format(str(user.id)))
     return embed
 
   def get_nickname(self, user):
@@ -119,16 +114,50 @@ class Info(commands.Cog):
     else:
       roles = "None"
 
-  @commands.command(description = "Gives information about the current server.")
+
+  @commands.command(aliases = ["guild"], description = "Gives information about the current server.")
   async def server(self, ctx):
     server = ctx.guild
-    embed = discord.Embed(title = "__**{}**__ ({})".format(str(server.name), self.regions[str(server.region)]), description = "<{}>".format(server.id))
+
+    embed = discord.Embed(title = "__**{}**__".format(str(server.name)), description = "**Owned by:** {}".format(server.owner))
     embed.set_thumbnail(url = server.icon_url)
-    embed.add_field(name = "Number of members:", value = str(server.member_count), inline = True)
-    embed.add_field(name = "Owner", value = str(server.owner), inline = True)
-    embed.set_footer(text = "Server was founded on {}".format(server.created_at.strftime("%d %b %Y")))
+    embed.add_field(name = "**Location**:", value = str(server.region))
+    embed.add_field(name = "**Creation Date:**", value = server.created_at.strftime("%d %b %Y"))
+    embed.add_field(name = "**Members:**", value = "{:,}".format(server.member_count))
+    embed.add_field(name = "**Boost:**", value = "{:,} Boosts (Level {})".format(server.premium_subscription_count, server.premium_tier))
+    embed.set_footer(text = "Server ID: {}".format(server.id))
 
     await ctx.send(embed = embed)
+
+
+  # gives some details about the bot
+  @commands.command(aliases = ["bot", "info"], description = "Gives information about the bot")
+  async def about(self, ctx):
+    embed = discord.Embed(title = " ", color = bot.user.color)
+    embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
+    embed.set_thumbnail(url = self.bot.user.avatar_url)
+
+    # storing info onto a string to make things a little more readable
+    info  = "**\u3164\u25A0 Author:** {}\n".format(await self.bot.fetch_user(94236862280892416))
+    info += "**\u3164\u25A0 Language:** Python {}.{}.{}\n".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
+    info += "**\u3164\u25A0 Discord.py Version:** {}\n".format(discord.__version__)
+    info += "**\u3164\u25A0 Host:** [PythonAnywhere](https://www.pythonanywhere.com/)\n"
+    info += "**\u3164\u25A0 Latency:** {:.4f} ms\n".format(self.bot.latency)
+    info += "**\u3164\u25A0 CPU Usage:** {}%\n".format(psutil.cpu_percent())
+    info += "**\u3164\u25A0 Disk Usage:** {}%\n".format(psutil.disk_usage('/')[3])
+    info += "**\u3164\u25A0 Current Uptime:** {}\n".format(self.get_uptime())
+    info += "**\u3164\u25A0 Servers:** {:,} ({:,} users)\n".format(len(bot.guilds), len(bot.users))
+    info += "\nWant y'shtola on _your_ server? [Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot).\n"
+    info += "Like this bot? [Consider donating a dollar or two](https://www.patreon.com/yshtolabot)."
+
+    embed.add_field(name ="**__Bot Statistics__**", value = info)
+    embed.set_footer(text = "Use {}help to produce a list of commands".format(ctx.prefix))
+    await ctx.send(embed = embed)
+
+  def get_uptime(self):
+    uptime = timedelta(seconds = time.time() - self.time_alive)
+    uptime = datetime(1,1,1) + uptime
+    return "{}d {}h {}m {}s".format(uptime.day-1, uptime.hour, uptime.minute, uptime.second)
 
 
 def setup(bot):
