@@ -15,36 +15,35 @@ class Poll(commands.Cog):
         "<:poll_gray:603005956883873852>"]
 
   # polling!
-  @commands.command(aliases = ["vote"], description = "Start a poll.")
+  @commands.command(aliases = ["vote"], description = "Start a poll. You can leave options blank in order to start a Yes/No vote instead.")
   async def poll(self, ctx, *, options: str = "None"):
     options = options.split(";")
     topic = options.pop(0)
-    if len(options) < 2 or len(options) > 8:
-      await ctx.send(embed = discord.Embed(title = "", description = "You can create a poll by using `{}poll <topic;option 1;option 2;...>`. You need at least **2** (at most **8** options) to choose from.".format(ctx.prefix)))
+    if topic is "None" or len(options) == 1 or len(options) > 8:
+      await ctx.send(embed = discord.Embed(title = "", description = "You can create a poll by using `{}poll <topic;option 1;option 2;...>`. Leave options blank if you want to start a Yes/No vote.".format(ctx.prefix)))
     else:
       embed = discord.Embed(title = "**Poll started!**", description = "Started by {}".format(ctx.author.mention))
 
-      # populating choices
-      choices = []
-      for i in range (0, len(options)):
-        choice_line = self.num[i] + " "+ options[i]
-        choices.append(choice_line)
-      embed.add_field(name = "**__{}__**".format(topic), value = "\n".join(choices))
-      embed.set_thumbnail(url = "https://cdn4.iconfinder.com/data/icons/universal-icons-4/512/poll-512.png")
+      if len(options) != 0:
+        choices = []
+        for i in range (0, len(options)):
+          choice_line = self.num[i] + " "+ options[i]
+          choices.append(choice_line)
+        embed.add_field(name = "**__{}__**".format(topic), value = "\n".join(choices))
+        embed.set_thumbnail(url = "https://cdn4.iconfinder.com/data/icons/universal-icons-4/512/poll-512.png")
+        poll_msg = await ctx.send(embed = embed)
 
-      poll_msg = await ctx.send(embed = embed)
+        # adding reactions
+        for i in range (0, len(options)):
+          await poll_msg.add_reaction(self.num[i])
 
-      # adding reactions
-      for i in range (0, len(options)):
-        await poll_msg.add_reaction(self.num[i])
+      else:
+        embed.add_field(name = "**__{}__**".format(topic), value = "Vote yes or no below.")
+        embed.set_thumbnail(url = "https://cdn4.iconfinder.com/data/icons/universal-icons-4/512/poll-512.png")
+        poll_msg = await ctx.send(embed = embed)
 
-
-  @commands.command(description = "test")
-  async def get_msg(self, ctx, msg_id):
-    await ctx.send(msg_id)
-    message = await ctx.channel.fetch_message(msg_id)
-    for emoji in message.reactions:
-      await ctx.send(emoji)
+        await poll_msg.add_reaction("<:agree:603662870567190597>")
+        await poll_msg.add_reaction("<:disagree:603662870365995019>")
 
 def setup(bot):
   bot.add_cog(Poll(bot))
