@@ -26,6 +26,23 @@ class General(commands.Cog):
     embed = discord.Embed(title = "", description = "Hi, {}! :wave:".format(ctx.author.mention))
     await ctx.send(embed = embed)
 
+  # repeats a message
+  @commands.command(aliases = ["me", "say"], description = "Repeats a given message.")
+  async def echo(self, ctx, *, message):
+    await ctx.send(embed = discord.Embed(title = "", description = message, color = ctx.author.color))
+
+
+  # makes bot react to a message
+  @commands.is_owner()
+  @commands.command(description = "Adds a reaction to a given message.")
+  async def addreaction(self, ctx, msg_id, emoji):
+    msg = await ctx.fetch_message(int(msg_id))
+    try:
+      await msg.add_reaction(str(emoji))
+    except:
+      await ctx.send(embed = discord.Embed(title = "**Error!**", description = "{} is not a valid emoji.".format(emoji)))
+
+
   # rates a user's nickname
   @commands.command(description = "Rate a username!")
   async def nickometer(self, ctx, *, user: discord.Member = None):

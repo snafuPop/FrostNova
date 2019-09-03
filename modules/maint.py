@@ -90,21 +90,36 @@ class Maint(commands.Cog):
       await self.bot.user.edit(username = new_name)
       await ctx.send(embed = discord.Embed(title = "", description = "Changed my name from **{}** to **{}**".format(original_name, bot.user.name)))
 
-  @commands.has_permissions(administrator = True)
-  @commands.command(description = "Changes the server's custom prefix for this bot. Must have administrator privileges.")
+  @commands.is_owner()
+  @commands.command(hidden = True, description = "Causes the bot to leave the server.")
+  async def leave(self, ctx):
+    try:
+      await ctx.guild.leave
+    except:
+      embed = discord.Embed(title = "", descritpion = "だが断る。")
+      embed.set_image(url = "https://i.kym-cdn.com/photos/images/original/001/178/131/588.gif")
+      await ctx.send(embed = embed)
+
+  @commands.command(description = "Changes the server's custom prefix for this bot. Must have guild modification privileges.")
   async def prefix(self, ctx, prefix: str = None):
+    if not ctx.author.guild_permissions.manage_guild:
+      await ctx.send(embed = discord.Embed(title = "**You don't have permission to do this.**", description = "You need to be able to change server settings in order to change my prefix."))
+      return
     with open("/home/snafuPop/yshtola/_config/settings.json") as json_data:
       settings = json.load(json_data)
     guild_id = str(ctx.guild.id)
     if prefix is None:
       current_prefix = settings["PREFIXES"][guild_id] if guild_id in settings["PREFIXES"] else "!"
-      await ctx.send(embed = discord.Embed(title = "**Current server prefix:** `{}`".format(current_prefix), description = "You can set a custom prefix for this server with `{}prefix <prefix>`, {}.".format(ctx.prefix, ctx.author.mention)))
+      embed = discord.Embed(title = "**Current server prefix:** `{}`".format(current_prefix), description = "You can set a custom prefix for this server with `{}prefix <prefix>`, {}.".format(ctx.prefix, ctx.author.mention))
+      embed.set_footer(text = "You can place an underscore at the end of a prefix to signify a space.")
+      await ctx.send(embed = embed)
     else:
+      if prefix != "_" and prefix.endswith("_"):
+        prefix = prefix[:-1] + " "
       settings["PREFIXES"][guild_id] = prefix
       with open("/home/snafuPop/yshtola/_config/settings.json", "w") as json_out:
         json.dump(settings, json_out, indent = 2)
       await ctx.send(embed = discord.Embed(title = "Prefix successfully changed!", description = "I've set the prefix for this server to `{}`, {}.".format(prefix, ctx.author.mention)))
-
 
 def setup(bot):
   bot.add_cog(Maint(bot))
