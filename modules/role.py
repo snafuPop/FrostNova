@@ -33,6 +33,7 @@ class Roles(commands.Cog):
         #if payload.event_type is "REACTION_REMOVE":
         #  await user.remove_roles(role)
 
+
   @commands.Cog.listener()
   async def on_raw_reaction_remove(self, payload):
     if str(payload.guild_id) in self.cache:
@@ -43,15 +44,36 @@ class Roles(commands.Cog):
         await user.remove_roles(role)
 
   @commands.command(description = "Gets a list of a server's roles and their IDs.")
-  async def server_roles(self, ctx):
+  async def roles(self, ctx):
     role_list = ""
     for role in ctx.guild.roles:
       if role.name is not "@everyone":
         role_list = role_list + "**{}**: ".format(role.name) + str(role.id) + "\n"
     await ctx.send(embed = discord.Embed(title = "**{}'s Roles**".format(ctx.guild.name), description = role_list))
 
-  @commands.command(description = "Add a role message to be stored. Role messages allow you to let members assign their own roles using reactions.")
-  async def role_msg(self, ctx, *, message: str = "Use the reactions below to assign yourself a role!"):
+  @commands.command(aliases = ["rolemsg"], description = "Manages the server's role message. You must have guild managment permissions to do this.")
+  async def role_msg(self, ctx, action: str = None, *, message: str = "Use the reactions below to assign yourself a role!"):
+    if (action == "create"):
+      await self.create_role_msg(ctx, message)
+    if (action == "delete"):
+      await self.delete_role_msg(ctx)
+    if (action == "edit"):
+      await self.edit_role_msg(ctx, message)
+    if (action == "add"):
+      args = message.split(" ")
+      emoji_name = args[0]
+      role_id = args[1]
+      await self.add_role_reaction(ctx, emoji_name, role_id)
+    else:
+      embed = discord.Embed(title = "", description = "As a moderator, you can use `{}role_msg <action>` to modify the server's role message.".format(ctx.prefix))
+      embed.add_field(name = "**Create**", value = "Creates the role message for the server. Type the desired message in the `<action>` field. Only one can be active at a time.")
+      embed.add_field(name = "**Delete**", value = "Deletes the role message for the server.")
+      embed.add_field(name = "**Edit**", value = "Edits the role message for the server. Type the desired message in the `<action>` field.")
+      embed.add_field(name = "**Add**", value = "Adds a reaction to the role message. Use `{}role_msg add <emoji_name> <role_id>`.".format(ctx.prefix))
+      await ctx.send(embed = embed)
+
+
+  async def create_role_msg(self, ctx, message: str = "Use the reactions below to assign yourself a role!"):
     if not ctx.author.guild_permissions.manage_guild:
       await ctx.send(embed = discord.Embed(title = "**You don't have permission to do this.**", description = "You need to be able to change server settings in order to create a role message."))
       return
@@ -66,7 +88,6 @@ class Roles(commands.Cog):
     self.update_roles(cache)
 
 
-  @commands.command(description = "Deletes the server's role message.")
   async def delete_role_msg(self, ctx):
     if not ctx.author.guild_permissions.manage_guild:
       await ctx.send(embed = discord.Embed(title = "**You don't have permission to do this.**", description = "You need to be able to change server settings in order to delete a role message."))
@@ -83,8 +104,7 @@ class Roles(commands.Cog):
     await ctx.send(embed = discord.Embed(title = "", description = "Successfully deleted this server's role message."))
 
 
-  @commands.command(description = "Edits the server's role message.s")
-  async def edit_role_msg(self, ctx, *, message: str = "Use the reactions below to assign yourself a role!"):
+  async def edit_role_msg(self, ctx, message: str = "Use the reactions below to assign yourself a role!"):
     if not ctx.author.guild_permissions.manage_guild:
       await ctx.send(embed = discord.Embed(title = "**You don't have permission to do this.**", description = "You need to be able to change server settings in order to create a role message."))
       return
@@ -97,7 +117,6 @@ class Roles(commands.Cog):
     await to_be_edited.edit(embed = role_msg)
 
 
-  @commands.command(description = "Adds a role reaction to the server's role message.")
   async def add_role_reaction(self, ctx, emoji: str = None, role_id: int = -1):
     if not ctx.author.guild_permissions.manage_guild:
       await ctx.send(embed = discord.Embed(title = "**You don't have permission to do this.**", description = "You need to be able to change server settings in order to modify a role message."))
@@ -117,7 +136,6 @@ class Roles(commands.Cog):
     cache = self.cache
     cache[str(ctx.guild.id)]["reactions"][str(emoji)] = int(role_id)
     self.update_roles(cache)
-
 
 
 
