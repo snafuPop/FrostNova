@@ -10,6 +10,17 @@ from titlecase import titlecase
 class Witchy(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
+    self.major_arcana = ["the fool", "the magician", "the high priestess", "the empress", "the emperor", "the hierophant", "the lovers", "the chariot", "strength", "the hermit", "wheel of fortune", "justice", "the hanged man", "death", "temperance", "the devil", "the tower", "the star", "the moon", "the sun", "judgement", "the world"]
+    self.minor_arcana = self.create_deck()
+
+  def create_deck(self):
+    deck = []
+    card_type = ["cups", "swords", "wands", "pentacles"]
+    card_num = ["king", "queen", "knight", "page", "ten", "nine", "eight", "seven", "six", "five", "four", "three", "two", "ace"]
+    for a_type in card_type:
+      for a_num in card_num:
+        deck.append(a_num + " of " + a_type)
+    return deck
 
   def get_8ball(self):
     # returns a random 8-ball response and a color representing its polarity
@@ -37,16 +48,11 @@ class Witchy(commands.Cog):
     return [polarity, reading]
 
   def get_card(self):
-    # returns a random major arcana and 3 random minor arcana
-
     spread = []
-    major_arcana = ["the fool", "the magician", "the high priestess", "the empress", "the emperor", "the hierophant", "the lovers", "the chariot", "strength", "the hermit", "wheel of fortune", "justice", "the hanged man", "death", "temperance", "the devil", "the tower", "the star", "the moon", "the sun", "judgement", "the world"]
-    minor_arcana = ["king of cups", "queen of cups", "knight of cups", "page of cups", "ten of cups", "nine of cups", "eight of cups", "seven of cups", "six of cups", "five of cups", "four of cups", "three of cups", "two of cups", "ace of cups", "king of swords", "queen of swords", "knight of swords", "page of swords", "ten of swords", "nine of swords", "eight of swords", "seven of swords", "six of swords", "five of swords", "four of swords", "three of swords", "two of swords", "ace of swords", "king of wands", "queen of wands", "knight of wands", "page of wands", "ten of wands", "nine of wands", "eight of wands", "seven of wands", "six of wands", "five of wands", "four of wands", "three of wands", "two of wands", "ace of wands", "king of pentacles", "queen of pentacles", "knight of pentacles", "page of pentacles", "ten of pentacles", "nine of pentacles", "eight of pentacles", "seven of pentacles", "six of pentacles", "five of pentacles", "four of pentacles", "three of pentacles", "two of pentacles", "ace of pentacles"]
-
-    # appends major arcana
-    spread.append(choice(major_arcana))
+    spread.append(choice(self.major_arcana))
 
     # appends 3 random minor arcana
+    minor_arcana = self.minor_arcana
     for i in range (3):
       spread.append(minor_arcana.pop(randint(0,len(minor_arcana))))
 
