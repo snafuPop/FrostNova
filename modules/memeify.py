@@ -26,12 +26,18 @@ class Memeify(commands.Cog):
     if message is None:
       await ctx.send(embed = discord.Embed(title = "", description = "You can show off some truly awful code using `{}badcode <text>`.".format(ctx.prefix)))
       return
-
     if message.startswith("```"):
-      message = message.replace("```", "")
       message = message.split("\n", 1)[1]
-      
-    await ctx.send(file = discord.File(fp = self.make_image("comsci.png", message, [430,25], [0,0,0,255], "FantasqueSansMono-Regular.ttf", 20), filename = "badcode.png"))
+      message = message.replace("```", "")
+    await ctx.send(file = discord.File(fp = self.make_image("comsci.png", message, [430, 25], [0, 0, 0, 255], "FantasqueSansMono-Regular.ttf", 20), filename = "badcode.png"))
 
+  @commands.command(aliases = ["jesus"], description = "Preach some truth.")
+  async def preach(self, ctx, *, message: str = None):
+    if message is None:
+      await ctx.send(embed = discord.Embed(title = "", description = "Preach some truth using `{}preach <text>`.".format(ctx.prefix)))
+      return
+    message = textwrap.fill(message, width = 14)
+    await ctx.send(file = discord.File(fp = self.make_image("jesus.png", message, [165, 175], [0, 0, 0, 255], "FantasqueSansMono-Regular.ttf", 25), filename = "jesus.png"))
+  
 def setup(bot):
   bot.add_cog(Memeify(bot))
