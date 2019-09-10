@@ -30,7 +30,7 @@ class Maint(commands.Cog):
         embed = discord.Embed(title = "", description = "**{}** could not be unloaded. Check the terminal and the message below for more information.".format(module))
         embed.add_field(name = type(e).__name__, value = e)
       else:
-        embed = discord.Embed(title = "", description = "**{}** was unloaded successfully.".format(module))
+        embed = discord.Embed(title = "", description = ":eject: **{}** was unloaded successfully.".format(module))
         print("\n\n{} was unloaded.".format(module))
         print("--------------------------------------------------------")
     await ctx.send(embed = embed)
@@ -49,7 +49,7 @@ class Maint(commands.Cog):
         embed = discord.Embed(title = "", description = "**{}** could not be loaded. Check the terminal and the message below for more information.".format(module))
         embed.add_field(name = type(e).__name__, value = e)
       else:
-        embed = discord.Embed(title = "", description = "**{}** was loaded successfully.".format(module))
+        embed = discord.Embed(title = "", description = ":record_button: **{}** was loaded successfully.".format(module))
         print("\n\n{} was loaded.".format(module))
         print("--------------------------------------------------------")
     await ctx.send(embed = embed)
@@ -68,7 +68,7 @@ class Maint(commands.Cog):
         embed = discord.Embed(title = "", description = "**{}** could not be reloaded. Check the terminal and the message below for more information.".format(module))
         embed.add_field(name = type(e).__name__, value = e)
       else:
-        embed = discord.Embed(title = "", description = "**{}** was reloaded successfully.".format(module))
+        embed = discord.Embed(title = "", description = ":repeat: **{}** was reloaded successfully.".format(module))
         print("\n\n{} was reloaded.".format(module))
         print("--------------------------------------------------------")
     await ctx.send(embed = embed)

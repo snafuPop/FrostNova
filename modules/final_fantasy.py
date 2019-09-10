@@ -21,6 +21,7 @@ class Final_Fantasy(commands.Cog):
 
   @commands.command(aliases = ["log"], description = "Grabs some information about a player from FFLogs")
   async def fflogs(self, ctx, *args):
+    await ctx.trigger_typing()
     if len(args) != 3:
       await ctx.send(embed = discord.Embed(title = "", description = "You can request information about someone's FFLogs by using `{}fflogs <first-name> <last-name> <server>`, {}.".format(ctx.prefix, ctx.author.mention)))
       return

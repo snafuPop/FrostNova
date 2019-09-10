@@ -43,46 +43,6 @@ class General(commands.Cog):
       await ctx.send(embed = discord.Embed(title = "**Error!**", description = "{} is not a valid emoji.".format(emoji)))
 
 
-  # rates a user's nickname
-  @commands.command(description = "Rate a username!")
-  async def nickometer(self, ctx, *, user: discord.Member = None):
-    if user is None:
-      user = ctx.author
-    rating = 100
-    marks = ""
-
-    # loss for generic user ID
-    if user.discriminator in ["0000", "0001", "6969", "4200", "9999"]:
-      marks += "\u3164**-50** Edgy discriminator ({})\n".format(user.discriminator)
-      rating -= 50
-
-    # loss for weeb
-    if any(i in user.display_name.lower() for i in ["chan", "sama", "hime", "kitsune", "tsuki", "neko", "senpai"]):
-      marks += "\u3164**-40** Weeaboo\n"
-      rating -= 40
-
-    # loss for number in name
-    if any(char.isdigit() for char in user.display_name):
-      marks += "\u3164**-20** Numbers in username\n"
-      rating -= 20
-
-    # loss for non single-word name
-    if " " in user.display_name:
-      marks += "\u3164**-10** Space in name\n"
-      rating -= 10
-
-    # loss for name ending with an "a"
-    if user.display_name.lower().endswith("a"):
-      marks += "\u3164**-10** Name ends with an \"a\"\n"
-      rating -= 10
-
-    if marks == "":
-      marks = "\u3164No negative marks! Good job!"
-
-    embed = discord.Embed(title = "**Nickometer Rating**", description = "Rating {}'s name".format(user.mention), color = user.color)
-    embed.add_field(name = "**Overall Rating:** {}".format(rating), value = marks)
-    await ctx.send(embed = embed)
-
   # hugs another user
   @commands.command(pass_context = True, description = "Hugs a user")
   async def hug(self, ctx, *, user: discord.Member = None):

@@ -97,8 +97,11 @@ class Roles(commands.Cog):
       return
 
     cache = self.cache
-    to_be_deleted = await ctx.fetch_message(int(cache[str(ctx.guild.id)]["message_id"]))
-    await to_be_deleted.delete()
+    try:
+      to_be_deleted = await ctx.fetch_message(int(cache[str(ctx.guild.id)]["message_id"]))
+      await to_be_deleted.delete()
+    except:
+      print("Message was already deleted?", flush = True)
     cache.pop(str(ctx.guild.id))
     self.update_roles(cache)
     await ctx.send(embed = discord.Embed(title = "", description = "Successfully deleted this server's role message."))

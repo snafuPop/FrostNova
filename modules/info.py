@@ -89,7 +89,6 @@ class Info(commands.Cog):
 
     currency_name = user_json.get_currency_name()
     stats = []
-    stats.append("**Successful Raids:** {:,}".format(user_key["raids"]))
     stats.append("**Money From Adventures:** {:,} {}".format(user_key["loot_earnings"], currency_name))
     stats.append("**Slot Winnings:** {:,} {}".format(user_key["slot_winnings"], currency_name))
     stats.append("**Pennies Stolen:** {:,} {}".format(user_key["stolen_money"], currency_name))
