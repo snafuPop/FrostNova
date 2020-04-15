@@ -39,5 +39,12 @@ class Memeify(commands.Cog):
     message = textwrap.fill(message, width = 14)
     await ctx.send(file = discord.File(fp = self.make_image("jesus.png", message, [165, 175], [0, 0, 0, 255], "FantasqueSansMono-Regular.ttf", 25), filename = "jesus.png"))
   
+  @commands.command(description = "uhuhuhuhuhuhuhuh")
+  async def sans(self, ctx, *, message: str = None):
+    if message is None:
+      message = "I think you messed up. You can make me say something using {}sans <text>.".format(ctx.prefix)
+    message = textwrap.fill(message, width = 30)
+    await ctx.send(file = discord.File(fp = self.make_image("sans.png", message, [117, 30], [255, 255, 255, 255], "UndertaleSans.ttf", 24), filename = "sans.png"))
+    
 def setup(bot):
   bot.add_cog(Memeify(bot))
