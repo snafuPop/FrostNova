@@ -23,6 +23,8 @@ class Adventure(commands.Cog):
 
       # incrementing text posts
       user_dict[str(ctx.author.id)]["text_posts"] = user_dict[str(ctx.author.id)]["text_posts"] + 1
+      if user_dict[str(ctx.author.id)]["username"] != ctx.author.name:
+        user_dict[str(ctx.author.id)]["username"] = ctx.author.name
       user_json.update(user_dict)
 
 
