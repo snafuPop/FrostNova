@@ -140,4 +140,6 @@ def interpret_frac(user, money):
     return get_balance(user)//4
   if money == "tenth":
     return get_balance(user)//10
+  if money == "hundredth":
+    return get_balance(user)//100
   return
