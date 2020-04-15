@@ -138,9 +138,10 @@ class Slots(commands.Cog):
     payout_message.add_field(name = "{lemon.value} {lemon.value} {lemon.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 40", inline = True)
     payout_message.add_field(name = "{seven.value} {seven.value} {seven.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 30")
     payout_message.add_field(name = "{money.value} {money.value} {money.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 10", inline = True)
-    payout_message.add_field(name = "{cherry.value} {cherry.value} {cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 10")
-    payout_message.add_field(name = "{cherry.value} {cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 5", inline = True)
-    payout_message.add_field(name = "{cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 2")
+    payout_message.add_field(name = "{bell.value} {bell.value} {bell.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 10")
+    payout_message.add_field(name = "{cherry.value} {cherry.value} {cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 10", inline = True)
+    payout_message.add_field(name = "{cherry.value} {cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 5")
+    payout_message.add_field(name = "{cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 2", inline = True)
     await ctx.author.send(embed = payout_message)
 
 def setup(bot):
