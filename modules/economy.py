@@ -114,19 +114,19 @@ class Economy(commands.Cog):
 
 
   # attempts to rob a user
-  @commands.command(description = "Attempt to rob another user.")
+  @commands.command(description = "Attempt to rob another user.", cooldown_after_parsing = True)
   @commands.cooldown(1, 1800, commands.BucketType.user)
   async def rob(self, ctx, user: discord.Member = None, money: str = None):
     # checks if the user is trying to rob themselves
     money = user_json.interpret_frac(user, money)
-    if ctx.author == user:
+    if money == None or user is None:
+      embed = discord.Embed(title = "", description = "Rob another user with `{}rob <user> <number of {}>`".format(ctx.prefix, user_json.get_currency_name(), user_json.get_currency_name()))
+      ctx.command.reset_cooldown(ctx)
+    elif ctx.author == user:
       embed = discord.Embed(title = "", description = "You can't rob yourself, {}!".format(ctx.author.mention))
       ctx.command.reset_cooldown(ctx)
     elif not user_json.is_registered(user):
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `!register`".format(user.mention))
-      ctx.command.reset_cooldown(ctx)
-    elif money == None or user is None:
-      embed = discord.Embed(title = "", description = "Rob another user with `{}rob <user> <number of {}>`".format(ctx.prefix, user_json.get_currency_name(), user_json.get_currency_name()))
       ctx.command.reset_cooldown(ctx)
     elif money <= 0:
       embed = discord.Embed(title = "", description = "You need to steal more than 0 {}, {}.".format(user_json.get_currency_name(), user.mention))
