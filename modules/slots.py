@@ -104,8 +104,8 @@ class Slots(commands.Cog):
 
     # checking for a payout
     reel_key = [reel[0][3], reel[1][3], reel[2][3]]
-    if reel_key[0] == reel_key[1] == reel_key[2]:
-      payout = self.payout[str(reel_key[0])]
+    if (reel_key[0] == reel_key[1] == reel_key[2]) and reel_key[0] != "no_win":
+      payout = self.payout["3cherry"] if reel_key[0] == "cherry" else self.payout[str(reel_key[0])]
     elif (reel_key[0] == reel_key[1] and reel_key[0] == "cherry") or (reel_key[1] == reel_key[2] and reel_key[1] == "cherry"):
       payout = self.payout["2cherry"]
     elif reel_key[0] == "cherry" or reel_key[1] == "cherry" or reel_key[2] == "cherry":
