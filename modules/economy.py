@@ -82,7 +82,8 @@ class Economy(commands.Cog):
               "level": 1,
               "exp": 0,
               "raids": 0,
-              "loot_earnings": 0}
+              "loot_earnings": 0,
+              "item_level": 0}
       user_dict[str(ctx.author.id)] = user
       user_json.update(user_dict)
       embed = discord.Embed(title = "", description = "You're now registered on my database, {}!".format(ctx.message.author.mention))
@@ -139,7 +140,7 @@ class Economy(commands.Cog):
       ctx.command.reset_cooldown(ctx)
     else:
       # makes it so that the more money you are trying to steal, the harder it is to be successful
-      success_rate = int(math.ceil(100-((money**1.774)/user_json.get_balance(user))*.94))
+      success_rate = int(math.ceil(100-((money**1.3874)/user_json.get_balance(user))*.98))
 
       # makes it so that it's never guaranteed to work
       if success_rate >= 90:

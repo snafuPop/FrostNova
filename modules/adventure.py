@@ -152,6 +152,89 @@ class Adventure(commands.Cog):
     await ctx.author.send(embed = embed)
 
 
+  # helper function for calculating the cost of upgrading an item
+  def calculate_item_upgrade(self, level):
+    return math.ceil(level**2.79+100)
+
+
+  @commands.command(description = "Upgrades your item level.")
+  async def upgrade(self, ctx, *, num_of_upgrades: str = None):
+    if not user_json.is_registered(ctx.author):
+      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the sytem, {}. Try `{}register`".format(ctx.author.mention, ctx.prefer))
+      await ctx.send(embed = embed)
+      return
+
+    user_dict = user_json.get_users()
+    user_level = user_dict[str(ctx.author.id)]["level"]
+
+    # user level isn't high enough to perform upgrades
+    if user_level < 30:
+      embed = discord.Embed(title = "**Level Too Low!**", description = "Hmmm, it doesn't seem like you're strong enough to handle an upgraded weapon. Come back when you're at least level 30.", color = ctx.author.color)
+      embed.set_footer(text = "(You're currently level {})".format(user_level))
+      embed.set_thumbnail(url = "https://wiki.mabinogiworld.com/images/2/25/Ferghus.png")
+      await ctx.send(embed = embed)
+      return
+
+    user_item_level = user_dict[str(ctx.author.id)]["item_level"]
+    user_balance = user_dict[str(ctx.author.id)]["balance"]
+
+    # checks the cost of upgrading
+    if num_of_upgrades == None:
+      embed = discord.Embed(title = "**Item Upgrading**", description = "Are you interested in upgrading your item's level, {}? Right now your item level is {}, but I can increase it for you, for a small fee of course. If you'd like me to upgrade your item once, use `{}upgrade once`. Or, I can upgrade your item as many times as I can with `{}upgrade max`.".format(ctx.author.mention, user_item_level, ctx.prefix, ctx.prefix))
+      embed.add_field(name = "**Your Current Balance:**", value = "{:,} {}".format(user_balance, user_json.get_currency_name()))
+      embed.add_field(name = "**Cost of One Upgrade:**", value = "{:,} {}".format(self.calculate_item_upgrade(user_item_level+1), user_json.get_currency_name()))
+      embed.set_thumbnail(url = "https://wiki.mabinogiworld.com/images/2/25/Ferghus.png")
+      await ctx.send(embed = embed)
+      return
+
+    # calculate cost of upgrades
+    elif num_of_upgrades in ["once", "max"]:
+      upgrade_cost = 0
+      if num_of_upgrades == "once":
+        upgrade_cost = self.calculate_item_upgrade(user_item_level+1)
+        if upgrade_cost > user_balance:
+          embed = discord.Embed(title = "**Item Upgrading**", description = "Sorry, {}, I don't give credit! Come back when you're a little... mmm... richer!".format(ctx.author.mention))
+          embed.add_field(name = "**Your Current Balance:**", value = "{:,} {}".format(user_balance, user_json.get_currency_name()))
+          embed.add_field(name = "**Cost of One Upgrade:**", value = "{:,} {}".format(upgrade_cost, user_json.get_currency_name()))
+          embed.set_thumbnail(url = "https://wiki.mabinogiworld.com/images/2/25/Ferghus.png")
+          await ctx.send(embed = embed)
+          return
+        else:
+          final_item_level = user_item_level + 1
+          final_balance = user_balance - upgrade_cost
+      else:
+        i = 1
+        while True:
+          add_upgrade_cost = self.calculate_item_upgrade(user_item_level+i)
+          if upgrade_cost + add_upgrade_cost <= user_balance:
+            upgrade_cost += self.calculate_item_upgrade(user_item_level+i)
+            i += 1
+          else:
+            break
+        final_item_level = user_item_level + i
+        final_balance = user_balance - upgrade_cost
+
+      # sending the final message
+      user_dict[str(ctx.author.id)]["item_level"] = final_item_level
+      user_dict[str(ctx.author.id)]["balance"] = final_balance
+      embed = discord.Embed(title = "**Item Upgrading**", description = "There you go, {}! Your item is now level **{:,}**.".format(ctx.author.mention, final_item_level))
+      embed.add_field(name = "**Your Original Balance:**", value = "{:,} {}".format(user_balance, user_json.get_currency_name()))
+      embed.add_field(name = "**Your Current Balance:**", value = "{:,} {}".format(final_balance, user_json.get_currency_name()))
+      embed.add_field(name = "**Total Upgrade Costs:**", value = "{:,} {}".format(upgrade_cost, user_json.get_currency_name()))
+      embed.set_thumbnail(url = "https://wiki.mabinogiworld.com/images/2/25/Ferghus.png")
+      await ctx.send(embed = embed)
+      user_json.update(user_dict)
+      return
+
+    else:
+      embed = discord.Embed(title = "**Item Upgrading**", description = "I'm not quite sure what you said there, {}. If you'd like me to upgrade your item once, use `{}upgrade once`. Or, I can upgrade your item as many times as I can with `{}upgrade max`.".format(ctx.author.mention, ctx.prefix, ctx.prefix))
+      await ctx.send(embed = embed)
+      return
+
+
+
+
+
   @adventure.error
   async def cd_error(self, ctx, error):
     if isinstance(error, commands.CommandOnCooldown):

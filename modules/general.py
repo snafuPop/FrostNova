@@ -57,8 +57,8 @@ class General(commands.Cog):
   async def leaderboard(self, ctx):
     embed = discord.Embed(title = ":trophy: Leaderboard", description = "Requested by {}".format(ctx.author.mention), color = ctx.author.color)
     self.top_five(embed, 'balance', 'Richest Users')
-    self.top_five(embed, 'text_posts', 'Chattiest Users')
     self.top_five(embed, 'level', 'Highest Levels')
+    self.top_five(embed, 'item_level', 'Mightiest Item Levels')
     embed.set_footer(text = "Only registered users are tracked. Type {}register to start tracking your records (and more)!".format(ctx.prefix))
     await ctx.send(embed = embed)
 
@@ -71,7 +71,7 @@ class General(commands.Cog):
     top_users = ""
     for i in range(len(medals)):
       top_users += "\u3164{} **{}**: {:,}\n".format(medals[i], users[user_list[i]]['username'], users[user_list[i]][parameter])
-    embed.add_field(name = "**__{}__**".format(title), value = top_users, inline = True)
+    embed.add_field(name = "**__{}__**".format(title), value = top_users, inline = False)
 
 
   # byork
@@ -106,7 +106,7 @@ class General(commands.Cog):
       return
     new_line = ""
     for character in input:
-      new_line += ":b:" if character in "bp" or (character.isalpha() and character not in "aeioug" and randint(1, 10) == 10) else character
+      new_line += ":b:" if character in "bp" or (character.isalpha() and character not in "aeioug" and randint(1, 4) == 4) else character
     new_line.replace("gg", ":b::b:")
     await ctx.send(embed = discord.Embed(title = "", description = "{}\n{}".format(ctx.author.mention, new_line), color = ctx.author.color))
 
@@ -122,7 +122,7 @@ class General(commands.Cog):
   # prints out a list of commands
   @commands.command(hidden = True, description = "Prints a list of commands and what they do")
   async def help(self, ctx, *, cog_name: str = ""):
-    embed = discord.Embed(title = "**Help Menu**")
+    embed = discord.Embed(title = "**Help Menu**", description = "Type `!help <cog_name>` to get a list of commands.")
     if cog_name.title() in bot.cogs:
       self.get_list_of_commands(embed, cog_name)
     else:

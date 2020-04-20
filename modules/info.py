@@ -82,13 +82,14 @@ class Info(commands.Cog):
 
     embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "***Level {:,} {}*** (**{:,}**/{:,} exp)".format(user_key["level"], titlecase(str(user.top_role)), user_key["exp"], user_json.get_req_exp(user, user_dict)), color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
-    embed.add_field(name = "**Text Posts:**", value = "{:,} posts".format(user_key["text_posts"]), inline = True)
-    embed.add_field(name = "**Balance:**", value = "{:,} {}".format(user_key["balance"], user_json.get_currency_name()), inline = True)
     embed.add_field(name = "**Joined Discord on:**", value = str(user.created_at.strftime("%b %d, %Y")))
     embed.add_field(name = "**Joined Server on:**", value = str(user.joined_at.strftime("%b %d, %Y")))
 
     currency_name = user_json.get_currency_name()
     stats = []
+    stats.append("**Text Posts:** {:,}".format(user_key["text_posts"]))
+    stats.append("**Current Item Level:** {:,}".format(user_key["item_level"]))
+    stats.append("**Balance:** {:,} {}".format(user_key["balance"], currency_name))
     stats.append("**Money From Adventures:** {:,} {}".format(user_key["loot_earnings"], currency_name))
     stats.append("**Slot Winnings:** {:,} {}".format(user_key["slot_winnings"], currency_name))
     stats.append("**Pennies Stolen:** {:,} {}".format(user_key["stolen_money"], currency_name))
