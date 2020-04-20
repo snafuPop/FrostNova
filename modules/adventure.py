@@ -211,6 +211,13 @@ class Adventure(commands.Cog):
             i += 1
           else:
             break
+        if upgrade_cost == 0:
+          embed = discord.Embed(title = "**Item Upgrading**", description = "Sorry, {}, I don't give credit! Come back when you're a little... mmm... richer!".format(ctx.author.mention))
+          embed.add_field(name = "**Your Current Balance:**", value = "{:,} {}".format(user_balance, user_json.get_currency_name()))
+          embed.add_field(name = "**Cost of One Upgrade:**", value = "{:,} {}".format(upgrade_cost, user_json.get_currency_name()))
+          embed.set_thumbnail(url = "https://wiki.mabinogiworld.com/images/2/25/Ferghus.png")
+          await ctx.send(embed = embed)
+          return
         final_item_level = user_item_level + i
         final_balance = user_balance - upgrade_cost
 
