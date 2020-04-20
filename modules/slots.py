@@ -2,71 +2,90 @@ import discord
 from discord.ext import commands
 from builtins import bot
 import random
-from enum import Enum
 from modules.utils import user_json
-
-# enum-type containing list of all possible symbols
-class Reel_Types(Enum):
-  cherry = "\N{CHERRIES}"
-  bell   = "\N{BELL}"
-  money  = "\N{MONEY WITH WINGS}"
-  seven  = "\N{MONEY BAG}"
-  lemon  = "\N{LEMON}"
-  grape  = "\N{GRAPES}"
-  orange = "\N{TANGERINE}"
-  gun    = "\N{PISTOL}"
-  no_win = "\N{RADIO BUTTON}"
 
 class Slots(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
+    self.reel_strip = ["none", "grape", "bell", "lemon", "cherry", "none", "money", "seven", "none", "cherry", "lemon", "none", "orange", "bell", "seven", "none", "gun", "none", "cherry", "money"]
     self.payout = {
       "gun": {
         "payout": 200,
+        "icon": "\N{PISTOL}",
         "output": "You found Ranger Rod! Your bet was multiplied by 200."
       },
       "orange": {
         "payout": 100,
+        "icon": "\N{TANGERINE}",
         "output": "Three oranges! Your bet was multiplied by 100."
       },
       "grape": {
         "payout": 60,
+        "icon": "\N{GRAPES}",
         "output": "Three grapes! Your bet was multiplied by 60."
       },
       "lemon": {
         "payout": 40,
+        "icon": "\N{LEMON}",
         "output": "Three lemons! Your bet was multiplied by 40."
       },
       "seven": {
         "payout": 30,
+        "icon": "\N{MONEY BAG}",
         "output": "Three moneybags! Your bet was multiplied by 30."
       },
       "money": {
         "payout": 20,
+        "icon": "\N{MONEY WITH WINGS}",
         "output": "Three dollar bills! Your bet was multiplied by 10."
       },
       "bell": {
         "payout": 10,
+        "icon": "\N{BELL}",
         "output": "Three bells! Your bet was mutliplied by 10."
       },
       "3cherry": {
         "payout": 10,
+        "icon": "\N{CHERRIES}",
         "output": "Three cherries! Your bet was multiplied by 10."
       },
       "2cherry": {
         "payout": 5,
+        "icon": "\N{CHERRIES}",
         "output": "Two cherries! Your bet was multiplied by 5."
       },
       "1cherry": {
         "payout": 2,
+        "icon": "\N{CHERRIES}",
+        "output": "One cherry! Your bet was multiplied by 2."
+      },
+      "cherry": {
+        "payout": 2,
+        "icon": "\N{CHERRIES}",
         "output": "One cherry! Your bet was multiplied by 2."
       },
       "none": {
         "payout": 0,
+        "icon": "\N{RADIO BUTTON}",
         "output": "No matches! You lost your bet."
       }
     }
 
+
+  def get_reel_column(self):
+    reel_length = len(self.reel_strip)
+    rand_choice = random.randint(0, reel_length-1)
+    reel_col = []
+    reel_col.append(self.reel_strip[(rand_choice-1)%reel_length])
+    reel_col.append(self.reel_strip[rand_choice])
+    reel_col.append(self.reel_strip[(rand_choice+1)%reel_length])
+    return reel_col
+
+  def get_icon(self, key):
+    return self.payout[key]["icon"]
+
+  def get_payout(self, key):
+    return self.payout[key]["payout"]
 
   # plays slots
   @commands.command(aliases = ["slot"], description = "Play some slots!")
@@ -84,28 +103,27 @@ class Slots(commands.Cog):
 
     # generating reels
     reel = []
-    reel_list = list(Reel_Types)
-    for row in range(3):
-      # to make the slots realistic, each column contains 3 contiguous icons, rather than 3 completely randomly popped ones
-      rand_choice = random.randint(0,len(list(Reel_Types))-1)
-      reel_row = []
-      reel_row.append(reel_list[(rand_choice-1)%len(reel_list)].value)
-      reel_row.append(reel_list[rand_choice].value)
-      reel_row.append(reel_list[(rand_choice+1)%len(reel_list)].value)
-      reel_row.append(reel_list[rand_choice].name)
-      reel.append(reel_row)
+    for row in range(0,3):
+      reel.append(self.get_reel_column())
 
     # starting to create the embed message
     embed = discord.Embed(title = "", description = ctx.author.mention, color = ctx.author.color)
-    embed.add_field(name = "\u3164", value = "{} {} {}\n{} {} {} ⬅\n{} {} {}".format(reel[0][0], reel[1][0], reel[2][0], reel[0][1], reel[1][1], reel[2][1], reel[0][2], reel[1][2], reel[2][2]))
+
+    payout_msg = ""
+    for i in range(0,3):
+      for j in range(0,3):
+        payout_msg += "{} ".format(self.get_icon(reel[j][i]))
+      if i == 1: payout_msg += "⬅"
+      payout_msg += "\n"
+    embed.add_field(name = "\u3164", value = payout_msg)
 
     # grabbing initial information for the final embed message
     initial_balance = user_json.get_balance(ctx.message.author)
 
     # checking for a payout
-    reel_key = [reel[0][3], reel[1][3], reel[2][3]]
-    if (reel_key[0] == reel_key[1] == reel_key[2]) and reel_key[0] != "no_win":
-      payout = self.payout["3cherry"] if reel_key[0] == "cherry" else self.payout[str(reel_key[0])]
+    reel_key = [reel[0][1], reel[1][1], reel[2][1]]
+    if (reel_key[0] == reel_key[1] == reel_key[2]) and reel_key[0] != "none":
+      payout = self.payout["3cherry"] if reel_key[0] == "cherry" else self.payout[reel_key[0]]
     elif (reel_key[0] == reel_key[1] and reel_key[0] == "cherry") or (reel_key[1] == reel_key[2] and reel_key[1] == "cherry"):
       payout = self.payout["2cherry"]
     elif reel_key[0] == "cherry" or reel_key[1] == "cherry" or reel_key[2] == "cherry":
@@ -132,16 +150,11 @@ class Slots(commands.Cog):
   @commands.command(description = "Returns a list of possible payouts")
   async def payouts(self, ctx):
     payout_message = discord.Embed(title = "**Slot Payouts**")
-    payout_message.add_field(name = "{gun.value} {gun.value} {gun.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 200")
-    payout_message.add_field(name = "{orange.value} {orange.value} {orange.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 100", inline = True)
-    payout_message.add_field(name = "{grape.value} {grape.value} {grape.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 60")
-    payout_message.add_field(name = "{lemon.value} {lemon.value} {lemon.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 40", inline = True)
-    payout_message.add_field(name = "{seven.value} {seven.value} {seven.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 30")
-    payout_message.add_field(name = "{money.value} {money.value} {money.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 10", inline = True)
-    payout_message.add_field(name = "{bell.value} {bell.value} {bell.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 10")
-    payout_message.add_field(name = "{cherry.value} {cherry.value} {cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 10", inline = True)
-    payout_message.add_field(name = "{cherry.value} {cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 5")
-    payout_message.add_field(name = "{cherry.value}".format(**Reel_Types.__dict__), value = "Bet \u00d7 2", inline = True)
+    for key in ["gun", "orange", "grape", "lemon", "seven", "money", "bell"]:
+      payout_message.add_field(name = "{0} {0} {0}".format(self.get_icon(key)), value = "Bet \u00d7 {}".format(self.get_payout(key)), inline = True)
+    payout_message.add_field(name = "{0} {0} {0}".format(self.get_icon("cherry")), value = "Bet \u00d7 {}".format(self.get_payout("3cherry")), inline = True)
+    payout_message.add_field(name = "{0} {0}".format(self.get_icon("cherry")), value = "Bet \u00d7 {}".format(self.get_payout("2cherry")), inline = True)
+    payout_message.add_field(name = "{0}".format(self.get_icon("cherry")), value = "Bet \u00d7 {}".format(self.get_payout("1cherry")), inline = True)
     await ctx.author.send(embed = payout_message)
 
 def setup(bot):
