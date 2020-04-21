@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="870" height="550" src="https://i.imgur.com/kkXCoCg.png"><br>
+  <img width="870" height="550" src="https://i.imgur.com/ElNBpK0.png"><br>
 </p>
 
 # yvona Bot
