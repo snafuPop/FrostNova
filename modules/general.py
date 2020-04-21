@@ -59,6 +59,7 @@ class General(commands.Cog):
     self.top_five(embed, 'balance', 'Richest Users')
     self.top_five(embed, 'level', 'Highest Levels')
     self.top_five(embed, 'item_level', 'Mightiest Item Levels')
+    self.top_five(embed, 'damage_dealt', 'Heftiest Damage Dealers')
     embed.set_footer(text = "Only registered users are tracked. Type {}register to start tracking your records (and more)!".format(ctx.prefix))
     await ctx.send(embed = embed)
 
@@ -122,7 +123,7 @@ class General(commands.Cog):
   # prints out a list of commands
   @commands.command(hidden = True, description = "Prints a list of commands and what they do")
   async def help(self, ctx, *, cog_name: str = ""):
-    embed = discord.Embed(title = "**Help Menu**", description = "Type `!help <cog_name>` to get a list of commands.")
+    embed = discord.Embed(title = "**Help Menu**", description = "Type `{}help <cog_name>` to get a list of commands.".format(ctx.prefix))
     if cog_name.title() in bot.cogs:
       self.get_list_of_commands(embed, cog_name)
     else:
