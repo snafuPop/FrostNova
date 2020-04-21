@@ -66,7 +66,7 @@ class Adventure(commands.Cog):
 
     # goes through the dictionary of dungeons and only grabs dungeons whose levels are no more than 4 higher than the player's
     embed = discord.Embed(title = "**Explorable Dungeon List**", description = "**{}'s Current Level:** {:,}".format(ctx.author.mention, user_dict[str(ctx.author.id)]["level"]), color = ctx.author.color)
-    
+
     user_level = user_dict[str(ctx.author.id)]["level"]
     dungeons = self.get_list_of_dungeons(dungeon_dict, user_level)
 
@@ -179,7 +179,7 @@ class Adventure(commands.Cog):
 
   # helper function for calculating the cost of upgrading an item
   def calculate_item_upgrade(self, level):
-    return int(100000*(level**3.32+100))
+    return int(10000*(level**3.32+100))
 
 
 
@@ -379,9 +379,9 @@ class Adventure(commands.Cog):
     result_msg += "**Contribution:** {:,} Damage Dealt ({:.2f}% of Boss's Total HP)\n".format(damage_dealt, (damage_dealt/boss["hp_max"])*100)
     result_msg += "**Remaining HP:** {:,} ({:.2f}% Remaining)\n".format(boss["hp_cur"], boss["hp_cur"]/boss["hp_max"]*100)
     result_msg += "**Bounty Earned:** {:,} {}\n".format(money_earned, user_json.get_currency_name())
-    result_msg += "**EXP Earned:** {:,} exp\n".format(exp_earned) 
+    result_msg += "**EXP Earned:** {:,} exp\n".format(exp_earned)
     embed = discord.Embed(title = "**Raid Results:**", description = "A successful attack against **{}** was performed by {}!\n\n{}".format(boss_name, ctx.author.mention, result_msg), color = ctx.author.color)
-    
+
     # adding extra message
     if was_killed:
       embed.add_field(name = "**{}** was slain!".format(boss_name), value = "Hail to the great warrior {}, who landed the killing blow to **{}**! For their efforts, they have received **{}** from its remains! Long live {}!".format(ctx.author.mention, boss_name, boss["loot"], ctx.author.mention))
