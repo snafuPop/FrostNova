@@ -237,7 +237,7 @@ class Adventure(commands.Cog):
             i += 1
           else:
             break
-        if upgrade_cost == 0:
+        if upgrade_cost <= user_balance:
           embed = discord.Embed(title = "**Item Upgrading**", description = "Sorry, {}, I don't give credit! Come back when you're a little... mmm... richer!".format(ctx.author.mention), color = ctx.author.color)
           embed.add_field(name = "**Your Current Balance:**", value = "{:,} {}".format(user_balance, user_json.get_currency_name()))
           embed.add_field(name = "**Cost of One Upgrade:**", value = "{:,} {}".format(upgrade_cost, user_json.get_currency_name()))
