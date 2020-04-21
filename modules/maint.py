@@ -105,7 +105,7 @@ class Maint(commands.Cog):
     if not ctx.author.guild_permissions.manage_guild:
       await ctx.send(embed = discord.Embed(title = "**You don't have permission to do this.**", description = "You need to be able to change server settings in order to change my prefix."))
       return
-    with open("/home/snafuPop/yshtola/_config/settings.json") as json_data:
+    with open("/home/snafuPop/yvona/_config/settings.json") as json_data:
       settings = json.load(json_data)
     guild_id = str(ctx.guild.id)
     if prefix is None:
@@ -117,7 +117,7 @@ class Maint(commands.Cog):
       if prefix != "_" and prefix.endswith("_"):
         prefix = prefix[:-1] + " "
       settings["PREFIXES"][guild_id] = prefix
-      with open("/home/snafuPop/yshtola/_config/settings.json", "w") as json_out:
+      with open("/home/snafuPop/yvona/_config/settings.json", "w") as json_out:
         json.dump(settings, json_out, indent = 2)
       await ctx.send(embed = discord.Embed(title = "Prefix successfully changed!", description = "I've set the prefix for this server to `{}`, {}.".format(prefix, ctx.author.mention)))
 
