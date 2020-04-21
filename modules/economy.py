@@ -140,7 +140,7 @@ class Economy(commands.Cog):
       ctx.command.reset_cooldown(ctx)
     else:
       # makes it so that the more money you are trying to steal, the harder it is to be successful
-      success_rate = int(math.ceil(100-((money**1.3874)/user_json.get_balance(user))*.98))
+      success_rate = int(100-((money**1.3874)/user_json.get_balance(user))*.98)
 
       # makes it so that it's never guaranteed to work
       if success_rate >= 90:

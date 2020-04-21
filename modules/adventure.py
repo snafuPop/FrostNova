@@ -167,7 +167,7 @@ class Adventure(commands.Cog):
 
   # helper function for calculating the cost of upgrading an item
   def calculate_item_upgrade(self, level):
-    return math.ceil(100000(level**6.94+100))
+    return int(100000*(level**6.94+100))
 
 
 
