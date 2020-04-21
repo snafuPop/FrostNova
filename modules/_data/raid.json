@@ -1,41 +1,37 @@
 {
-  "Glas Gaibhnenn": {
-    "hp_max": 50000000,
-    "hp_cur": 50000000,
-    "defense": 0,
-    "multiplier": 3.2, 
-    "loot": "Bottle of Unending Milk"
-  },
-
-  "Tabhartas": {
-    "hp_max": 300000000,
-    "hp_cur": 300000000,
-    "defense": 25,
-    "multiplier": 5.1,
-    "loot": "Chunk of Ancient Feldspar"
-  },
-
-  "Cromm Cruaich": {
-    "hp_max": 740000000000,
-    "hp_cur": 740000000000,
-    "defense": 50,
-    "multiplier": 7.3,
-    "loot": "Umbral Dragonscale"
-  },
-
-  "Crumena": {
-    "hp_max": 19000000000000,
-    "hp_cur": 19000000000000,
-    "defense": 75,
-    "multiplier": 9.7,
-    "loot": "Infernal Dragon Heart"
-  },
-
   "Claimh Solas": {
+    "defense": 200,
+    "multiplier": 15.4,
     "hp_max": 2300000000000000000,
     "hp_cur": 2300000000000000000,
-    "defense": 100,
-    "multiplier": 15.4,
     "loot": "Brionac"
+  },
+  "Tabhartas": {
+    "defense": 25,
+    "multiplier": 5.1,
+    "hp_max": 300000000,
+    "hp_cur": 299571049,
+    "loot": "Chunk of Ancient Feldspar"
+  },
+  "Cromm Cruaich": {
+    "defense": 70,
+    "multiplier": 7.3,
+    "hp_max": 740000000000,
+    "hp_cur": 740000000000,
+    "loot": "Umbral Dragonscale"
+  },
+  "Glas Gaibhnenn": {
+    "defense": 0,
+    "multiplier": 3.2,
+    "hp_max": 50000000,
+    "hp_cur": 39870759,
+    "loot": "Bottle of Unending Milk"
+  },
+  "Crumena": {
+    "defense": 130,
+    "multiplier": 9.7,
+    "hp_max": 19000000000000,
+    "hp_cur": 19000000000000,
+    "loot": "Infernal Dragon Heart"
   }
 }
