@@ -12,32 +12,32 @@ class InvalidArgs(Exception):
 
 # get dictionary of users
 def get_users():
-  with open("/home/snafuPop/yshtola/modules/_data/users.json") as json_data:
+  with open("/home/snafuPop/yvona/modules/_data/users.json") as json_data:
     users_dict = json.load(json_data)
   return users_dict
 
 
 # get dictionary of dungeons
 def get_dungeons():
-  with open("/home/snafuPop/yshtola/modules/_data/adventure.json") as json_data:
+  with open("/home/snafuPop/yvona/modules/_data/adventure.json") as json_data:
     dungeon_dict = json.load(json_data)
   return dungeon_dict
 
 
 # get dictionary of bosses
 def get_bosses():
-  with open("/home/snafuPop/yshtola/modules/_data/raid.json") as json_data:
+  with open("/home/snafuPop/yvona/modules/_data/raid.json") as json_data:
     raid_dict = json.load(json_data)
   return raid_dict
 
 # updates the dictionary of bosses
 def update_bosses(boss_dict):
-  with open("/home/snafuPop/yshtola/modules/_data/raid.json", "w") as json_out:
+  with open("/home/snafuPop/yvona/modules/_data/raid.json", "w") as json_out:
     json.dump(boss_dict, json_out, indent = 2)
 
 # updates the .json with new values and creates a back-up
 def update(user_dict):
-  with open("/home/snafuPop/yshtola/modules/_data/users.json", "w") as json_out:
+  with open("/home/snafuPop/yvona/modules/_data/users.json", "w") as json_out:
     json.dump(user_dict, json_out, indent = 2)
 
 

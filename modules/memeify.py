@@ -11,9 +11,9 @@ class Memeify(commands.Cog):
 
   # controls making all of the images via PIL and running it thorugh BytesIO to make Discord happy
   def make_image(self, image_name, message, coords, color, font_name, font_size):
-    with Image.open("/home/snafuPop/yshtola/modules/_images/" + image_name) as image:
+    with Image.open("/home/snafuPop/yvona/modules/_images/" + image_name) as image:
       draw = ImageDraw.Draw(image)
-      font = ImageFont.truetype("/home/snafuPop/yshtola/modules/_data/" + font_name, font_size)
+      font = ImageFont.truetype("/home/snafuPop/yvona/modules/_data/" + font_name, font_size)
       draw.text((coords[0], coords[1]), message, (color[0], color[1], color[2], color[3]), font = font)
 
       output_buffer = BytesIO()
