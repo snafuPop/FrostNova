@@ -24,6 +24,17 @@ def get_dungeons():
   return dungeon_dict
 
 
+# get dictionary of bosses
+def get_bosses():
+  with open("/home/snafuPop/yshtola/modules/_data/raid.json") as json_data:
+    raid_dict = json.load(json_data)
+  return raid_dict
+
+# updates the dictionary of bosses
+def update_bosses(boss_dict):
+  with open("/home/snafuPop/yshtola/modules/_data/raid.json", "w") as json_out:
+    json.dump(boss_dict, json_out, indent = 2)
+
 # updates the .json with new values and creates a back-up
 def update(user_dict):
   with open("/home/snafuPop/yshtola/modules/_data/users.json", "w") as json_out:
@@ -56,6 +67,13 @@ def get_balance(user):
 def add_balance(user, credits):
   user_dict = get_users()
   user_dict[str(user.id)]["balance"] = user_dict[str(user.id)]["balance"] + credits
+  update(user_dict)
+
+
+# adds an item to the user
+def add_item(user, item):
+  user_dict = get_users()
+  user_dict[str(user.id)]["inventory"] = user_dict[str(user.id)]["balance"].append(item)
   update(user_dict)
 
 
@@ -98,6 +116,16 @@ def add_loot_earnings(user, money):
   user_dict[str(user.id)]["loot_earnings"] = user_dict[str(user.id)]["loot_earnings"] + money
   update(user_dict)
 
+def add_raid(user):
+  user_dict = get_users()
+  user_dict[str(user.id)]["raids"] = user_dict[str(user.id)]["raids"] + 1
+  update(user_dict)
+
+def add_damage_dealt(user, damage):
+  user_dict = get_users()
+  user_dict[str(user.id)]["damage_dealt"] = user_dict[str(user.id)]["damage_dealt"] + damage
+  update(user_dict)
+
 async def add_exp(ctx, user, exp):
   user_dict = get_users()
   user_dict[str(user.id)]["exp"] = user_dict[str(user.id)]["exp"] + exp
@@ -136,7 +164,7 @@ def interpret_frac(user, money):
     return get_balance(user)
   if money == "half":
     return get_balance(user)//2
-  if money == "fourth":
+  if money in ["fourth", "quarter"]:
     return get_balance(user)//4
   if money == "tenth":
     return get_balance(user)//10
