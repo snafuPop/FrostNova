@@ -1,6 +1,5 @@
 <p align="center">
-  <img width="512" height="512" src="https://i.imgur.com/tUPlwVf.jpg"><br>
-  <b>Original Artist:</b> <a href=https://www.pixiv.net/member.php?id=6574595>さとま</a>
+  <img width="870" height="550" src="https://i.imgur.com/kkXCoCg.png"><br>
 </p>
 
 # yvona Bot
