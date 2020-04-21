@@ -3,6 +3,7 @@ from discord.ext import commands
 from builtins import bot
 from random import randint
 from random import choice
+from random import uniform
 import math
 from modules.utils import user_json
 from titlecase import titlecase
@@ -54,12 +55,17 @@ class Adventure(commands.Cog):
 
   @commands.command(description = "Returns a list of explorable dungeons.")
   async def dungeons(self, ctx):
+    if not user_json.is_registered(ctx.author):
+      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `{}register`".format(ctx.author.mention, ctx.prefix))
+      await ctx.send(embed = embed)
+      return
+
     user_dict = user_json.get_users()
     dungeon_dict = user_json.get_dungeons()
     dungeon_list = list(dungeon_dict["dungeons"])
 
     # goes through the dictionary of dungeons and only grabs dungeons whose levels are no more than 4 higher than the player's
-    embed = discord.Embed(title = "**Explorable Dungeon List**", description = "**{}'s current level:** {:,}".format(ctx.author.mention, user_dict[str(ctx.author.id)]["level"]), color = ctx.author.color)
+    embed = discord.Embed(title = "**Explorable Dungeon List**", description = "**{}'s Current Level:** {:,}".format(ctx.author.mention, user_dict[str(ctx.author.id)]["level"]), color = ctx.author.color)
     
     user_level = user_dict[str(ctx.author.id)]["level"]
     dungeons = self.get_list_of_dungeons(dungeon_dict, user_level)
@@ -87,7 +93,7 @@ class Adventure(commands.Cog):
 
 
   @commands.command(aliases = ["adv", "expore", "go"], description = "Go on an adventure!", cooldown_after_parsing = True)
-  @commands.cooldown(1, 1800, commands.BucketType.user)
+  @commands.cooldown(1, 300, commands.BucketType.user)
   async def adventure(self, ctx, *, dungeon: str = None):
     if not user_json.is_registered(ctx.author):
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `{}register`".format(ctx.author.mention, ctx.prefix))
@@ -96,7 +102,13 @@ class Adventure(commands.Cog):
       return
 
     dungeon_dict = user_json.get_dungeons()
-    if dungeon is None or titlecase(dungeon) not in dungeon_dict["dungeons"]:
+    if dungeon is None:
+      embed = discord.Embed(title = "**Adventuring**", description = "Hello, {0}! Are you interested in exploring dungeons? Dungeons provide a consistent way of earning money and experience, though you can only go exploring every **30 minutes**. The higher your level, the more dungeons you can go to, and higher level dungeons provide more valuable loot! Keep in mind that the lower your level is compared to the recommended level of the dungeon, the lower your odds of performing a successful exploration. If the success rate is 0%, you can immediately go on another exploration.\n\nYou can pull up a list of dungeons that you can reasonably go to with `{1}dungeons` and explore a dungeon by using `{1}adventure <name of dungeon>`. Happy exploring!".format(ctx.author.mention, ctx.prefix), color = ctx.author.color)
+      self.set_msg_thumbnail(embed, "adventure")
+      await ctx.send(embed = embed)
+      ctx.command.reset_cooldown(ctx)
+      return
+    if titlecase(dungeon) not in dungeon_dict["dungeons"]:
       embed = discord.Embed(title = "**Adventuring**", description = "Hmmm... I don't think that's the name of any dungeon I heard of, {}. You can see which dungeons you can go to by using `{}dungeons`.".format(ctx.author.mention, ctx.prefix), color = ctx.author.color)
       self.set_msg_thumbnail(embed, "adventure")
       await ctx.send(embed = embed)
@@ -129,13 +141,13 @@ class Adventure(commands.Cog):
         payout = payout + loot_table[loot]
       user_json.add_balance(ctx.author, payout)
       exp = dungeon_dict["dungeons"][dungeon]["exp"]
-      await user_json.add_exp(ctx, ctx.author, exp)
 
       # creating embed
       embed = discord.Embed(title = "**Adventure successful!**", description = "{} embarked on an adventure to **{}** and succeeded!".format(ctx.author.mention, dungeon), color = ctx.author.color)
       embed.add_field(name = "**Loot found:**", value = ', '.join(loot_list), inline = False)
       embed.add_field(name = "**Results:**", value = "Sold **{:,}** piece(s) of loot for **{:,} {}**\nGained **{:,}** exp".format(len(loot_list), payout, user_json.get_currency_name(), exp) , inline = False)
       user_json.add_loot_earnings(ctx.author, payout)
+      await user_json.add_exp(ctx, ctx.author, exp)
 
     # if the adventure failed
     else:
@@ -167,7 +179,7 @@ class Adventure(commands.Cog):
 
   # helper function for calculating the cost of upgrading an item
   def calculate_item_upgrade(self, level):
-    return int(100000*(level**6.94+100))
+    return int(100000*(level**3.32+100))
 
 
 
@@ -253,11 +265,59 @@ class Adventure(commands.Cog):
       await ctx.send(embed = embed)
       return
 
-  @commands.command(description = "Embark on a raid!")
-  async def raid(self, ctx, *, dungeon: str = None):
+
+  # helper function for calculating damage dealt during raid
+  def calculate_damage_dealt(self, level, defense):
+    if level < defense: return -1
+    return int((100000*((level - defense)**1.2))*(uniform(0.8,1.15)))
+
+  # helper function for calculating money earned
+  def calculate_money_earned(self, damage, multiplier):
+    return int(damage*multiplier*(uniform(0.75,1.50)))
+
+  # helper function for calculating exp earned
+  def calculate_exp_earned(self, money):
+    return int(money/(100000+randint(-20000,20000)))
+
+  # returns a list containing all current available bosses sorted by their defense value
+  def get_list_of_bosses(self, boss_dict):
+    boss_list = list(boss_dict)
+    bosses = []
+    for boss in boss_list:
+      if(boss_dict[boss]["hp_cur"] > 0):
+        bosses.append([boss, boss_dict[boss]["hp_max"], boss_dict[boss]["hp_cur"], boss_dict[boss]["defense"]])
+    return sorted(bosses, key = lambda x: x[3])
+
+
+  @commands.command(description = "Checks the current status of all raid bosses.")
+  async def bosses(self, ctx):
+    if not user_json.is_registered(ctx.author):
+      embed = discord.Embed(title = "", description = "It looks like you aren't registered in the system, {}. Try `{}register`".format(ctx.author.mention, ctx.prefix))
+      await ctx.send(embed = embed)
+      return
+
+    user_dict = user_json.get_users()
+    embed = discord.Embed(title = "**Raid Boss Status**", description = "**{}'s Current Item Level:** {:,}".format(ctx.author.mention, user_dict[str(ctx.author.id)]["item_level"]), color = ctx.author.color)
+    bosses = self.get_list_of_bosses(user_json.get_bosses())
+    boss_alive = ""
+    boss_dead = ""
+    for boss in bosses:
+      hp = boss[2]/boss[1]*100
+      if hp > 0: boss_alive += "**{}** (**{:.2f}**% HP) (**{}** Defense)\n".format(boss[0], hp, boss[3])
+      else: boss_dead += "~~{}~~\n".format(boss[0])
+    if boss_alive: embed.add_field(name = "**Current Available Bosses:**", value = boss_alive, inline = True)
+    if boss_dead: embed.add_field(name = "**Defeated Bosses:**", value = boss_dead, inline = True)
+    self.set_msg_thumbnail(embed, "raid")
+    await ctx.send(embed = embed)
+
+
+  @commands.command(description = "Embark on a raid!", cooldown_after_parsing = True)
+  @commands.cooldown(1, 43200, commands.BucketType.user)
+  async def raid(self, ctx, *, boss: str = None):
     if not user_json.is_registered(ctx.author):
       embed = discord.Embed(title = "", description = "It looks like you aren't registered in the sytem, {}. Try `{}register`".format(ctx.author.mention, ctx.prefer))
       await ctx.send(embed = embed)
+      ctx.command.reset_cooldown(ctx)
       return
 
     user_dict = user_json.get_users()
@@ -270,18 +330,77 @@ class Adventure(commands.Cog):
       embed.set_footer(text = "(You're currently level {})".format(user_level))
       self.set_msg_thumbnail(embed, "raid")
       await ctx.send(embed = embed)
+      ctx.command.reset_cooldown(ctx)
       return
 
-    # print help information if no dungeon specified
-    if dungeon == None:
-      embed = discord.Embed(title = "**Raid**", description = "So you're interested in embarking on a **raid**, {}? Raids are special dungeons that uses your **item level** stat instead of your level in order to determine how much loot you receive. The higher your item level, the more monsters you'll potentially be able to kill. If it's high enough, you may be strong enough to kill the boss of the area! Of course, you'll also get EXP and I can only take you on a raid every **12 hours**.\n\nYou can check your item level either by using `{}user` or `{}upgrade`. Once you think you're ready, you can use `{}raid <name of raid zone>` to begin a raid.".format(ctx.author.mention, ctx.prefix, ctx.prefix, ctx.prefix), color = ctx.author.color)
-      embed.add_field(name = "**Your Current Item Level:**", value = "{:,}".format(user_item_level))
-      embed.add_field(name = "**Available Raid Zones:**", value = "{:,} {}".format(self.calculate_item_upgrade(user_item_level+1), user_json.get_currency_name()))
+    # print help information if no boss specified
+    if boss == None:
+      embed = discord.Embed(title = "**Raid**", description = "So you're interested in embarking on a **raid**, {0}? By embarking on a raid, you'll clash against a monster of tremendous strength and vigor. The damage you deal is based of your **item level**, so the higher your item level, the more damage you'll do and the more money you will receive as compensation for your efforts. Furthermore, once we eventually defeat a boss, we can begin to mobilize against a new threat. Of course, you'll also get EXP and I can only take you on a raid every **12 hours**.\n\nYour current item level is **{1}**, but you can increase that by using `{2}upgrade`. Once you think you're ready, you can use `{2}raid <name of raid zone>` to begin a raid. You can also check the status of all raid bosses with `{2}bosses`.".format(ctx.author.mention, user_item_level, ctx.prefix), color = ctx.author.color)
       self.set_msg_thumbnail(embed, "raid")
       await ctx.send(embed = embed)
+      ctx.command.reset_cooldown(ctx)
       return
 
+    boss_dict = user_json.get_bosses()
+    boss_name = titlecase(boss)
+    if boss_name not in boss_dict.keys():
+      embed = discord.Embed(title = "**Raid**", description = "Uhh... are you sure you got the name right, {}? You can check the status of all raid bosses with `{}bosses`.".format(ctx.author.mention, ctx.prefix), color = ctx.author.color)
+      self.set_msg_thumbnail(embed, "raid")
+      await ctx.send(embed = embed)
+      ctx.command.reset_cooldown(ctx)
+      return
+
+    boss = boss_dict[boss_name]
+    damage_dealt = self.calculate_damage_dealt(user_item_level, boss["defense"])
+
+    # no damage dealt - attack failed
+    if damage_dealt <= 0:
+      embed = discord.Embed(title = "**Raid Results:**", description = "**{}** completely endured {}'s attack! Retreat!".format(boss_name, ctx.author.mention))
+      embed.add_field(name = "**Notes:**", value = "When performing an attack against a boss, your item level is reduced by their defense. You're going to need to have a higher item level before you can challenge **{}** (your item level was **{:,}** while **{}'s** defense is **{:,}**). Try upgrading your item level with `{}upgrade`, then try again later.".format(boss_name, user_item_level, boss_name, boss["defense"], ctx.prefix))
+      embed.add_field(name = "**Forgiveness Cooldown:**", value = "Because your attack failed, your cooldown timer has been reset.", inline = False)
+      self.set_msg_thumbnail(embed, "raid")
+      await ctx.send(embed = embed)
+      ctx.command.reset_cooldown(ctx)
+      return
+
+    # attack succeeded
+    money_earned = self.calculate_money_earned(damage_dealt, boss["multiplier"])
+    exp_earned = self.calculate_exp_earned(money_earned)
+    boss["hp_cur"] = boss["hp_cur"] - damage_dealt
+
+    # check if boss was killed
+    was_killed = False
+    if boss["hp_cur"] <= 0:
+      boss["hp_cur"] = 0
+      was_killed = True
+
+    # creating result message
+    result_msg = ""
+    result_msg += "**Contribution:** {:,} Damage Dealt ({:.2f}% of Boss's Total HP)\n".format(damage_dealt, (damage_dealt/boss["hp_max"])*100)
+    result_msg += "**Remaining HP:** {:,} ({:.2f}% Remaining)\n".format(boss["hp_cur"], boss["hp_cur"]/boss["hp_max"]*100)
+    result_msg += "**Bounty Earned:** {:,} {}\n".format(money_earned, user_json.get_currency_name())
+    result_msg += "**EXP Earned:** {:,} exp\n".format(exp_earned) 
+    embed = discord.Embed(title = "**Raid Results:**", description = "A successful attack against **{}** was performed by {}!\n\n{}".format(boss_name, ctx.author.mention, result_msg), color = ctx.author.color)
+    
+    # adding extra message
+    if was_killed:
+      embed.add_field(name = "**{}** was slain!".format(boss_name), value = "Hail to the great warrior {}, who landed the killing blow to **{}**! For their efforts, they have received **{}** from its remains! Long live {}!".format(ctx.author.mention, boss_name, boss["loot"], ctx.author.mention))
+      user_json.add_item(ctx.author, boss["loot"])
+
+    self.set_msg_thumbnail(embed, "raid")
+
+    user_json.add_balance(ctx.author, money_earned)
+    user_json.add_loot_earnings(ctx.author, money_earned)
+    user_json.add_raid(ctx.author)
+    user_json.add_damage_dealt(ctx.author, damage_dealt)
+    await user_json.add_exp(ctx, ctx.author, exp_earned)
+
+    boss_dict[boss_name] = boss
+    user_json.update_bosses(boss_dict)
+    await ctx.send(embed = embed)
+
   @adventure.error
+  @raid.error
   async def cd_error(self, ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
       time_left = int(error.retry_after)
