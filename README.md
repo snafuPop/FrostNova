@@ -40,4 +40,4 @@ Users can write notes that can be viewed at any time. Notes are split into two c
 ## Feedback
 If you have any questions, bug reports, feature requests, or need to get in touch with me, please use the [issue page](https://github.com/snafuPop/yvona/issues) to do so.
 
-I would also greatly appreciate any donations. The cost of hosting is quite minimal, but would be helpful nonetheless. Go to to the [Patreon page](https://www.patreon.com/yvonabot) for more information.
+I would also greatly appreciate any donations. The cost of hosting is quite minimal, but would be helpful nonetheless. Go to to the [Patreon page](https://www.patreon.com/yvona) for more information.
