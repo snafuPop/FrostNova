@@ -273,9 +273,9 @@ class Adventure(commands.Cog):
 
 
   # helper function for calculating damage dealt during raid
-  def calculate_damage_dealt(self, level, defense):
-    if level < defense: return -1
-    return int((100000*((level - defense)**1.2))*(uniform(0.8,1.15)))
+  def calculate_damage_dealt(self, level, item_level, defense):
+    if item_level < defense: return -1
+    return int(((level-28)/2)*(100000*((item_level - defense)**1.2))*(uniform(0.8,1.15)))
 
   # helper function for calculating money earned
   def calculate_money_earned(self, damage, multiplier):
@@ -290,8 +290,7 @@ class Adventure(commands.Cog):
     boss_list = list(boss_dict)
     bosses = []
     for boss in boss_list:
-      if(boss_dict[boss]["hp_cur"] > 0):
-        bosses.append([boss, boss_dict[boss]["hp_max"], boss_dict[boss]["hp_cur"], boss_dict[boss]["defense"]])
+      bosses.append([boss, boss_dict[boss]["hp_max"], boss_dict[boss]["hp_cur"], boss_dict[boss]["defense"]])
     return sorted(bosses, key = lambda x: x[3])
 
 
@@ -308,9 +307,8 @@ class Adventure(commands.Cog):
     boss_alive = ""
     boss_dead = ""
     for boss in bosses:
-      hp = boss[2]/boss[1]*100
-      if hp > 0: boss_alive += "**{}** (**{:.2f}**% HP) (**{}** Defense)\n".format(boss[0], hp, boss[3])
-      else: boss_dead += "~~{}~~\n".format(boss[0])
+      if boss[2] == 0: boss_dead += "~~{}~~\n".format(boss[0])
+      else: boss_alive += "**{}** (**{:.2f}**% HP) (**{}** Defense)\n".format(boss[0], boss[2]/boss[1]*100, boss[3])
     if boss_alive: embed.add_field(name = "**Current Available Bosses:**", value = boss_alive, inline = True)
     if boss_dead: embed.add_field(name = "**Defeated Bosses:**", value = boss_dead, inline = True)
     self.set_msg_thumbnail(embed, "raid")
@@ -357,7 +355,7 @@ class Adventure(commands.Cog):
       return
 
     boss = boss_dict[boss_name]
-    damage_dealt = self.calculate_damage_dealt(user_item_level, boss["defense"])
+    damage_dealt = self.calculate_damage_dealt(user_level, user_item_level, boss["defense"])
 
     # no damage dealt - attack failed
     if damage_dealt <= 0:
@@ -372,26 +370,41 @@ class Adventure(commands.Cog):
     # attack succeeded
     money_earned = self.calculate_money_earned(damage_dealt, boss["multiplier"])
     exp_earned = self.calculate_exp_earned(money_earned)
-    boss["hp_cur"] = boss["hp_cur"] - damage_dealt
 
-    # check if boss was killed
-    was_killed = False
-    if boss["hp_cur"] <= 0:
-      boss["hp_cur"] = 0
-      was_killed = True
+    # if boss was already killed
+    if boss["hp_cur"] == 0:
+      money_earned = int(money_earned * 1.5)
+      exp_earned = int(exp_earned * 10)
 
-    # creating result message
-    result_msg = ""
-    result_msg += "**Contribution:** {:,} Damage Dealt ({:.2f}% of Boss's Total HP)\n".format(damage_dealt, (damage_dealt/boss["hp_max"])*100)
-    result_msg += "**Remaining HP:** {:,} ({:.2f}% Remaining)\n".format(boss["hp_cur"], boss["hp_cur"]/boss["hp_max"]*100)
-    result_msg += "**Bounty Earned:** {:,} {}\n".format(money_earned, user_json.get_currency_name())
-    result_msg += "**EXP Earned:** {:,} exp\n".format(exp_earned)
-    embed = discord.Embed(title = "**Raid Results:**", description = "A successful attack against **{}** was performed by {}!\n\n{}".format(boss_name, ctx.author.mention, result_msg), color = ctx.author.color)
+      result_msg = ""
+      result_msg += "**Contribution:** {:,} Damage Dealt\n".format(damage_dealt)
+      result_msg += "**Bounty Earned:** {:,} {}\n".format(money_earned, user_json.get_currency_name())
+      result_msg += "**EXP Earned:** {:,} exp\n".format(exp_earned)
+      embed = discord.Embed(title = "**Raid Results:**", description = "A successful attack against **{}'s minions** was performed by {}!\n\n{}".format(boss_name, ctx.author.mention, result_msg), color = ctx.author.color)
+      embed.add_field(name = "**Notes:**", value = "Although **{}** was slain long ago, their minions are still about. You'll receive a larger bounty and extra EXP, but you should get ready to challenge the next boss if you can.".format(boss_name))
 
-    # adding extra message
-    if was_killed:
-      embed.add_field(name = "**{}** was slain!".format(boss_name), value = "Hail to the great warrior {}, who landed the killing blow to **{}**! For their efforts, they have received **{}** from its remains! Long live {}!".format(ctx.author.mention, boss_name, boss["loot"], ctx.author.mention))
-      user_json.add_item(ctx.author, boss["loot"])
+    # if boss hasn't been killed yet
+    else:
+      boss["hp_cur"] = boss["hp_cur"] - damage_dealt
+
+      # check if boss was killed
+      was_killed = False
+      if boss["hp_cur"] <= 0:
+        boss["hp_cur"] = 0
+        was_killed = True
+
+      # creating result message
+      result_msg = ""
+      result_msg += "**Contribution:** {:,} Damage Dealt ({:.2f}% of Boss's Total HP)\n".format(damage_dealt, (damage_dealt/boss["hp_max"])*100)
+      result_msg += "**Remaining HP:** {:,} ({:.2f}% Remaining)\n".format(boss["hp_cur"], boss["hp_cur"]/boss["hp_max"]*100)
+      result_msg += "**Bounty Earned:** {:,} {}\n".format(money_earned, user_json.get_currency_name())
+      result_msg += "**EXP Earned:** {:,} exp\n".format(exp_earned)
+      embed = discord.Embed(title = "**Raid Results:**", description = "A successful attack against **{}** was performed by {}!\n\n{}".format(boss_name, ctx.author.mention, result_msg), color = ctx.author.color)
+
+      # adding extra message
+      if was_killed:
+        embed.add_field(name = "**{}** was slain!".format(boss_name), value = "Hail to the great warrior {}, who landed the killing blow to **{}**! For their efforts, they have received **{}** from its remains! Long live {}!".format(ctx.author.mention, boss_name, boss["loot"], ctx.author.mention))
+        user_json.add_item(ctx.author, boss["loot"])
 
     self.set_msg_thumbnail(embed, "raid")
 
@@ -406,7 +419,7 @@ class Adventure(commands.Cog):
     await ctx.send(embed = embed)
 
   @adventure.error
-  @raid.error
+ # @raid.error
   async def cd_error(self, ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
       time_left = int(error.retry_after)
