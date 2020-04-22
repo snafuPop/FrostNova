@@ -73,7 +73,7 @@ def add_balance(user, credits):
 # adds an item to the user
 def add_item(user, item):
   user_dict = get_users()
-  user_dict[str(user.id)]["inventory"] = user_dict[str(user.id)]["inventory"].append(item)
+  user_dict[str(user.id)]["inventory"] = user_dict[str(user.id)]["inventory"].append(str(item))
   update(user_dict)
 
 
