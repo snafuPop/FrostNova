@@ -11,7 +11,7 @@ from prawcore import NotFound
 import mimetypes
 import urllib
 
-with open("/home/snafuPop/yshtola/_config/settings.json") as json_data:
+with open("/home/snafuPop/yvona/_config/settings.json") as json_data:
   data = json.load(json_data)
 r = praw.Reddit(client_id = data["REDDIT_CLIENT_ID"], client_secret = data["REDDIT_CLIENT_SECRET"], user_agent = data["REDDIT_USER_AGENT"])
 

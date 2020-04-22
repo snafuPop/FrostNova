@@ -9,12 +9,12 @@ class Roles(commands.Cog):
     self.cache = self.get_roles()
 
   def get_roles(self):
-    with open("/home/snafuPop/yshtola/modules/_data/role.json") as json_data:
+    with open("/home/snafuPop/yvona/modules/_data/role.json") as json_data:
       cache = json.load(json_data)
     return cache
 
   def update_roles(self, cache):
-    with open("/home/snafuPop/yshtola/modules/_data/role.json", "w") as json_out:
+    with open("/home/snafuPop/yvona/modules/_data/role.json", "w") as json_out:
       json.dump(cache, json_out, indent = 2)
     self.cache = self.get_roles()
 
