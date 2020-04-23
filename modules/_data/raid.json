@@ -1,37 +1,37 @@
 {
-  "Claimh Solas": {
-    "defense": 200,
-    "multiplier": 15.4,
-    "hp_max": 2300000000000000000,
-    "hp_cur": 2300000000000000000,
-    "loot": "Brionac"
-  },
   "Tabhartas": {
-    "defense": 25,
-    "multiplier": 5.1,
     "hp_max": 300000000,
-    "hp_cur": 299571049,
-    "loot": "Chunk of Ancient Feldspar"
+    "hp_cur": 300000000,
+    "multiplier": 5,
+    "defense": 25,
+    "loot": "D Chunk of Ancient Feldspar"
   },
   "Cromm Cruaich": {
-    "defense": 70,
-    "multiplier": 7.3,
     "hp_max": 740000000000,
     "hp_cur": 740000000000,
-    "loot": "Umbral Dragonscale"
+    "multiplier": 8,
+    "defense": 50,
+    "loot": "Dragon Egg"
+  },
+  "Claimh Solas": {
+    "hp_max": 2300000000000000000,
+    "hp_cur": 2300000000000000000,
+    "multiplier": 22,
+    "defense": 90,
+    "loot": "Brionac"
   },
   "Glas Gaibhnenn": {
-    "defense": 0,
-    "multiplier": 3.2,
     "hp_max": 50000000,
-    "hp_cur": 39870759,
+    "hp_cur": 50000000,
+    "multiplier": 3,
+    "defense": 10,
     "loot": "Bottle of Unending Milk"
   },
   "Crumena": {
-    "defense": 130,
-    "multiplier": 9.7,
     "hp_max": 19000000000000,
     "hp_cur": 19000000000000,
-    "loot": "Infernal Dragon Heart"
+    "multiplier": 13,
+    "defense": 75,
+    "loot": "Red Hot Chili Pepper"
   }
 }
