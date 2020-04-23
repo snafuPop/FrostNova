@@ -3,7 +3,7 @@
     "Border Woods": {
       "description": "Off to the south of Primum lies the Border Woods, a frigid landscape that divides the Primum Highlands from the Macha Lowlands. These woods provide good and valuable game for fledging hunters, with some boars marked for death by the Primum Principality.",
       "level": 1,
-      "exp": 20,
+      "exp": 10,
       "loot": {
         "Boar Tusk": 50,
         "Spruce Log": 70,
@@ -21,7 +21,7 @@
     "Outer Oldewood": {
       "description": "To the east of Primum lies the wide expanse that is Oldewood -- a seemingly endless thicket of trees. Within the forest lies a tall wall, which marks the borders between Hume-kind and Mumblis -- land of the goblins.",
       "level": 9,
-      "exp": 70,
+      "exp": 45,
       "loot": {
         "Oak Lumber": 100,
         "Mana Grass": 150,
@@ -56,7 +56,7 @@
     "Upper Alfeim": {
       "description": "Centuries ago, counted among the great races of Empyrean were the Elves, who resided in their capital nation of Alfeim. However, the Elves have long since left this realm. But yet, their capital still remains somewhere... and it seems archaeologists have uncovered its remains...",
       "level": 25,
-      "exp": 250,
+      "exp": 850,
       "loot": {
         "Sandstone": 200,
         "Amber": 250,
@@ -76,7 +76,7 @@
     "Dialcrest Tower": {
       "description": "Across the Ocean of Lyr from Primum lays the three greater islands: Dunbarton, Eirigh Na, and Dun Scaith. Dunbarton is home to legendary astrologians and thus lies Dialcrest Tower, a modern marvel of astronomy that pre-dates Hume-kind. However, recently the tower's interior seems to rustle...",
       "level": 29,
-      "exp": 380,
+      "exp": 1195,
       "loot": {
         "Electrum Nut": 300,
         "Electrum Screw": 350,
@@ -95,7 +95,7 @@
     "Cave of Swords": {
       "description": "Within the foothills of Eirigh Na lies the Cave of Swords, which earned its name from the deadly organization of swordsmen and protectors of Milesian knowledge -- Owl Eye. By decree of Eirigh Na stewards, bounties are awarded for every member seized -- dead or alive.",
       "level": 35,
-      "exp": 430,
+      "exp": 1340,
       "loot": {
         "Durasteel Ingot": 500,
         "Unfinished Katana Pommel": 700,
@@ -112,7 +112,7 @@
     "Macha Lowlands": {
       "description": "Unlike its warmer northern neighbor, the Macha Lowlands are brutally cold with seemingly unending winters. Here, in the kingdom of Emain Macha, resides the divine Knights of the Round. Squires who aspire to become such noble knights tend to train on the various creatures hardened by the lowlands.",
       "level": 42,
-      "exp": 550,
+      "exp": 1840,
       "loot": {
         "Snow Bear's Fur": 800,
         "Snow Bear's Meat": 1000,
@@ -131,7 +131,7 @@
     "Inner Oldewood": {
       "description": "Mumblis, the Goblin Kingdom, lives the ruthless Goblins, protectors of the great tree Yggdrasil and the surrounding magical woods. They treat all non-kin as threats to the woods and do not hesitate to kill on sight.",
       "level": 50,
-      "exp": 800,
+      "exp": 2603,
       "loot": {
         "Goblin's Toe": 1000,
         "Goblin's Staff": 1500,
@@ -144,6 +144,122 @@
         "Oldewood Staff": 6500,
         "Twig of Yggdrasil": 7300,
         "Royal Goblin Crown": 9000
+      }
+    },
+
+    "Dialcrest Clockwork": {
+      "description": "Once again it appears that the Dialcrest Tower is experiencing a large surge in magical energy, though this time deeper within its interior. Keep your wits, as not one person for centuries has delved so deep into the tower. Who knows what automata lie ahead?",
+      "level": 56,
+      "exp": 3142,
+      "loot": {
+        "Midan Nut": 2300,
+        "Midan Screw": 2400,
+        "Midan Cog": 2700,
+        "Midan Axle": 4100,
+        "Gordian Bolt": 5300,
+        "Gordian Shaft": 6800,
+        "Gordian Lever": 7500,
+        "Masterpiece Chronometer": 9800,
+        "Gordian Datalogue": 10100
+      }
+    },
+
+    "The Ebony Coast": {
+      "description": "The lower continent Dun Scaith is also known as the land of the Formorians. While other types of Formorians, such as the Sahagin, have found their homes elsewhere, Dun Scaith shelters numerous tribes and races throughout its breadth. Along the shores lies the Ebony Coast, whose sands are a deep purple and its trees twisted and crooked. What manner of horrors await?",
+      "level": 63,
+      "exp": 4000,
+      "loot": {
+        "Formorian Silk": 3400,
+        "Formorian Brooch": 3800,
+        "Ebontwig": 4500,
+        "Pouch of Ebonsilt": 5100,
+        "Chunk of Ebony Ore": 5700,
+        "Ebony Ingot": 7300,
+        "Sigil of Macha": 8000,
+        "Umbragem": 9990,
+        "Formorian Tome": 13000
+      }
+    },
+
+    "Wyrmscar": {
+      "description": "Deeper into Dun Scaith exists a vast and seemingly bottomless ravine of which encompasses a majority of the continent. Legends say that it was terrestrial damage left by a dragon's claw as it grazed the ground, hence its name. Of course, modern scholars argue that the ravine indeed has a bottom, the question is if anybody will be able to prove so.",
+      "level": 70,
+      "exp": 4860,
+      "loot": {
+        "Feldspar Fragment": 5000,
+        "Wyvern Ivory": 5700,
+        "Wyvern Leather": 7000,
+        "Flask of Wyrmbreath": 8500,
+        "Ebonsprig": 9100,
+        "Edenleaf": 9100,
+        "Formorian Penny": 12500,
+        "Wyrmthyst": 16000
+      }
+    },
+
+    "Mag Itha": {
+      "description": "At the bottom of Wyrmscar you discover what could quite possibly be the last remaining structure built by the original Milesians -- a cathedral built into the side of the ravine connected by an impressive stone bridge. Perhaps inside lies the ancient magicks once wielded by the Ideal Masters; Milesians who achieved the highest form of magick - ascension.",
+      "level": 79,
+      "exp": 6300,
+      "loot": {
+        "Tome: Empyreanal Pyromancy 101": 8000,
+        "Tome: Essential Ice Crafting": 8000,
+        "Tome: Legendary Levinmancy": 8000,
+        "Tome: Enochian Glossary": 9000,
+        "Tome: Understanding Astrology": 9000,
+        "Tome: Accounts of Blasphemy": 9000,
+        "Tome: Study of Vampirism": 9000,
+        "Tome: Draconic Geomancy": 12000,
+        "Tome: Forbidden Formorian Arts": 12000,
+        "Tome: Mastering Chaomancy": 12000,
+        "Tome: The Milesian Account": 20000
+      }
+    },
+
+    "Prenumbral Laboratory": {
+      "description": "Within the vast corridors of Mag Itha you find a laboratory equipped with technology no scholar has ever seen before. Tubes, chambers, and other machinery which seems to be remnants of research regarding astral and umbral magic. If you were to bring back some left behind research materials to the Academy, the advancement of cosmic magic may accelerate by years, if not decades.",
+      "level": 88,
+      "exp": 8100,
+      "loot": {
+        "Milesian Research Notes": 9100,
+        "Binder Full of Academia": 9900,
+        "Cosmological Data Charts": 11000,
+        "Artificial Stellar Ore": 13000,
+        "Staff of Harmonic Conduction": 14500,
+        "Megaton Light Magnet": 17000,
+        "Lumen Fons": 25000,
+        "Khaligo Fons": 25000
+      }
+    },
+
+    "Sen Mag Plateau": {
+      "description": "One last corridor of Mag Itha remains unexplored, and the end of it lies a massive door similar to the one found at the entrance. On the other side is a massive expanse of flat land filled with flora and fauna, most definitely left behind by Milesians long ago. Most fables speak of Sen Mag as the last resting place of Milesians, as the Formorian King, Elatha, wiped them to near extinction during his reign.",
+      "level": 94,
+      "exp": 9160,
+      "loot": {
+        "Tuatha De Danannic Cloth": 10000,
+        "Tuatha De Danannic Metal": 12400,
+        "Tuahta De Danannic Scripture": 13500,
+        "Formorian Blade Shard": 14500,
+        "Formorian Ivory": 17300,
+        "Formorian Battle Standard": 21000,
+        "Tuatha De Danannic Emblem": 23200,
+        "Wyvern Battle Horn": 27600,
+        "Sigil of Morrighan": 35000
+      }
+    },
+
+    "Tir Na Nog": {
+      "description": "As you wander across the Sen Mag Plateau, your vision begins to blur and your ability the feel the air around you fades. The sky slowly turns amber and the soil around you shifts in hue. As you regain sight, the only noticeable structure you see around you is a large stone obelisk with various runic carvings on them. It is unmistakeable - it is Lia Fail, the font of all mana. Perhaps you can use it to return to where you first came from.",
+      "level": 100,
+      "exp": 10200,
+      "loot": {
+        "Font of Fire-Aspected Mana": 25000,
+        "Font of Ice-Aspected Mana": 25000,
+        "Font of Shock-Aspected Mana": 25000,
+        "Font of Umbral-Aspected Mana": 45000,
+        "Font of Astral-Aspected Mana": 45000,
+        "Fragment of Lia Fail": 50000
       }
     }
   }
