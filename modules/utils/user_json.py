@@ -73,7 +73,7 @@ def add_balance(user, credits):
 # adds an item to the user
 def add_item(user, item):
   user_dict = get_users()
-  user_dict[str(user.id)]["inventory"] = user_dict[str(user.id)]["inventory"].append(str(item))
+  user_dict[str(user.id)]["inventory"].append(str(item))
   update(user_dict)
 
 
@@ -139,7 +139,6 @@ async def add_exp(ctx, user, exp):
 def level_up(user):
   user_dict = get_users()
   req_exp = get_req_exp(user, user_dict)
-  print(req_exp)
   if user_dict[str(user.id)]["exp"] >= req_exp:
     # incrementing the level
     user_dict[str(user.id)]["level"] = user_dict[str(user.id)]["level"] + 1
@@ -152,7 +151,7 @@ def level_up(user):
 
 
 def get_req_exp(user, user_dict):
-  return int((user_dict[str(user.id)]["level"]**2.1)+15)
+  return int((user_dict[str(user.id)]["level"]**3.2)+100)
 
 # allows users to give fractional strings as arguments and interprets them into integer values
 def interpret_frac(user, money):

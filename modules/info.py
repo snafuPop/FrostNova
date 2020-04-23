@@ -139,7 +139,7 @@ class Info(commands.Cog):
   @commands.command(aliases = ["bot", "info"], description = "Gives information about the bot")
   async def about(self, ctx):
     embed = discord.Embed(title = " ", color = bot.user.color)
-    embed.set_author(name = "Y'shtola Bot", url = "https://github.com/snafuPop/yshtola", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
+    embed.set_author(name = "Yvona Bot", url = "https://github.com/snafuPop/yvona", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
     embed.set_thumbnail(url = self.bot.user.avatar_url)
 
     # storing info onto a string to make things a little more readable
