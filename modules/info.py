@@ -147,13 +147,15 @@ class Info(commands.Cog):
     info += "**\u3164\u25A0 Language:** Python {}.{}.{}\n".format(sys.version_info[0], sys.version_info[1], sys.version_info[2])
     info += "**\u3164\u25A0 Discord.py Version:** {}\n".format(discord.__version__)
     info += "**\u3164\u25A0 Host:** [PythonAnywhere](https://www.pythonanywhere.com/)\n"
+    info += "**\u3164\u25A0 Source Code:** [GitHub](https://github.com/snafuPop/yvona)\n"
     info += "**\u3164\u25A0 Latency:** {:.4f} ms\n".format(self.bot.latency)
     info += "**\u3164\u25A0 CPU Usage:** {}%\n".format(psutil.cpu_percent())
     info += "**\u3164\u25A0 Disk Usage:** {}%\n".format(psutil.disk_usage('/')[3])
     info += "**\u3164\u25A0 Current Uptime:** {}\n".format(self.get_uptime())
     info += "**\u3164\u25A0 Servers:** {:,} ({:,} users)\n".format(len(bot.guilds), len(bot.users))
-    info += "\nWant yvona on _your_ server? [Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot).\n"
-    info += "Like this bot? [Consider donating a dollar or two](https://www.patreon.com/yshtolabot)."
+    info += "\n**Submit all bug reports and suggestions to the GitHub:** [Click here](https://github.com/snafuPop/yvona/issues/new)\n"
+    info += "Want yvona on _your_ server? [Click here](https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot).\n"
+    info += "Like this bot? [Consider donating a dollar or two](https://www.patreon.com/yvona)."
 
     embed.add_field(name ="**__Bot Statistics__**", value = info)
     embed.set_footer(text = "Use {}help to produce a list of commands".format(ctx.prefix))
