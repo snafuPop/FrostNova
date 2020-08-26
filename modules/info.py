@@ -95,7 +95,7 @@ class Info(commands.Cog):
     stats.append("**Money From Adventures:** {:,} {}".format(user_key["loot_earnings"], currency_name))
     stats.append("**Slot Winnings:** {:,} {}".format(user_key["slot_winnings"], currency_name))
     stats.append("**Pennies Stolen:** {:,} {}".format(user_key["stolen_money"], currency_name))
-    embed.add_field(name = "**Statistics:**", value = "\n".join(stats), inline = False)
+    embed.add_field(name = "__**Statistics:**__", value = "\n".join(stats), inline = False)
 
     items = ", ".join(user_key["inventory"])
     if items: embed.add_field(name = "**Inventory:**", value = items)
