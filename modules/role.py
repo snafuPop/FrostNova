@@ -27,11 +27,13 @@ class Roles(commands.Cog):
         role = guild.get_role(self.cache[str(payload.guild_id)]["reactions"][payload.emoji.name])
         user = guild.get_member(payload.user_id)
         await user.add_roles(role)
-        # for discord 1.3
-        #if payload.event_type is "REACTION_ADD":
-        #  await user.add_roles(role)
-        #if payload.event_type is "REACTION_REMOVE":
-        #  await user.remove_roles(role)
+      else:
+        emoji_name = "<:{}:{}>".format(str(payload.emoji.name), str(payload.emoji.id))
+        if emoji_name in self.cache[str(payload.guild_id)]["reactions"]:
+          guild = self.bot.get_guild(payload.guild_id)
+          role = guild.get_role(self.cache[str(payload.guild_id)]["reactions"][emoji_name])
+          user = guild.get_member(payload.user_id)
+          await user.add_roles(role)
 
 
   @commands.Cog.listener()
@@ -42,6 +44,13 @@ class Roles(commands.Cog):
         role = guild.get_role(self.cache[str(payload.guild_id)]["reactions"][payload.emoji.name])
         user = guild.get_member(payload.user_id)
         await user.remove_roles(role)
+      else:
+        emoji_name = "<:{}:{}>".format(str(payload.emoji.name), str(payload.emoji.id))
+        if emoji_name in self.cache[str(payload.guild_id)]["reactions"]:
+          guild = self.bot.get_guild(payload.guild_id)
+          role = guild.get_role(self.cache[str(payload.guild_id)]["reactions"][emoji_name])
+          user = guild.get_member(payload.user_id)
+          await user.remove_roles(role)
 
   @commands.command(description = "Gets a list of a server's roles and their IDs.")
   async def roles(self, ctx):
@@ -55,15 +64,19 @@ class Roles(commands.Cog):
   async def role_msg(self, ctx, action: str = None, *, message: str = "Use the reactions below to assign yourself a role!"):
     if (action == "create"):
       await self.create_role_msg(ctx, message)
+      return
     if (action == "delete"):
       await self.delete_role_msg(ctx)
+      return
     if (action == "edit"):
       await self.edit_role_msg(ctx, message)
+      return
     if (action == "add"):
       args = message.split(" ")
       emoji_name = args[0]
       role_id = args[1]
       await self.add_role_reaction(ctx, emoji_name, role_id)
+      return
     else:
       embed = discord.Embed(title = "", description = "As a moderator, you can use `{}role_msg <action>` to modify the server's role message.".format(ctx.prefix))
       embed.add_field(name = "**Create**", value = "Creates the role message for the server. Type the desired message in the `<action>` field. Only one can be active at a time.")
@@ -133,7 +146,7 @@ class Roles(commands.Cog):
 
     msg = await ctx.fetch_message(self.cache[str(ctx.guild.id)]["message_id"])
     try:
-      await msg.add_reaction(str(emoji))
+      await msg.add_reaction(emoji)
     except:
       await ctx.send(embed = discord.Embed(title = "**Error!**", description = "`{}` is not a valid emoji.".format(emoji)))
     cache = self.cache
