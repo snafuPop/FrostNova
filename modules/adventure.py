@@ -98,8 +98,8 @@ class Adventure(commands.Cog):
     await ctx.send(embed = embed)
 
   # helper function for calculating damage dealt during raid
-  def calculate_damage_dealt(self, level, item_level):
-    return int(((level-28)/2)*(100000*(item_level**1.2))*(uniform(0.8,1.15)))
+  def calculate_damage_dealt(self, level, item_level, defense):
+    return int(((level-8)/2)*(100000*((item_level-defense)**1.2))*(uniform(0.8,1.15)))
 
   # helper function for calculating money earned
   def calculate_money_earned(self, contribution_score, multiplier, hp_max):
@@ -108,7 +108,7 @@ class Adventure(commands.Cog):
 
   # helper function for calculating exp earned
   def calculate_exp_earned(self, contribution_score, multiplier, hp_max):
-    return int(hp_max/1000*multiplier*contribution_score*uniform(0.09, 0.12))
+    return int((hp_max/1000*multiplier*contribution_score*uniform(0.09, 0.12))/100)
     #return int(damage*multiplier*(uniform(.0012,.002)))
 
   # returns a list containing all current available bosses sorted by their defense value
@@ -175,13 +175,13 @@ class Adventure(commands.Cog):
 
 
   @commands.command(aliases = ["adv", "expore", "go"], description = "Go on an adventure!", cooldown_after_parsing = True)
-  @commands.cooldown(1, 300, commands.BucketType.user)
+  @commands.cooldown(1, 600, commands.BucketType.user)
   async def adventure(self, ctx, *, dungeon: str = None):
     if not await self.msg_is_registered(ctx): return
 
     # no dungeon specified
     if dungeon is None:
-      embed = discord.Embed(title = "**Adventuring**", description = "Hello, {0}! Are you interested in exploring dungeons? Dungeons provide a consistent way of earning money and experience, though you can only go exploring every **30 minutes**. The higher your level, the more dungeons you can go to, and higher level dungeons provide more valuable loot! Keep in mind that the lower your level is compared to the recommended level of the dungeon, the lower your odds of performing a successful exploration. If the success rate is 0%, you can immediately go on another exploration.\n\nYou can pull up a list of dungeons that you can reasonably go to with `{1}dungeons` and explore a dungeon by using `{1}adventure <name of dungeon>`. Happy exploring!".format(ctx.author.mention, ctx.prefix), color = ctx.author.color)
+      embed = discord.Embed(title = "**Adventuring**", description = "Hello, {0}! Are you interested in exploring dungeons? Dungeons provide a consistent way of earning money and experience, though you can only go exploring every **10 minutes**. The higher your level, the more dungeons you can go to, and higher level dungeons provide more valuable loot! Keep in mind that the lower your level is compared to the recommended level of the dungeon, the lower your odds of performing a successful exploration. If the success rate is 0%, you can immediately go on another exploration.\n\nYou can pull up a list of dungeons that you can reasonably go to with `{1}dungeons` and explore a dungeon by using `{1}adventure <name of dungeon>`. Happy exploring!".format(ctx.author.mention, ctx.prefix), color = ctx.author.color)
       self.set_msg_thumbnail(embed, "adventure")
       await ctx.send(embed = embed)
       ctx.command.reset_cooldown(ctx)
@@ -217,9 +217,9 @@ class Adventure(commands.Cog):
 
       # calculating value of all loot
       for loot in loot_list:
-        payout = payout + loot_table[loot]
+        payout = payout + loot_table[loot] * self.get_user_item_level(ctx)
       user_json.add_balance(ctx.author, payout)
-      exp = dungeon_dict["dungeons"][dungeon]["exp"]
+      exp = int(dungeon_dict["dungeons"][dungeon]["exp"] * uniform(.95,1.15))
 
       # creating embed
       embed = discord.Embed(title = "**Adventure successful!**", description = "{} embarked on an adventure to **{}** and succeeded!".format(ctx.author.mention, dungeon), color = ctx.author.color)
@@ -250,8 +250,8 @@ class Adventure(commands.Cog):
     user_level = self.get_user_level(ctx)
 
     # user level isn't high enough to perform upgrades
-    if user_level < 30:
-      embed = discord.Embed(title = "**Level Too Low!**", description = "Hmmm, it doesn't seem like you're strong enough to handle an upgraded weapon. Come back when you're at least **level 30.**", color = ctx.author.color)
+    if user_level < 10:
+      embed = discord.Embed(title = "**Level Too Low!**", description = "Hmmm, it doesn't seem like you're strong enough to handle an upgraded weapon. Come back when you're at least **level 10.**", color = ctx.author.color)
       embed.set_footer(text = "(You're currently level {})".format(user_level))
       self.set_msg_thumbnail(embed, "upgrade")
       await ctx.send(embed = embed)
@@ -330,11 +330,12 @@ class Adventure(commands.Cog):
     boss_alive = ""
     boss_dead = ""
     for boss in bosses:
-      if boss[2] == 0: boss_dead += "~~{}~~\n".format(boss[0])
-      else: boss_alive += "**{}** (**{:.2f}**% HP) (**{}** Defense)\n".format(boss[0], boss[2]/boss[1]*100, boss[3])
-    if boss_alive: embed.add_field(name = "**Current Available Bosses:**", value = boss_alive, inline = True)
-    if boss_dead: embed.add_field(name = "**Defeated Bosses:**", value = boss_dead, inline = True)
+      if boss[2] == 0: boss_dead += "~~{}~~ (**{:,}** Defense)\n".format(boss[0], boss[3] )
+      else: boss_alive += "**{}** (**{:.2f}**% HP) (**{:,}** Defense)\n".format(boss[0], boss[2]/boss[1]*100, boss[3])
+    if boss_dead: embed.add_field(name = "**Defeated Bosses:**", value = boss_dead, inline = False)
+    if boss_alive: embed.add_field(name = "**Current Available Bosses:**", value = boss_alive, inline = False)
     self.set_msg_thumbnail(embed, "raid")
+    embed.set_footer(text = "Defeated bosses can still be challenged.")
     await ctx.send(embed = embed)
 
 
@@ -348,9 +349,9 @@ class Adventure(commands.Cog):
     user_item_level = self.get_user_item_level(ctx)
 
     # user level isn't high enough to embark on a raid
-    if user_level < 30:
-      embed = discord.Embed(title = "**Level Too Low!**", description = "You think I'll let a whelp like you embark on a raid, {}? Come back when you're a little stronger - say, **level 30**.".format(ctx.author.mention), color = ctx.author.color)
-      embed.set_footer(text = "(You're currently level {})".format(user_level))
+    if user_level < 10:
+      embed = discord.Embed(title = "**Level Too Low!**", description = "You think I'll let a whelp like you embark on a raid, {}? Come back when you're a little stronger - say, **level 10**.".format(ctx.author.mention), color = ctx.author.color)
+      embed.set_footer(text = "(You're currently level {:,})".format(user_level))
       self.set_msg_thumbnail(embed, "raid")
       await ctx.send(embed = embed)
       ctx.command.reset_cooldown(ctx)
@@ -376,11 +377,9 @@ class Adventure(commands.Cog):
       return
 
     boss = boss_dict[boss_name]
-    true_damage_dealt = self.calculate_damage_dealt(user_level, user_item_level)
-    damage_dealt = int(true_damage_dealt * (boss["defense"] / 100))
 
     # no damage dealt - attack failed
-    if damage_dealt <= 0:
+    if self.get_user_item_level(ctx) < boss_dict[boss_name]["defense"]:
       embed = discord.Embed(title = "**Raid Results:**", description = "**{}** completely endured {}'s attack! Retreat!".format(boss_name, ctx.author.mention))
       embed.add_field(name = "**Notes:**", value = "When performing an attack against a boss, your item level is reduced by their defense. You're going to need to have a higher item level before you can challenge **{}** (your item level was **{:,}** while **{}'s** defense is **{:,}**). Try upgrading your item level with `{}upgrade`, then try again later.".format(boss_name, user_item_level, boss_name, boss["defense"], ctx.prefix))
       embed.add_field(name = "**Forgiveness Cooldown:**", value = "Because your attack failed, your cooldown timer has been reset.", inline = False)
@@ -389,10 +388,12 @@ class Adventure(commands.Cog):
       ctx.command.reset_cooldown(ctx)
       return
 
+    damage_dealt = int(self.calculate_damage_dealt(user_level, user_item_level, boss_dict[boss_name]["defense"]))
+
     # attack succeeded
     # contribution score is based on % of boss's health damaged
     # this score will never go above 1 (10% of HP) or below .01 (.1% of HP)
-    contribution_score = 10*true_damage_dealt/boss["hp_max"]
+    contribution_score = 10*damage_dealt/boss["hp_max"]
     if contribution_score > 1: contribution_score = 1
     elif contribution_score < .01: contribution_score = .01
     money_earned = self.calculate_money_earned(contribution_score, boss["multiplier"], boss["hp_max"])
@@ -457,7 +458,9 @@ class Adventure(commands.Cog):
         time_unit = "minute(s)"
       else:
         time_unit = "second(s)"
-      await ctx.send(embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.author.mention, time_left, time_unit)))
+      embed = discord.Embed(title = "", description = "This command is still on cooldown, {}. Try again in {:.0f} {}.".format(ctx.author.mention, time_left, time_unit))
+      if uniform(0,100) == 69: embed.set_thumbnail(url = "https://i.imgur.com/Sngo9G2.png")
+      await ctx.send(embed = embed)
     else:
       raise error
 

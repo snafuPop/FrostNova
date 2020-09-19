@@ -151,7 +151,7 @@ def level_up(user):
 
 
 def get_req_exp(user, user_dict):
-  return int((user_dict[str(user.id)]["level"]**3.2)+100)
+  return int((user_dict[str(user.id)]["level"]**3.9)+100)
 
 # allows users to give fractional strings as arguments and interprets them into integer values
 def interpret_frac(user, money):
