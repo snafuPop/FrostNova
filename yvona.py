@@ -33,9 +33,20 @@ def get_prefix(bot, ctx):
   prefixes = get_config()["PREFIXES"]
   return prefixes.get(guild, "!")
 
-# load the token and prefix
+# load intents
+intents = discord.Intents.default()
+intents.members = True
+intents.guilds = True
+intents.emojis = True
+intents.messages = True
+intents.guild_messages = True
+intents.dm_messages = True
+intents.reactions = True
+intents.guild_reactions = True
+
+# load the token, prefixes, and intents
 TOKEN = get_config()["TOKEN"]
-bot = commands.Bot(command_prefix = get_prefix)
+bot = commands.Bot(command_prefix = get_prefix, intents = intents)
 builtins.bot = bot
 bot.remove_command('help')
 
