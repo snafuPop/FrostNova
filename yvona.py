@@ -7,6 +7,9 @@ import importlib
 import inspect
 from enum import Enum
 import json
+from discord import Client, Intents, Embed
+from discord_slash import SlashCommand, SlashContext
+from discord.ext.commands import Bot
 
 # attempt to import discord.py
 try:
@@ -16,13 +19,18 @@ except ImportError:
   print("discord.py was not found.")
   sys.exit(1)
 
+# getting directory information
+dirname = os.path.dirname(__file__)
+settings_file_path = os.path.join(dirname, '_config/settings.json')
+modules_path = os.path.join(dirname, 'modules/')
+
 # opening initial settings
 def get_config():
-  with open("/home/snafuPop/yvona/_config/settings.json") as json_data:
+  with open(settings_file_path) as json_data:
     return json.load(json_data)
 
 def update_config(config):
-  with open("/home/snafuPop/yvona/_config/settings.json") as json_out:
+  with open(settings_file_path) as json_out:
     json.dump(config, json_out, indent = 2)
 
 def get_prefix(bot, ctx):
@@ -31,30 +39,34 @@ def get_prefix(bot, ctx):
   except:
     return ""
   prefixes = get_config()["PREFIXES"]
-  return prefixes.get(guild, "!")
+  return prefixes.get(guild, "yv ")
 
 # load intents
-intents = discord.Intents.default()
-intents.members = True
-intents.guilds = True
-intents.emojis = True
-intents.messages = True
-intents.guild_messages = True
-intents.dm_messages = True
-intents.reactions = True
-intents.guild_reactions = True
+#intents = discord.Intents.default()
+#intents.members = True
+#intents.guilds = True
+#intents.emojis = True
+#intents.messages = True
+#intents.guild_messages = True
+#intents.dm_messages = True
+#intents.reactions = True
+#intents.guild_reactions = True
 
 # load the token, prefixes, and intents
 TOKEN = get_config()["TOKEN"]
-bot = commands.Bot(command_prefix = get_prefix, intents = intents)
+#bot = commands.Bot(command_prefix = get_prefix, intents = intents)
+bot = Bot(command_prefix = get_prefix, self_bot = True, help_command = None, intents = Intents.default())
+slash = SlashCommand(bot, sync_commands = True)
+guild_ids = [482725089217871893]
 builtins.bot = bot
-bot.remove_command('help')
+builtins.guild_ids = guild_ids
+#bot.remove_command('help')
 
 # imports
 successful_imports = 0
 total_imports = 0
 print("\n")
-for file in os.listdir("/home/snafuPop/yvona/modules/"):
+for file in os.listdir(modules_path):
   filename = os.fsdecode(file)
   if filename != "__init__.py" and filename.endswith(".py"):
     total_imports += 1
