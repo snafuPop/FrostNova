@@ -130,7 +130,11 @@ class Info(commands.Cog):
       manage_components.create_button(
         style = ButtonStyle.URL,
         label = "GitHub repo",
-        url = "https://github.com/snafuPop/yvona")]
+        url = "https://github.com/snafuPop/yvona"),
+      manage_components.create_button(
+        style = ButtonStyle.URL,
+        label = "Report an issue",
+        url = "https://github.com/snafuPop/yvona/issues/new")]
     action_row = manage_components.create_actionrow(*buttons)
     await ctx.send(embed = embed, components = [action_row])
 
