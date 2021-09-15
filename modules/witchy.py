@@ -2,28 +2,60 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext, SlashCommand
 from discord_slash.utils.manage_commands import create_option, create_choice
+from discord_slash.utils import manage_components
+from discord_slash.model import ButtonStyle
+from ButtonPaginator import Paginator
 from discord.ext import commands
 from builtins import bot, guild_ids
 
-from random import random
+import random
 from random import randint
 from random import choice
 from titlecase import titlecase
 
+import aiohttp
+
 class Witchy(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
-    self.major_arcana = ["the fool", "the magician", "the high priestess", "the empress", "the emperor", "the hierophant", "the lovers", "the chariot", "strength", "the hermit", "wheel of fortune", "justice", "the hanged man", "death", "temperance", "the devil", "the tower", "the star", "the moon", "the sun", "judgement", "the world"]
-    self.minor_arcana = self.create_deck()
 
-  def create_deck(self):
-    deck = []
-    card_type = ["cups", "swords", "wands", "pentacles"]
-    card_num = ["king", "queen", "knight", "page", "ten", "nine", "eight", "seven", "six", "five", "four", "three", "two", "ace"]
-    for a_type in card_type:
-      for a_num in card_num:
-        deck.append(a_num + " of " + a_type)
-    return deck
+
+  @cog_ext.cog_slash(name = "tarot", description = "Generates a spread of tarot cards.", guild_ids = guild_ids)
+  async def tarot(self, ctx):
+    await ctx.defer()
+    try:
+      url = "https://rws-cards-api.herokuapp.com/api/v1/cards/random?n=5"
+      async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+          spread = await response.json()
+    except Exception as error:
+      await ctx.send(embed = discord.Embed(title = (str(type(error).__name)), description = ":no_entry: " + str(error)))
+      return
+
+    questions = ["What is happening in this moment?", "How can I weather it easily and with grace?", "What is the lesson?", "What is leaving at this time?", "What is arriving at this time?"]
+    embeds = []
+    question_index = 0
+
+    for card in spread["cards"]:
+      is_reversed = bool(random.getrandbits(1))
+      is_major = card["type"] == "major"
+
+      if is_major:
+        card_name = "The Reversed {}".format(card["name"][4:]) if is_reversed else card["name"]
+      else:
+        card_name = "Reversed {}".format(card["name"]) if is_reversed else card["name"]
+
+      card_meaning = card["meaning_rev"] if is_reversed else card["meaning_up"]
+
+      embed = discord.Embed(title = card_name, description = "{} Arcana".format(titlecase(card["type"])))
+      embed.add_field(name = "**{}**".format(questions[question_index]), value = "{}".format(card_meaning))
+      embed.set_thumbnail(url = "https://www.trustedtarot.com/img/cards/{}.png".format(card["name"].replace(" ", "-").lower()))
+      embeds.append(embed)
+      question_index += 1
+
+    paginated_embed = Paginator(bot = self.bot, ctx = ctx, embeds = embeds, only = ctx.author)
+    await paginated_embed.start()
+
 
   def get_8ball(self):
     # returns a random 8-ball response and a color representing its polarity
@@ -50,16 +82,6 @@ class Witchy(commands.Cog):
 
     return [polarity, reading]
 
-  def get_card(self):
-    spread = []
-    spread.append(choice(self.major_arcana))
-
-    # appends 3 random minor arcana
-    minor_arcana = self.minor_arcana
-    for i in range (3):
-      spread.append(minor_arcana.pop(randint(0,len(minor_arcana))))
-
-    return spread
 
   @cog_ext.cog_slash(name = "8ball", description = "Ask the mystical 8ball a question.", guild_ids = guild_ids, 
     options = [create_option(
@@ -69,25 +91,14 @@ class Witchy(commands.Cog):
       required = True)])
   async def _8ball(self, ctx, question: str = None):
     reading = self.get_8ball()
+    if not question.endswith('?'):
+      question = question + "?"
+
     embed = discord.Embed(title = "", description = ":8ball: {}".format(reading[1]), color = reading[0])
     embed.set_author(name = "\"{}\"".format(question), icon_url = ctx.author.avatar_url)
     await ctx.send(embed = embed)
 
 
-  @cog_ext.cog_slash(name = "tarot", description = "Generates a spread of tarot cards.")
-
-  @commands.command(description = "Generates a spread of tarot cards.")
-  async def tarot(self, ctx):
-    '''Returns a major arcana and 3 minor arcana.'''
-
-    # grabs the spread
-    spread = self.get_card()
-
-    embed = discord.Embed(title="", description="{}'s spread...".format(ctx.author.mention), color = ctx.author.color)
-    embed.add_field(name="Major Arcana", value="[{}](https://www.trustedtarot.com/cards/{})".format(titlecase(spread[0]), spread[0].replace(" ", "-")), inline=False)
-    embed.set_thumbnail(url="https://www.trustedtarot.com/img/cards/{}.png".format(spread[0].replace(" ", "-")))
-    embed.add_field(name="Minor Arcanas", value="[The {}](https://www.trustedtarot.com/cards/{}), [The {}](https://www.trustedtarot.com/cards/{}), and [The {}](https://www.trustedtarot.com/cards/{})".format(titlecase(spread[1]), spread[1].replace(" ", "-"), titlecase(spread[2]), spread[2].replace(" ", "-"), titlecase(spread[3]), spread[3].replace(" ", "-")))
-    await ctx.send(embed=embed)
 
 def setup(bot):
   bot.add_cog(Witchy(bot))
