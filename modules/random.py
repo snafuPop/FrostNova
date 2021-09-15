@@ -27,7 +27,7 @@ class Random(commands.Cog):
       option_type = 3,
       required = False)]
     )
-  async def roll(self, ctx, number: int = 100, *, declaration: str = ""):
+  async def roll(self, ctx, number: int = 100, declaration: str = ""):
     if number <= 1:
       await ctx.send(embed = discord.Embed(title = "", description = ":no_entry: Maybe roll a value greater than 1, {}? (｀Д´)".format(ctx.author.mention)))
       return
