@@ -114,5 +114,14 @@ class Maint(commands.Cog):
         print("--------------------------------------------------------")
     await ctx.send(embed = embed)
 
+
+@bot.event
+async def on_slash_command_error(ctx, error):
+  print(error, ctx)
+  if isinstance(error, commands.NotOwner):
+    embed = discord.Embed(title = "", description = ":no_entry: Only the owner of the bot may run this command.")
+    await ctx.send(embed = embed)
+
+
 def setup(bot):
   bot.add_cog(Maint(bot))
