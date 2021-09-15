@@ -4,7 +4,7 @@ from discord_slash import cog_ext, SlashContext, SlashCommand
 from discord_slash.utils import manage_components
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option, create_choice
-from builtins import bot
+from builtins import bot, guild_ids
 
 from random import randint
 from random import choice
