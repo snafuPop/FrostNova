@@ -13,7 +13,7 @@ class Maint(commands.Cog):
 
   # shuts down the bot
   @commands.is_owner()
-  @cog_ext.cog_slash(name = "shutdown", description = "Shuts down the bot.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "shutdown", description = "⛔ Shuts down the bot.", guild_ids = guild_ids)
   async def shutdown(self, ctx):
     embed = discord.Embed(title = "", description = "Shutting down. Goodbye! :wave:")
     await ctx.send(embed = embed)
@@ -21,7 +21,7 @@ class Maint(commands.Cog):
 
 
   @commands.is_owner()
-  @cog_ext.cog_slash(name = "unload", description = "Unloads a module.", guild_ids = guild_ids, 
+  @cog_ext.cog_slash(name = "unload", description = "⛔ Unloads a module.", guild_ids = guild_ids, 
     options = [create_option(
       name = "module",
       description = "The name of the module to be unloaded.",
@@ -49,7 +49,7 @@ class Maint(commands.Cog):
 
 
   @commands.is_owner()
-  @cog_ext.cog_slash(name = "load", description = "Loads a module.", guild_ids = guild_ids,
+  @cog_ext.cog_slash(name = "load", description = "⛔ Loads a module.", guild_ids = guild_ids,
     options = [create_option(
       name = "module",
       description = "The name of the module to be unloaded.",
@@ -77,7 +77,7 @@ class Maint(commands.Cog):
 
 
   @commands.is_owner()
-  @cog_ext.cog_slash(name = "reload", description = "Reloads a module. Leave moudle field empty to reload all modules.", guild_ids = guild_ids,
+  @cog_ext.cog_slash(name = "reload", description = "⛔ Reloads a module. Leave moudle field empty to reload all modules.", guild_ids = guild_ids,
     options = [create_option(
       name = "module",
       description = "The name of the module to be reloaded.",
