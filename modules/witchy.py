@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
-from builtins import bot
+from discord_slash import cog_ext, SlashContext, SlashCommand
+from discord_slash.utils.manage_commands import create_option, create_choice
+from discord.ext import commands
+from builtins import bot, guild_ids
 
 from random import random
 from random import randint
@@ -38,11 +41,11 @@ class Witchy(commands.Cog):
     reading = choice(ball[polarity])
 
     # determines a color based on polarity
-    if polarity is "good":
+    if polarity == "good":
       polarity = 0x2ecc71
-    if polarity is "neutral":
+    if polarity == "neutral":
       polarity = 0xf1c40f
-    if polarity is "bad":
+    if polarity == "bad":
       polarity = 0xe74c3c
 
     return [polarity, reading]
@@ -58,19 +61,20 @@ class Witchy(commands.Cog):
 
     return spread
 
-  @commands.command(aliases = ["8ball"], description = "Generates a standard 8ball response.")
-  async def _8ball(self, ctx, *, question: str = None):
-    '''Reads in a question and returns a standard 8-Ball response.'''
-
-    if question is None:
-      # catches empty responses
-      embed = discord.Embed(title = "", description = "Try asking a question with `{}8ball <question>`, {}".format(ctx.prefix, ctx.author.mention), color = 0xe74c3c)
-    else:
-      # fetches a response
-      reading = self.get_8ball()
-
-      embed = discord.Embed(title = question, description="{}, {}.".format(reading[1], ctx.author.mention), color = reading[0])
+  @cog_ext.cog_slash(name = "8ball", description = "Ask the mystical 8ball a question.", guild_ids = guild_ids, 
+    options = [create_option(
+      name = "question",
+      description = "Your question.",
+      option_type = 3,
+      required = True)])
+  async def _8ball(self, ctx, question: str = None):
+    reading = self.get_8ball()
+    embed = discord.Embed(title = "", description = ":8ball: {}".format(reading[1]), color = reading[0])
+    embed.set_author(name = "\"{}\"".format(question), icon_url = ctx.author.avatar_url)
     await ctx.send(embed = embed)
+
+
+  @cog_ext.cog_slash(name = "tarot", description = "Generates a spread of tarot cards.")
 
   @commands.command(description = "Generates a spread of tarot cards.")
   async def tarot(self, ctx):
