@@ -86,6 +86,12 @@ def add_item(user, item):
   update(user_dict)
 
 
+def add_slot_winnings(user, value):
+  user_dict = get_users()
+  user_dict[str(user.id)]["slot_winnings"] = user_dict[str(user.id)]["slot_winnings"] + (value)
+  update(user_dict)
+
+
 # checks if the user can pay for a certain action
 def can_spend(user, cost):
   return get_balance(user) >= cost
