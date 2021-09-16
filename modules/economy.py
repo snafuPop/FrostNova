@@ -75,7 +75,7 @@ class Economy(commands.Cog):
       option_type = 6,
       required = True),
     create_option(
-      name = "value",
+      name = "credits",
       description = "Money value.",
       option_type = 4,
       required = True)])
@@ -95,14 +95,12 @@ class Economy(commands.Cog):
       option_type = 6,
       required = True),
     create_option(
-      name = "value",
+      name = "credits",
       description = "Money value.",
       option_type = 4,
       required = True)])
   async def add_balance(self, ctx, user: discord.Member = None, credits: int = 0):
-    user_dict = user_json.get_users()
     user_json.add_balance(user, credits)
-    user_json.update(user_dict)
     embed = discord.Embed(title = "", description = "Successfully added {:,} to {}'s balance.".format(credits, user.mention))
     await ctx.send(embed = embed)
 
@@ -115,14 +113,12 @@ class Economy(commands.Cog):
       option_type = 6,
       required = True),
     create_option(
-      name = "value",
+      name = "credits",
       description = "Money value.",
       option_type = 4,
       required = True)])
   async def subtract_balance(self, ctx, user: discord.Member = None, credits: int = 0):
-    user_dict = user_json.get_users()
     user_json.add_balance(user, -credits)
-    user_json.update(user_dict)
     embed = discord.Embed(title = "", description = "Successfully added {:,} to {}'s balance.".format(credits, user.mention))
     await ctx.send(embed = embed)
 
@@ -177,7 +173,7 @@ class Economy(commands.Cog):
       embed = discord.Embed(title = "", description = ":no_entry: You can't send less than 1 {}, {}!".format(user_json.get_currency_name(), ctx.author.mention))
 
     elif not user_json.is_registered(ctx.author):
-      embed = discord.Embed(title = "", description = ":no_entry: It looks like you aren't registered in the system, {}".format(recipient.name, ctx.author.mention))
+      embed = discord.Embed(title = "", description = ":no_entry: It looks like you aren't registered in the system, {}. Try `/register`.".format(recipient.name, ctx.author.mention))
 
     elif not user_json.is_registered(recipient):
       embed = discord.Embed(title = "", description = ":no_entry: It looks like **{}** isn't registered in the system, {}".format(recipient.name, ctx.author.mention))
@@ -186,8 +182,8 @@ class Economy(commands.Cog):
       user_money = user_json.get_balance(ctx.author)
 
       if user_money < value:
-        embed = discord.Embed(title = "", description = ":no_entry: You don't have that much money to give, {}!".format(ctx.author.mention))
-        embed.set_footer(text = "You have {} {}.".format(user_money, user_json.get_currency_name()))
+        embed = discord.Embed(title = "", description = ":no_entry: You don't have that much, {}!".format(ctx.author.mention))
+        embed.set_footer(text = "You have {:,} {}.".format(user_money, user_json.get_currency_name()))
       else:
         user_json.add_balance(ctx.author, -value)
         user_json.add_balance(recipient, value)
@@ -224,7 +220,7 @@ class Economy(commands.Cog):
       ctx.slash.commands["rob"].reset_cooldown(ctx)
 
     elif not user_json.is_registered(ctx.author):
-      embed = discord.Embed(title = "", description = ":no_entry: It looks like you aren't registered in the system, {}. Try `!register`".format(ctx.author.mention))
+      embed = discord.Embed(title = "", description = ":no_entry: It looks like you aren't registered in the system, {}. Try `/register`.".format(ctx.author.mention))
       await ctx.send(embed = embed)
       ctx.message = ctx
       ctx.slash.commands["rob"].reset_cooldown(ctx)
@@ -240,7 +236,7 @@ class Economy(commands.Cog):
 
       if user_money < money:
         embed = discord.Embed(title = "", description = ":no_entry: {} doesn't have that much, {}!".format(user, ctx.author.mention))
-        embed.set_footer(text = "You have {} {}.".format(user_money, user_json.get_currency_name()))
+        embed.set_footer(text = "They have {:,} {}.".format(user_money, user_json.get_currency_name()))
         ctx.slash.commands["rob"].reset_cooldown(ctx)
 
       else:
