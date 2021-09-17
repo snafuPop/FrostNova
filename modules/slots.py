@@ -80,7 +80,7 @@ class Slots(commands.Cog):
     user_money = user_json.get_balance(user)
     user_money_after = user_money - bet + payout_total
 
-    embed = discord.Embed(title = "", description = self.beautify_reel(reel))
+    embed = discord.Embed(title = "", description = self.beautify_reel(reel), color = user.color)
     embed.set_author(name = "{}'s Slot Machine".format(user.name), icon_url = user.avatar_url)
     embed.add_field(name = "**Payout:**", value = "{:,} × **{}** = {:,} {}".format(bet, payout_mult, payout_total, user_json.get_currency_name()))
     embed.set_footer(text = "Balance: {:,} → {:,} {}".format(user_money, user_money_after, user_json.get_currency_name()))
@@ -100,6 +100,7 @@ class Slots(commands.Cog):
       option_type = 4,
       required = True)])
   async def slots(self, ctx, bet: int = 0):
+    await ctx.defer()
     if not user_json.is_registered(ctx.author):
       embed = discord.Embed(title = "", description = ":no_entry: It looks like you aren't reigsted in the system, {}. Try `/register`.").format(ctx.author.mention)
 
