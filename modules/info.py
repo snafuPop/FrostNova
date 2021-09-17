@@ -161,7 +161,7 @@ class Info(commands.Cog):
 
   def get_non_registered_user(self, user):
     # Gets statistics of unregistered users.
-    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)))
+    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
 
     # Adding additional fields to the Embed.
@@ -182,7 +182,7 @@ class Info(commands.Cog):
     user_key = user_dict[str(user.id)]
 
     # Constructing the Embed.
-    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "***Level {:,} {}***".format(user_key["level"], titlecase(str(user.top_role))))
+    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "***Level {:,} {}***".format(user_key["level"], titlecase(str(user.top_role))), color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
 
     # Constructing additional information.
