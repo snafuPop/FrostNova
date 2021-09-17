@@ -47,7 +47,7 @@ class Witchy(commands.Cog):
 
       card_meaning = card["meaning_rev"] if is_reversed else card["meaning_up"]
 
-      embed = discord.Embed(title = card_name, description = "{} Arcana".format(titlecase(card["type"])))
+      embed = discord.Embed(title = card_name, description = "{} Arcana".format(titlecase(card["type"])), color = ctx.author.color)
       embed.add_field(name = "**{}**".format(questions[question_index]), value = "{}".format(card_meaning))
       embed.set_thumbnail(url = "https://www.trustedtarot.com/img/cards/{}.png".format(card["name"].replace(" ", "-").lower()))
       embeds.append(embed)
