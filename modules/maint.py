@@ -15,6 +15,7 @@ class Maint(commands.Cog):
   @commands.is_owner()
   @cog_ext.cog_slash(name = "shutdown", description = "⛔ Shuts down the bot.", guild_ids = guild_ids)
   async def shutdown(self, ctx):
+    await ctx.defer()
     embed = discord.Embed(title = "", description = "Shutting down. Goodbye! :wave:")
     await ctx.send(embed = embed)
     await self.bot.logout()
@@ -35,6 +36,7 @@ class Maint(commands.Cog):
       ])
     ])
   async def unload(self, ctx, module: str = None):
+    await ctx.defer()
     load_module = "modules." + module[:len(module)-3]
     try:
       self.bot.unload_extension(load_module)
@@ -63,6 +65,7 @@ class Maint(commands.Cog):
       ])
     ])
   async def load(self, ctx, module: str = None):
+    await ctx.defer()
     load_module = "modules." + module[:len(module)-3]
     try:
       self.bot.load_extension(load_module)
@@ -91,6 +94,7 @@ class Maint(commands.Cog):
       ])
     ])
   async def reload(self, ctx, module: str = None):
+    await ctx.defer()
     if (module is None):
       for module in os.listdir("modules"):
         if (module.endswith(".py")):
