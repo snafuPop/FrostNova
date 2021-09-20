@@ -93,7 +93,7 @@ class Slots(commands.Cog):
     user_json.add_slot_winnings(user, value)
 
   # plays slots
-  @cog_ext.cog_slash(name = "slots", description = "Play some slots!", guild_ids = guild_ids,
+  @cog_ext.cog_slash(name = "slots", description = "Play some slots!", 
     options = [create_option(
       name = "bet",
       description = "Amount of money to bet (must be at least 100 {}.".format(user_json.get_currency_name()),
