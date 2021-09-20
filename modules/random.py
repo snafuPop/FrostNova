@@ -24,7 +24,7 @@ class Random(commands.Cog):
 
   # rolls a random number between 1 and a user defined max (defaults to 100)
   # also optionally takes in a string input
-  @cog_ext.cog_slash(name = "roll", description = "Rolls a dice.", guild_ids = guild_ids, 
+  @cog_ext.cog_slash(name = "roll", description = "Rolls a dice.", 
     options = [create_option(
       name = "number",
       description = "The highest possible number you can roll. Leave blank for 100.",
@@ -57,7 +57,7 @@ class Random(commands.Cog):
     await ctx.send(embed=embed)
 
 
-  @cog_ext.cog_slash(name = "coinflip", description = "Flips a coin.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "coinflip", description = "Flips a coin.")
   async def flip(self, ctx):
     rand = randint(1, 101)
     if rand == 1:
@@ -101,11 +101,10 @@ class Random(commands.Cog):
     embed.add_field(name = "**Your Saeldor Dryness Score:**", value = self.calculate_dryness(run_count), inline = False)
     embed.set_thumbnail(url = "https://oldschool.runescape.wiki/images/6/6e/The_Corrupted_Gauntlet.png?e621e")
     embed.set_footer(text = "Your Corrupted Gauntlet completion count is: {:,}".format(run_count))
-
     return embed
 
 
-  @cog_ext.cog_slash(name = "cg", description = "Run the Corrupted Gauntlet!", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "cg", description = "Run the Corrupted Gauntlet!")
   async def corrupted_gauntlet(self, ctx):
     await ctx.defer()
     run_count = 1
