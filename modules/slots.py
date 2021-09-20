@@ -120,7 +120,7 @@ class Slots(commands.Cog):
       await ctx.send(embed = embed, components = [action_row])
 
       while user_json.get_balance(ctx.author) >= bet:
-        button_ctx: ComponentContext = await wait_for_component(self.bot, components = action_row)
+        button_ctx: ComponentContext = await wait_for_component(self.bot, components = action_row, check = lambda btn_ctx: btn_ctx.author_id == ctx.author_id)
         await button_ctx.edit_origin(embed = self.create_slot_embed(ctx.author, bet))
 
     await ctx.send(embed = embed)

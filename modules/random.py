@@ -138,7 +138,7 @@ class Random(commands.Cog):
     await ctx.send(embed = embed, components = [action_row])
 
     while True:
-      button_ctx: ComponentContext = await wait_for_component(self.bot, components = action_row)
+      button_ctx: ComponentContext = await wait_for_component(self.bot, components = action_row, check = lambda btn_ctx: btn_ctx.author_id == ctx.author_id)
       for i in range(int(button_ctx.component_id)):
         run_count += 1
         embed = self.run_corrupted_gauntlet(ctx.author, dropped_so_far, run_count)
