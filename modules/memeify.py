@@ -7,6 +7,8 @@ from builtins import bot
 from PIL import ImageDraw, Image, ImageFont
 from io import BytesIO
 import textwrap
+import os
+
 
 class Memeify(commands.Cog):
   def __init__(self, bot):
