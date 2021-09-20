@@ -20,7 +20,7 @@ class Witchy(commands.Cog):
     self.bot = bot
 
 
-  @cog_ext.cog_slash(name = "tarot", description = "Generates a spread of tarot cards.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "tarot", description = "Generates a spread of tarot cards.")
   async def tarot(self, ctx):
     await ctx.defer()
     try:
@@ -83,7 +83,7 @@ class Witchy(commands.Cog):
     return [polarity, reading]
 
 
-  @cog_ext.cog_slash(name = "8ball", description = "Ask the mystical 8ball a question.", guild_ids = guild_ids, 
+  @cog_ext.cog_slash(name = "8ball", description = "Ask the mystical 8ball a question.",  
     options = [create_option(
       name = "question",
       description = "Your question.",
