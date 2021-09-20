@@ -33,29 +33,22 @@ def update_config(config):
   with open(settings_file_path) as json_out:
     json.dump(config, json_out, indent = 2)
 
-def get_prefix(bot, ctx):
-  try:
-    guild = str(ctx.guild.id)
-  except:
-    return ""
-  prefixes = get_config()["PREFIXES"]
-  return prefixes.get(guild, "yv ")
 
 # load intents
-#intents = discord.Intents.default()
-#intents.members = True
-#intents.guilds = True
-#intents.emojis = True
-#intents.messages = True
-#intents.guild_messages = True
-#intents.dm_messages = True
-#intents.reactions = True
-#intents.guild_reactions = True
+intents = Intents.default()
+intents.members = True
+intents.guilds = True
+intents.emojis = True
+intents.messages = True
+intents.guild_messages = True
+intents.dm_messages = True
+intents.reactions = True
+intents.guild_reactions = True
 
 # load the token, prefixes, and intents
 TOKEN = get_config()["TOKEN"]
 #bot = commands.Bot(command_prefix = get_prefix, intents = intents)
-bot = Bot(command_prefix = get_prefix, self_bot = True, help_command = None, intents = Intents.default())
+bot = Bot(command_prefix = "yv ", self_bot = True, help_command = None, intents = intents)
 slash = SlashCommand(bot, sync_commands = True)
 guild_ids = [482725089217871893]
 builtins.bot = bot
