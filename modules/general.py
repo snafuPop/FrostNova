@@ -15,14 +15,14 @@ class General(commands.Cog):
 
 
   # ping pong!
-  @cog_ext.cog_slash(name = "wave", description = "Checks the status of the bot.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "wave", description = "Checks the status of the bot.")
   async def hello(self, ctx):
     embed = discord.Embed(title = "", description = "Hi, {}! :wave:".format(ctx.author.mention))
     embed.set_footer(text = "{}ms response time".format(round(bot.latency*1000)))
     await ctx.send(embed = embed)
 
 
-  @cog_ext.cog_slash(name = "leaderboard", description = "Gets leaderboard information.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "leaderboard", description = "Gets leaderboard information.")
   async def leaderboard(self, ctx):
     await ctx.defer()
 

@@ -35,7 +35,7 @@ class Memeify(commands.Cog):
     return output_buffer
 
 
-  @cog_ext.cog_subcommand(base = "meme", name = "badcode", description = "Make fun of some code.", guild_ids = guild_ids, 
+  @cog_ext.cog_subcommand(base = "meme", name = "badcode", description = "Make fun of some code.", 
     options = [create_option(
       name = "code",
       description = "The code to make fun of.",
@@ -47,7 +47,7 @@ class Memeify(commands.Cog):
     await ctx.send(file = discord.File(fp = self.make_image("comsci.png", code, [430, 25], [0, 0, 0, 255], "FantasqueSansMono-Regular.ttf", 20), filename = "badcode.png"))
 
 
-  @cog_ext.cog_subcommand(base = "meme", name = "preach", description = "Preach some truth, even if they hate the truth.", guild_ids = guild_ids,
+  @cog_ext.cog_subcommand(base = "meme", name = "preach", description = "Preach some truth, even if they hate the truth.",
     options = [create_option(
       name = "truth", 
       description = "The hard truth to preach.", 
@@ -59,7 +59,7 @@ class Memeify(commands.Cog):
     await ctx.send(file = discord.File(fp = self.make_image("jesus.png", truth, [165, 175], [0, 0, 0, 255], "FantasqueSansMono-Regular.ttf", 25), filename = "jesus.png"))
   
 
-  @cog_ext.cog_subcommand(base = "meme", name = "sans", description = "uhuhuhuhuhuhuhuh", guild_ids = guild_ids,
+  @cog_ext.cog_subcommand(base = "meme", name = "sans", description = "uhuhuhuhuhuhuhuh", 
     options = [create_option(
       name = "message",
       description = "Any message.",
@@ -71,6 +71,6 @@ class Memeify(commands.Cog):
     message = textwrap.fill(message, width = 30)
     await ctx.send(file = discord.File(fp = self.make_image("sans.png", message, [117, 30], [255, 255, 255, 255], "UndertaleSans.ttf", 24), filename = "sans.png"))
     
-    
+
 def setup(bot):
   bot.add_cog(Memeify(bot))

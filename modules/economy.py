@@ -18,7 +18,7 @@ class Economy(commands.Cog):
 
   # adds new keys to all users
   @commands.is_owner()
-  @cog_ext.cog_subcommand(base = "dict", name = "add", description = "⛔ Adds a key to all users.", guild_ids = guild_ids, 
+  @cog_ext.cog_subcommand(base = "dict", name = "add", description = "⛔ Adds a key to all users.",  
     options = [create_option(
       name = "key",
       description = "Key to be added.",
@@ -45,7 +45,7 @@ class Economy(commands.Cog):
 
   # remove key from all users
   @commands.is_owner()
-  @cog_ext.cog_subcommand(base = "dict", name = "delete", description = "⛔ Removes a key from all users.", guild_ids = guild_ids,
+  @cog_ext.cog_subcommand(base = "dict", name = "delete", description = "⛔ Removes a key from all users.", 
     options = [create_option(
       name = "key",
       description = "Key to be removed.",
@@ -68,7 +68,7 @@ class Economy(commands.Cog):
 
   # sets a new balance to a user
   @commands.is_owner()
-  @cog_ext.cog_subcommand(base = "balance", name = "set", description = "⛔ Sets a user's balance to a given value.", guild_ids = guild_ids,
+  @cog_ext.cog_subcommand(base = "balance", name = "set", description = "⛔ Sets a user's balance to a given value.", 
     options = [create_option(
       name = "user",
       description = "The name of a user.",
@@ -88,7 +88,7 @@ class Economy(commands.Cog):
 
 
   @commands.is_owner()
-  @cog_ext.cog_subcommand(base = "balance", name = "add", description = "⛔ Adds a given value to a user's balance.", guild_ids = guild_ids,
+  @cog_ext.cog_subcommand(base = "balance", name = "add", description = "⛔ Adds a given value to a user's balance.", 
     options = [create_option(
       name = "user",
       description = "The name of a user.",
@@ -106,7 +106,7 @@ class Economy(commands.Cog):
 
 
   @commands.is_owner()
-  @cog_ext.cog_subcommand(base = "balance", name = "subtract", description = "⛔ Subtracts a given value to a user's balance.", guild_ids = guild_ids,
+  @cog_ext.cog_subcommand(base = "balance", name = "subtract", description = "⛔ Subtracts a given value to a user's balance.", 
     options = [create_option(
       name = "user",
       description = "The name of a user.",
@@ -127,7 +127,7 @@ class Economy(commands.Cog):
 # ----------------------------------------------------------------------------------------------------
 
   # registers an economy account with the bot
-  @cog_ext.cog_slash(name = "register", description = "Registers an account with yvona, allowing you to earn money and have additional stats tracked.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "register", description = "Registers an account with yvona, allowing you to earn money and have additional stats tracked.")
   async def register(self, ctx):
     user_dict = user_json.get_users()
     if str(ctx.author.id) in user_dict:
@@ -154,7 +154,7 @@ class Economy(commands.Cog):
 
 
   # transfers credits to another user
-  @cog_ext.cog_slash(name = "transfer", description = "Transfers your money to another user.", guild_ids = guild_ids, 
+  @cog_ext.cog_slash(name = "transfer", description = "Transfers your money to another user.", 
     options = [create_option(
       name = "recipient",
       description = "The name of a user.",
@@ -193,7 +193,7 @@ class Economy(commands.Cog):
 
 
   # attempts to rob a user
-  @cog_ext.cog_slash(name = "rob", description = "Attempt to rob another user.", guild_ids = guild_ids,
+  @cog_ext.cog_slash(name = "rob", description = "Attempt to rob another user.", 
     options = [create_option(
       name = "user",
       description = "The name of a user.",

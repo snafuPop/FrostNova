@@ -54,7 +54,7 @@ class Info(commands.Cog):
       return ", ".join(flags) 
 
 
-  @cog_ext.cog_slash(name = "avatar", description = "Pulls up a user's profile picture.", guild_ids = guild_ids, 
+  @cog_ext.cog_slash(name = "avatar", description = "Pulls up a user's profile picture.", 
     options = [create_option(
       name = "user",
       description = "The name of a user. Leave blank to pull up your own profile picture.",
@@ -72,7 +72,7 @@ class Info(commands.Cog):
     await ctx.send(embed = embed)
 
 
-  @cog_ext.cog_slash(name = "server", description = "Pulls up information about the current server.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "server", description = "Pulls up information about the current server.")
   async def server(self, ctx):
     server = ctx.guild
 
@@ -96,7 +96,7 @@ class Info(commands.Cog):
     await ctx.send(embed = embed)
 
 
-  @cog_ext.cog_slash(name = "about", description = "Pulls up information about yvona.", guild_ids = guild_ids)
+  @cog_ext.cog_slash(name = "about", description = "Pulls up information about yvona.")
   async def about(self, ctx):
     # Constructing the Embed.
     embed = discord.Embed(title = "", color = self.bot.user.color)
@@ -125,7 +125,7 @@ class Info(commands.Cog):
       manage_components.create_button(
         style = ButtonStyle.URL,
         label = "Invite yvona",
-        url = "https://discordapp.com/api/oauth2/authorize?client_id=547516876851380293&permissions=1861483585&scope=bot"),
+        url = "https://bit.ly/3kqPgv0"),
       # Github repo Button.
       manage_components.create_button(
         style = ButtonStyle.URL,
@@ -139,7 +139,7 @@ class Info(commands.Cog):
     await ctx.send(embed = embed, components = [action_row])
 
 
-  @cog_ext.cog_slash(name = "user", description = "Pulls up information about a user.", guild_ids = guild_ids, 
+  @cog_ext.cog_slash(name = "user", description = "Pulls up information about a user.", 
     options = [create_option(
       name = "user",
       description = "The name of a user. Leave blank to pull up your own information.",
