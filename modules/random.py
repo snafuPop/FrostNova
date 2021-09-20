@@ -77,7 +77,7 @@ class Random(commands.Cog):
 
   def calculate_dryness(self, run_count):
     dryness = pow(.9975, run_count)
-    return "You had a **{:.2%}** chance of getting no drops.\nYou had a **{:.2%}** chance of getting at least one drop.".format(dryness, 1-dryness)
+    return "You had a **{:.4%}** chance of getting no drops.\nYou had a **{:.4%}** chance of getting at least one drop.".format(dryness, 1-dryness)
 
 
   def run_corrupted_gauntlet(self, user, dropped_so_far, run_count):
@@ -99,6 +99,7 @@ class Random(commands.Cog):
 
     embed.add_field(name = "**Your drops:**", value = "\n".join(drops), inline = False)
     embed.add_field(name = "**Your Saeldor Dryness Score:**", value = self.calculate_dryness(run_count), inline = False)
+    embed.set_thumbnail(url = "https://oldschool.runescape.wiki/images/6/6e/The_Corrupted_Gauntlet.png?e621e")
     embed.set_footer(text = "Your Corrupted Gauntlet completion count is: {:,}".format(run_count))
 
     return embed
