@@ -11,15 +11,14 @@ import textwrap
 class Memeify(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
-    self.filepath = '/yvona/modules/'
 
 
   def get_image_filepath(self):
-    return self.filepath + '_images/'
+    return os.path.dirname(__file__) + "/_images"
 
 
   def get_font_filepath(self):
-    return self.filepath + '_data/'
+    return os.path.dirname(__file__) + "/_data"
 
 
   # controls making all of the images via PIL and running it thorugh BytesIO to make Discord happy

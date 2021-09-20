@@ -7,6 +7,7 @@ from discord_slash.utils.manage_components import emoji_to_dict
 from builtins import bot, guild_ids
 import json
 import asyncio
+import os
 
 class Roles(commands.Cog):
   def __init__(self, bot):
@@ -15,15 +16,19 @@ class Roles(commands.Cog):
 
 
 
+  def get_dirname(self):
+    return os.path.dirname(__file__) + "/_data/role.json"
+
+
   def get_roles(self):
-    with open("/yvona/modules/_data/role.json") as json_data:
+    with open(self.get_dirname()) as json_data:
       cache = json.load(json_data)
     return cache
 
 
 
   def update_roles(self, cache):
-    with open("/yvona/modules/_data/role.json", "w") as json_out:
+    with open(self.get_dirname(), "w") as json_out:
       json.dump(cache, json_out, indent = 2)
     self.cache = self.get_roles()
 
