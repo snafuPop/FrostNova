@@ -17,10 +17,12 @@ class Roles(commands.Cog):
 
 
   def get_dirname(self):
+    # return: the location of the role.json file.
     return os.path.dirname(__file__) + "/_data/role.json"
 
 
   def get_roles(self):
+    # return: the dictionary of role messages stored on the bot.
     with open(self.get_dirname()) as json_data:
       cache = json.load(json_data)
     return cache
@@ -28,6 +30,7 @@ class Roles(commands.Cog):
 
 
   def update_roles(self, cache):
+    # updates the dictionary of role messages and stores it onto the bot.
     with open(self.get_dirname(), "w") as json_out:
       json.dump(cache, json_out, indent = 2)
     self.cache = self.get_roles()
@@ -35,6 +38,8 @@ class Roles(commands.Cog):
 
 
   async def has_permissions(self, ctx):
+    # checks if the context author has permissions to modify/create the role message.
+    # return: True if they do, False if they do not.
     if not ctx.author.guild_permissions.manage_guild:
       await ctx.send(embed = discord.Embed(title = "**You don't have permission to do this.**", description = "You need to be able to change server settings in order to create a role message."))
       return False
@@ -44,6 +49,8 @@ class Roles(commands.Cog):
 
 
   async def role_msg_exists(self, ctx):
+    # checks if a role message exists on the context guild.
+    # return: True if it does, False if it does not.
     if str(ctx.guild.id) not in self.cache:
       await ctx.send(embed = discord.Embed(title = "**This server does not have a role message.**", description = "You must create a role message first before modifying it. Make sure you're also issuing commands in the same channel that contains the role message."))
       return False
@@ -54,6 +61,8 @@ class Roles(commands.Cog):
 
   @commands.Cog.listener()
   async def on_raw_reaction_add(self, payload):
+    # listens for reaction additions.
+    # if a reaction is added onto a role message for the context's guild, update the context author's roles.
     if str(payload.guild_id) in self.cache:
       if str(payload.emoji.name) in self.cache[str(payload.guild_id)]["reactions"]:
         guild = self.bot.get_guild(payload.guild_id)
@@ -72,6 +81,8 @@ class Roles(commands.Cog):
 
   @commands.Cog.listener()
   async def on_raw_reaction_remove(self, payload):
+    # listens for reaction removals.
+    # if a reaction is removed from a role message for the context's guild, update the context author's roles.
     if str(payload.guild_id) in self.cache:
       if str(payload.emoji.name) in self.cache[str(payload.guild_id)]["reactions"]:
         guild = self.bot.get_guild(payload.guild_id)
@@ -90,6 +101,7 @@ class Roles(commands.Cog):
 
   @cog_ext.cog_subcommand(base = "role", name = "list", description = "Returns a list of the current server's roles and their IDs.")
   async def roles(self, ctx):
+    # sends an embedded list of roles' names and respective IDs for the context's guild.
     role_list = ""
     for role in ctx.guild.roles:
       if role.name != "@everyone":

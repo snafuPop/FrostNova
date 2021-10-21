@@ -16,11 +16,11 @@ class Memeify(commands.Cog):
 
 
   def get_image_filepath(self):
-    return os.path.dirname(__file__) + "/_images"
+    return os.path.dirname(__file__) + "/_images/"
 
 
   def get_font_filepath(self):
-    return os.path.dirname(__file__) + "/_data"
+    return os.path.dirname(__file__) + "/_data/"
 
 
   # controls making all of the images via PIL and running it thorugh BytesIO to make Discord happy

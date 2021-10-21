@@ -125,7 +125,7 @@ class Info(commands.Cog):
       manage_components.create_button(
         style = ButtonStyle.URL,
         label = "Invite yvona",
-        url = "https://bit.ly/3kqPgv0"),
+        url = "https://bit.ly/3hStVZH"),
       # Github repo Button.
       manage_components.create_button(
         style = ButtonStyle.URL,
