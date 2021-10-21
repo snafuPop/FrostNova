@@ -22,7 +22,7 @@ def get_users():
 
 # get dictionary of dungeons
 def get_dungeons():
-  with open(file_path + "adventure.json") as json_data:
+  with open(file_path + "dungeons.json") as json_data:
     dungeon_dict = json.load(json_data)
   return dungeon_dict
 
