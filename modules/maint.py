@@ -100,7 +100,7 @@ class Maint(commands.Cog):
         if (module.endswith(".py")):
           try:
             self.bot.reload_extension("modules." + module[:len(module)-3])
-          except:
+          except Exception as e:
             embed = discord.Embed(title = "", description = ":no_entry: **{}** could not be reloaded. Check the terminal and the message below for more information.".format(module))
             embed.add_field(name = type(e).__name__, value = e)
           else:
