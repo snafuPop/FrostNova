@@ -11,7 +11,7 @@ class InvalidArgs(Exception):
   pass
 
 
-file_path = '/yvona/modules/_data/'
+file_path = '/home/ec2-user/yvona/modules/_data/'
 
 # get dictionary of users
 def get_users():
