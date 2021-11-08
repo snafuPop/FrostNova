@@ -1,5 +1,10 @@
 import discord
 from discord.ext import commands
+from discord_slash import cog_ext, SlashContext, SlashCommand, ComponentContext
+from discord_slash.utils import manage_components
+from discord_slash.utils.manage_components import wait_for_component
+from discord_slash.utils.manage_commands import create_option, create_choice
+from builtins import bot, guild_ids
 
 class Poll(commands.Cog):
   def __init__(self, bot):
@@ -14,36 +19,50 @@ class Poll(commands.Cog):
         "<:poll_teal:603006203219410944>",
         "<:poll_gray:603005956883873852>"]
 
+
   # polling!
-  @commands.command(aliases = ["vote"], description = "Start a poll. You can leave options blank in order to start a Yes/No vote instead.")
-  async def poll(self, ctx, *, options: str = "None"):
-    options = options.split(";")
-    topic = options.pop(0)
-    if topic is "None" or len(options) == 1 or len(options) > 8:
-      await ctx.send(embed = discord.Embed(title = "", description = "You can create a poll by using `{}poll <topic;option 1;option 2;...>`. Leave options blank if you want to start a Yes/No vote.".format(ctx.prefix)))
+  @cog_ext.cog_slash(name = "poll", description = "Start a poll. You can leave options blank in order to start a Yes/No vote instead.",
+    options = [create_option(
+      name = "question",
+      description = "A question you want to ask about.",
+      option_type = 3,
+      required = True),
+    create_option(
+      name = "options",
+      description = "List of options, separated by a semi-colon (;).",
+      option_type = 3,
+      required = False)])
+  async def poll(self, ctx, *, question: str = None, options: str = None):
+    embed = discord.Embed(title = "")
+    embed.set_author(name = question, icon_url = ctx.author.avatar_url)
+
+    # create yes/no poll
+    if options == None:
+      poll_msg = await ctx.send(embed = embed)
+      await poll_msg.add_reaction("<:agree:603662870567190597>")
+      await poll_msg.add_reaction("<:disagree:603662870365995019>")
+
+
+    # create a standard poll
     else:
-      embed = discord.Embed(title = "**Poll started!**", description = "Started by {}".format(ctx.author.mention))
+      options = options.split(";")
 
-      if len(options) != 0:
-        choices = []
-        for i in range (0, len(options)):
-          choice_line = self.num[i] + " "+ options[i]
-          choices.append(choice_line)
-        embed.add_field(name = "**__{}__**".format(topic), value = "\n".join(choices))
-        embed.set_thumbnail(url = "https://cdn4.iconfinder.com/data/icons/universal-icons-4/512/poll-512.png")
-        poll_msg = await ctx.send(embed = embed)
+      if len(options) == 1:
+        await ctx.send(embed = discord.Embed(title = "", description = ":no_entry: You cannot provide only one option."))
+        return
 
-        # adding reactions
-        for i in range (0, len(options)):
-          await poll_msg.add_reaction(self.num[i])
+      if len(options) > 8:
+        await ctx.send(embed = discord.Embed(title = "", description = ":no_entry: You can only provide at most eight options."))
+        return
 
-      else:
-        embed.add_field(name = "**__{}__**".format(topic), value = "Vote yes or no below.")
-        embed.set_thumbnail(url = "https://cdn4.iconfinder.com/data/icons/universal-icons-4/512/poll-512.png")
-        poll_msg = await ctx.send(embed = embed)
+      choices_text = []
+      for i in range(0, len(options)):
+        choices_text.append("{} {}".format(self.num[i], options[i])) 
+      embed.add_field(name = "**Choices:**", value = "\n".join(choices_text))
+      poll_msg = await ctx.send(embed = embed)
+      for i in range(0, len(options)):
+        await poll_msg.add_reaction(self.num[i])
 
-        await poll_msg.add_reaction("<:agree:603662870567190597>")
-        await poll_msg.add_reaction("<:disagree:603662870365995019>")
 
 def setup(bot):
   bot.add_cog(Poll(bot))
