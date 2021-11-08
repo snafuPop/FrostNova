@@ -45,8 +45,7 @@ class Maint(commands.Cog):
       embed.add_field(name = type(e).__name__, value = e)
     else:
       embed = discord.Embed(title = "", description = ":eject: **{}** was unloaded successfully.".format(module))
-      print("\n\n{} was unloaded.".format(module))
-      print("--------------------------------------------------------")
+      print("{} was unloaded.".format(module))
     await ctx.send(embed = embed)
 
 
@@ -74,8 +73,7 @@ class Maint(commands.Cog):
       embed.add_field(name = type(e).__name__, value = e)
     else:
       embed = discord.Embed(title = "", description = ":record_button: **{}** was loaded successfully.".format(module))
-      print("\n\n{} was loaded.".format(module))
-      print("--------------------------------------------------------")
+      print("{} was loaded.".format(module))
     await ctx.send(embed = embed)
 
 
@@ -100,12 +98,12 @@ class Maint(commands.Cog):
         if (module.endswith(".py")):
           try:
             self.bot.reload_extension("modules." + module[:len(module)-3])
+            print("{} was reloaded.".format(module))
           except Exception as e:
             embed = discord.Embed(title = "", description = ":no_entry: **{}** could not be reloaded. Check the terminal and the message below for more information.".format(module))
             embed.add_field(name = type(e).__name__, value = e)
           else:
             embed = discord.Embed(title = "", description = ":repeat: All modules were reloaded successfully.")
-            print("--------------------------------------------------------")
     else:
       try:
         self.bot.reload_extension("modules." + module[:len(module)-3])
@@ -114,8 +112,7 @@ class Maint(commands.Cog):
         embed.add_field(name = type(e).__name__, value = e)
       else:
         embed = discord.Embed(title = "", description = ":repeat: **{}** was reloaded.".format(module))
-        print("\n\n{} was reloaded.".format(module))
-        print("--------------------------------------------------------")
+        print("{} was reloaded.".format(module))
     await ctx.send(embed = embed)
 
 
