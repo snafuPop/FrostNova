@@ -114,9 +114,8 @@ class Info(commands.Cog):
     embed = discord.Embed(title = "", color = self.bot.user.color)
     embed.set_author(name = "Yvona Bot", url = "https://github.com/snafuPop/yvona", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
     embed.set_thumbnail(url = self.bot.user.avatar_url)
-
-
     response = self.get_ec2_info()
+    
     # Constructing additional information.
     info = []
     info.append("**Author:** {}".format(await self.bot.fetch_user(94236862280892416)))
