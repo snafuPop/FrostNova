@@ -12,6 +12,11 @@ import sys
 import psutil
 import time
 from datetime import timedelta, datetime
+import boto3
+from botocore.config import Config
+
+my_config = Config(
+  region_name = "us-east-1a")
 
 class Info(commands.Cog):
   def __init__(self, bot):
@@ -96,6 +101,13 @@ class Info(commands.Cog):
     await ctx.send(embed = embed)
 
 
+  def get_ec2_info(self):
+    # returns information about the current ec2 instance
+    ec2 = boto3.client('ec2')
+    response = ec2.describe_instances()['Reservations'][0]['Instances'][0]
+    return response
+
+
   @cog_ext.cog_slash(name = "about", description = "Pulls up information about yvona.")
   async def about(self, ctx):
     # Constructing the Embed.
@@ -103,12 +115,15 @@ class Info(commands.Cog):
     embed.set_author(name = "Yvona Bot", url = "https://github.com/snafuPop/yvona", icon_url = "https://image.flaticon.com/icons/png/512/25/25231.png")
     embed.set_thumbnail(url = self.bot.user.avatar_url)
 
+
+    response = self.get_ec2_info()
     # Constructing additional information.
     info = []
     info.append("**Author:** {}".format(await self.bot.fetch_user(94236862280892416)))
     info.append("**Language:** Python {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     info.append("**Discord.py Version:** {}".format(discord.__version__))
-    info.append("**Host:** [PythonAnywhere](https://www.pythonanywhere.com/)")
+    info.append("**Host:** aws ec2 {} instance".format(response['InstanceType']))
+    info.append("**Platform:** {} {}".format(response['Architecture'], response['PlatformDetails']))
     info.append("**Latency:** {:.4f}ms".format(self.bot.latency))
     info.append("**CPU Usage:** {}%".format(psutil.cpu_percent()))
     info.append("**Disk Usage:** {}%".format(psutil.disk_usage('/')[3]))
