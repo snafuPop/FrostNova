@@ -4,7 +4,9 @@ from discord_slash import cog_ext, SlashContext, SlashCommand, ComponentContext
 from discord_slash.utils import manage_components
 from discord_slash.model import ButtonStyle
 from discord_slash.utils.manage_commands import create_option, create_choice
+from ButtonPaginator import Paginator
 from builtins import bot, guild_ids
+
 import requests
 from modules.utils import user_json
 from titlecase import titlecase
@@ -12,6 +14,7 @@ import sys
 import psutil
 import time
 from datetime import timedelta, datetime
+
 import boto3
 from botocore.config import Config
 
@@ -21,10 +24,19 @@ my_config = Config(
 class Info(commands.Cog):
   def __init__(self, bot):
     self.time_alive = time.time()
-    self.bot = bot;
+    self.bot = bot
+    self.bullet_dict = {
+      "basic": "▪️",
+      "money": user_json.get_currency_name(),
+      "boost": "<:boost:907765841771257928>"
+    }
 
 
-  def datetime_to_unix(self, datetime_val):
+  def get_bullet(self, key):
+    return self.bullet_dict[key]
+
+
+  def datetime_to_unix(self, datetime_val): 
     # Because many of discord's api requests return time as a datetime object,
     # we need to manually convert it into UNIX time.
     return int(time.mktime((datetime_val).timetuple()))
@@ -34,14 +46,14 @@ class Info(commands.Cog):
     # Outputs how long the bot has been active.
     uptime = timedelta(seconds = time.time() - self.time_alive)
     uptime = datetime(1,1,1) + uptime
-    return "{}d {}h {}m {}s".format(uptime.day-1, uptime.hour, uptime.minute, uptime.second)
+    return f"{uptime.day-1}d {uptime.hour}h {uptime.minute}m {uptime.second}s"
 
 
   def get_nickname(self, user):
     # Gets the user's nickname within the server.
     # If they have no nickname, a null string is returned.
     if user.nick is not None:
-      return "(" + user.nick + ")"
+      return f"({user.nick})"
     else:
       return ""
 
@@ -71,7 +83,7 @@ class Info(commands.Cog):
       user = ctx.author
 
     # Constructing the Embed.
-    embed = discord.Embed(title = "{}'s avatar".format(str(user)), description = "", color = user.color)
+    embed = discord.Embed(title = f"{str(user)}'s avatar", description = "", color = user.color)
     avatar_url = user.avatar_url if user.avatar_url else user.default_avatar_url
     embed.set_image(url = avatar_url)
     await ctx.send(embed = embed)
@@ -82,22 +94,23 @@ class Info(commands.Cog):
     server = ctx.guild
 
     # Constructing the Embed.
-    embed = discord.Embed(title = "__**{}**__".format(str(server.name)))
-    embed.set_author(name = "Owned by {}".format(server.owner), icon_url = server.owner.avatar_url)
+    server_description = f"*{server.description}*" if server.description != None else ""
+    embed = discord.Embed(title = f"**{str(server.name)}**", description = server_description)
+    embed.set_author(name = f"Owned by {server.owner}", icon_url = server.owner.avatar_url)
 
     # Constructing additional information.
-    info = []
-    info.append("**Location:** {}".format(str(server.region)))
-    info.append("**Creation Date:** <t:{}:D>".format(self.datetime_to_unix(server.created_at)))
-    info.append("**Members:** {:,}".format(server.member_count))
-    info.append("**Boosts:** {:,} Boosts (Level {})".format(server.premium_subscription_count, server.premium_tier))
-    if server.description: info.append("*{}*".format(server.description))
-    server_info = "\n".join(info)
+    bullet = self.get_bullet("basic")
+    server_info = "\n".join([
+      f"{bullet} **Location:** {str(server.region)}",
+      f"{bullet} **Creation Date:** <t:{self.datetime_to_unix(server.created_at)}:D>",
+      f"{bullet} **Members:** {server.member_count}",
+      f"{self.get_bullet('boost')} **Boosts:** {server.premium_subscription_count:,} (Lv. {server.premium_tier})"
+    ])
 
     # Adding additional fields to the Embed.
     embed.set_thumbnail(url = server.icon_url)
     embed.add_field(name = "Information:", value = server_info)
-    embed.set_footer(text = "Server ID: {}".format(server.id))
+    embed.set_footer(text = f"Server ID: {server.id}")
     await ctx.send(embed = embed)
 
 
@@ -117,21 +130,21 @@ class Info(commands.Cog):
     response = self.get_ec2_info()
     
     # Constructing additional information.
-    info = []
-    info.append("**Author:** {}".format(await self.bot.fetch_user(94236862280892416)))
-    info.append("**Language:** Python {}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-    info.append("**Discord.py Version:** {}".format(discord.__version__))
-    info.append("**Host:** aws ec2 {} instance".format(response['InstanceType']))
-    info.append("**Platform:** {} {}".format(response['Architecture'], response['PlatformDetails']))
-    info.append("**Latency:** {:.4f}ms".format(self.bot.latency))
-    info.append("**CPU Usage:** {}%".format(psutil.cpu_percent()))
-    info.append("**Disk Usage:** {}%".format(psutil.disk_usage('/')[3]))
-    info.append("**Current Uptime:** {}".format(self.get_uptime()))
-    info.append("Currently supporting **{:,} servers** and **{:,} users**.".format(len(bot.guilds), len(bot.users)))
+    bullet = self.get_bullet("basic")
+    bot_info = "\n".join([
+      f"{bullet} **Author:** {await self.bot.fetch_user(94236862280892416)}",
+      f"{bullet} **Language:** Python {sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}",
+      f"{bullet} **Discord.py Version:** {discord.__version__}",
+      f"{bullet} **Host:** aws ec2 {response['InstanceType']} instance",
+      f"{bullet} **Platform:** {response['Architecture']} {response['PlatformDetails']}",
+      f"{bullet} **Latency:** {self.bot.latency:.4f}ms",
+      f"{bullet} **CPU Usage:** {psutil.cpu_percent()}\%",
+      f"{bullet} **Disk Usage:** {psutil.disk_usage('/')[3]}\%",
+      f"{bullet} **Current Uptime:** {self.get_uptime()}",
+      f"Currently supporting **{len(bot.guilds):,}** and **{len(bot.users):,}** users."
+    ])
 
-    # Adding additional fields to the Embed.
-    bot_info = "\n".join(info)
-    embed.add_field(name = "**__Bot Statistics__**", value = bot_info)
+    embed.add_field(name = "**Bot Statistics**", value = bot_info)
 
     # Constructing Buttons.
     buttons = [
@@ -153,7 +166,7 @@ class Info(commands.Cog):
     await ctx.send(embed = embed, components = [action_row])
 
 
-  @cog_ext.cog_slash(name = "user", description = "Pulls up information about a user.", 
+  @cog_ext.cog_slash(name = "user", description = "Pulls up information about a user.", guild_ids = guild_ids,
     options = [create_option(
       name = "user",
       description = "The name of a user. Leave blank to pull up your own information.",
@@ -164,72 +177,73 @@ class Info(commands.Cog):
     if user is None:
       user = ctx.author
 
-    # Checks if the user is registered with yvona.
-    # If so, additional stats are featured.
+    embeds = []
+    embeds.append(self.get_non_registered_user_info(ctx)) # Page 1 consists of general information provided by Discord
+
     user_dict = user_json.get_users()
     if str(user.id) in user_dict:
-      await ctx.send(embed = self.get_registered_user(user, user_dict))
+      embeds.append(self.get_registered_user_info(user, user_dict)) # Page 2 consists of yvona-specific information, if the user is registered.
+      paginated_embed = Paginator(bot = self.bot, ctx = ctx, embeds = embeds, only = ctx.author)
+      await paginated_embed.start()
     else:
-      await ctx.send(embed = self.get_non_registered_user(user))
+      await ctx.send(embed = embeds[0])
 
 
-  def get_non_registered_user(self, user):
+  def get_non_registered_user_info(self, ctx):
+    user = ctx.author
+
     # Gets statistics of unregistered users.
-    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), color = user.color)
+    embed = discord.Embed(title = f"**{str(user)}** {self.get_nickname(user)}", color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
 
     # Adding additional fields to the Embed.
-    info = []
-    info.append("**Badges:** {}".format(self.get_flags(user)))
-    info.append("**Joined Discord on:** <t:{}:D>".format(self.datetime_to_unix(user.created_at)))
-    info.append("**Joined Server on:** <t:{}:D>".format(self.datetime_to_unix(user.joined_at)))
+    bullet = self.get_bullet("basic")
+    user_info = "\n".join([
+      f"{bullet} **Badges:** {self.get_flags(user)}",
+      f"{bullet} **Joined Discord:** <t:{self.datetime_to_unix(user.created_at)}:D>",
+      f"{bullet} **Joined {ctx.guild.name} on:** <t:{self.datetime_to_unix(user.joined_at)}:D>"
+    ])
 
     # Adding additional fields to the Embed.
-    user_info = "\n".join(info)
-    embed.add_field(name = "Information:", value = user_info)
-    embed.set_footer(text = "User ID: {}".format(str(user.id)))
+    embed.add_field(name = "Discord Stats:", value = user_info)
+    embed.set_footer(text = f"User ID: {str(user.id)}")
     return embed
 
 
-  def get_registered_user(self, user, user_dict):
+  def get_registered_user_info(self, user, user_dict):
     # Gets statistics of registered users.
     user_key = user_dict[str(user.id)]
 
     # Constructing the Embed.
-    embed = discord.Embed(title = "__**{}**__ {}".format(str(user), self.get_nickname(user)), description = "***Level {:,} {}***".format(user_key["level"], titlecase(str(user.top_role))), color = user.color)
+    embed = discord.Embed(title = f"**{str(user)}** {self.get_nickname(user)}", color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
-
-    # Constructing additional information.
-    info = []
-    info.append("**Badges:** {}".format(self.get_flags(user)))
-    info.append("**Joined Discord on:** <t:{}:D>".format(self.datetime_to_unix(user.created_at)))
-    info.append("**Joined Server on:** <t:{}:D>".format(self.datetime_to_unix(user.joined_at)))
 
     # Constructing registered user information.
     currency_name = user_json.get_currency_name()
     current_exp = user_key["exp"]
     exp_needed = user_json.get_req_exp(user, user_dict)
 
-    info.append("\n**Text Posts:** {:,}".format(user_key["text_posts"]))
-    info.append("**Level:** {:,}/{:,} ({:.2f}%)".format(current_exp, exp_needed, (current_exp/exp_needed)*100))
-    info.append("**Current Item Level:** {:,}".format(user_key["item_level"]))
-    info.append("**Balance:** {:,} {}".format(user_key["balance"], currency_name))
-    info.append("**Embarked Raids:** {:,}".format(user_key["raids"]))
-    info.append("**Raid Damage Dealt:** {:,}".format(user_key["damage_dealt"]))
-    info.append("**Adventure Wages:** {:,} {}".format(user_key["loot_earnings"], currency_name))
-    info.append("**Stolen Wages:** {:,} {}".format(user_key["stolen_money"], currency_name))
-    info.append("**Slot Winnings:** {:,} {}".format(user_key["slot_winnings"],  currency_name))
+    # Adding additional fields to the Embed.
+    bullet = self.get_bullet("basic")
+    money = self.get_bullet("money")
+    user_info = "\n".join([
+      f"{bullet} **Text Posts:** {user_key['text_posts']:,}",
+      f"{bullet} **Level:** {user_key['level']:,}",
+      f"{bullet} **EXP:** {current_exp:,}/{exp_needed:,} ({current_exp/exp_needed*100:.2f}\%)",
+      f"{money} **Balance:** {user_key['balance']:,}",
+      f"{money} **Adventure Wages:** {user_key['loot_earnings']:,}",
+      f"{money} **Stolen Wages:** {user_key['stolen_money']:,}",
+      f"{money} **Slot Winnings:** {user_key['slot_winnings']:,}"
+    ])
 
     # Adding additional fields to the Embed.
-    user_info = "\n".join(info)
-    embed.add_field(name = "Information:", value = user_info, inline = False)
-    embed.set_footer(text = "User ID: {}".format(str(user.id)))
+    embed.add_field(name = "yvona Stats:", value = user_info, inline = False)
 
     # Adding user's inventory (if it exists) to the Embed.
     items = ", ".join(user_key["inventory"])
     if items:
       embed.add_field(name = "**Inventory:**", value = items)
-    embed.set_footer(text = "User ID: {}".format(str(user.id)))
+    embed.set_footer(text = f"User ID: {str(user.id)}")
     return embed
 
 def setup(bot):
