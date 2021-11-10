@@ -41,10 +41,10 @@ class Maint(commands.Cog):
     try:
       self.bot.unload_extension(load_module)
     except Exception as e:
-      embed = discord.Embed(title = "", description = ":no_entry: **{}** could not be unloaded. Check the terminal and the message below for more information.".format(module))
+      embed = discord.Embed(title = "", description = f":no_entry: **{module}** could not be unloaded. Check the terminal and the message below for more information.")
       embed.add_field(name = type(e).__name__, value = e)
     else:
-      embed = discord.Embed(title = "", description = ":eject: **{}** was unloaded successfully.".format(module))
+      embed = discord.Embed(title = "", description = f":eject: **{module}** was unloaded successfully.")
       print("{} was unloaded.".format(module))
     await ctx.send(embed = embed)
 
@@ -69,10 +69,10 @@ class Maint(commands.Cog):
     try:
       self.bot.load_extension(load_module)
     except Exception as e:
-      embed = discord.Embed(title = "", description = ":no_entry: **{}** could not be loaded. Check the terminal and the message below for more information.".format(module))
+      embed = discord.Embed(title = "", description = f":no_entry: **{module}** could not be loaded. Check the terminal and the message below for more information.")
       embed.add_field(name = type(e).__name__, value = e)
     else:
-      embed = discord.Embed(title = "", description = ":record_button: **{}** was loaded successfully.".format(module))
+      embed = discord.Embed(title = "", description = f":record_button: **{module}** was loaded successfully.")
       print("{} was loaded.".format(module))
     await ctx.send(embed = embed)
 
@@ -100,7 +100,7 @@ class Maint(commands.Cog):
             self.bot.reload_extension("modules." + module[:len(module)-3])
             print("{} was reloaded.".format(module))
           except Exception as e:
-            embed = discord.Embed(title = "", description = ":no_entry: **{}** could not be reloaded. Check the terminal and the message below for more information.".format(module))
+            embed = discord.Embed(title = "", description = f":no_entry: **{module}** could not be reloaded. Check the terminal and the message below for more information.")
             embed.add_field(name = type(e).__name__, value = e)
           else:
             embed = discord.Embed(title = "", description = ":repeat: All modules were reloaded successfully.")
@@ -108,10 +108,10 @@ class Maint(commands.Cog):
       try:
         self.bot.reload_extension("modules." + module[:len(module)-3])
       except Exception as e:
-        embed = discord.Embed(title = "", description = ":no_entry: **{}** could not be reloaded. Check the terminal and the message below for more information.".format(module))
+        embed = discord.Embed(title = "", description = f":no_entry: **{module}** could not be reloaded. Check the terminal and the message below for more information.")
         embed.add_field(name = type(e).__name__, value = e)
       else:
-        embed = discord.Embed(title = "", description = ":repeat: **{}** was reloaded.".format(module))
+        embed = discord.Embed(title = "", description = f":repeat: **{module}** was reloaded.")
         print("{} was reloaded.".format(module))
     await ctx.send(embed = embed)
 
