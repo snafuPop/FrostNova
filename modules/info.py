@@ -246,5 +246,6 @@ class Info(commands.Cog):
     embed.set_footer(text = f"User ID: {str(user.id)}")
     return embed
 
+
 def setup(bot):
   bot.add_cog(Info(bot))
