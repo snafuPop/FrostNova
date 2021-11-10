@@ -139,6 +139,7 @@ class Info(commands.Cog):
       f"{bullet} **Platform:** {response['Architecture']} {response['PlatformDetails']}",
       f"{bullet} **Latency:** {self.bot.latency:.4f}ms",
       f"{bullet} **CPU Usage:** {psutil.cpu_percent()}\%",
+      f"{bullet} **Memory Usage:** {psutil.virtual_memory()[2]}\%",
       f"{bullet} **Disk Usage:** {psutil.disk_usage('/')[3]}\%",
       f"{bullet} **Current Uptime:** {self.get_uptime()}",
       f"Currently supporting **{len(bot.guilds):,}** and **{len(bot.users):,}** users."
@@ -166,7 +167,7 @@ class Info(commands.Cog):
     await ctx.send(embed = embed, components = [action_row])
 
 
-  @cog_ext.cog_slash(name = "user", description = "Pulls up information about a user.", guild_ids = guild_ids,
+  @cog_ext.cog_slash(name = "user", description = "Pulls up information about a user.",
     options = [create_option(
       name = "user",
       description = "The name of a user. Leave blank to pull up your own information.",
