@@ -46,8 +46,8 @@ class Random(commands.Cog):
 
     # creates the embed message
     result = randint(1, number)
-    embed = discord.Embed(title = "", description = "{} {} rolled a **{:,}**! {}".format(dice, ctx.author.mention, result, dice), color = ctx.author.color)
-    embed.set_footer(text = "...out of {:,}".format(number))
+    embed = discord.Embed(title = "", description = f"{dice} {ctx.author.mention} rolled a **{result:,}**! {dice}", color = ctx.author.color)
+    embed.set_footer(text = f"...out of {number:,}")
 
     # parses the declaration
     if declaration != "":
@@ -66,7 +66,7 @@ class Random(commands.Cog):
       result = "tails"
     else:
       result = "heads"  
-    embed = discord.Embed(description="{} flipped a coin and it landed on **{}**!".format(ctx.author.mention, result), color = ctx.author.color)
+    embed = discord.Embed(description = f"{ctx.author.mention} flipped a coin and it landed on **{result}**!", color = ctx.author.color)
     await ctx.send(embed = embed)
 
 
@@ -77,7 +77,8 @@ class Random(commands.Cog):
 
   def calculate_dryness(self, run_count):
     dryness = pow(.9975, run_count)
-    return "You had a **{:.4%}** chance of getting no drops.\nYou had a **{:.4%}** chance of getting at least one drop.".format(dryness, 1-dryness)
+    return f"You had a **{dryness:.4%}** chance of getting no drops.\nYou had a **{(1-dryness):.4%}** chance of getting at least one drop."
+
 
 
   def run_corrupted_gauntlet(self, user, dropped_so_far, run_count):
@@ -90,17 +91,18 @@ class Random(commands.Cog):
     embed = discord.Embed(title = "The Corrupted Gauntlet", color = user.color)
     embed.set_author(name = "{}".format(user.name), icon_url = user.avatar_url)
 
-    drops = []
-    drops.append("{}**:** {:,}".format(Drops.CRYSTAL_SHARD.value, dropped_so_far["crystal_shard"]))
-    drops.append("{}**:** {:,}".format(Drops.CRYSTAL_ARMOR_SEED.value, dropped_so_far["crystal_armor_seed"]))
-    drops.append("{}**:** {:,}".format(Drops.CRYSTAL_WEAPON_SEED.value, dropped_so_far["crystal_weapon_seed"]))
-    drops.append("{}**:** {:,}".format(Drops.ENHANCED_CRYSTAL_WEAPON_SEED.value, dropped_so_far["enhanced_crystal_weapon_seed"]))
-    drops.append("{}**:** {:,}".format(Drops.YOUNLLEF.value, dropped_so_far["younllef"]))
+    drops = "\n".join([
+      f"{Drops.CRYSTAL_SHARD.value}**:** {dropped_so_far['crystal_shard']:,}",
+      f"{Drops.CRYSTAL_ARMOR_SEED.value}**:** {dropped_so_far['crystal_armor_seed']:,}",
+      f"{Drops.CRYSTAL_WEAPON_SEED.value}**:** {dropped_so_far['crystal_weapon_seed']:,}",
+      f"{Drops.ENHANCED_CRYSTAL_WEAPON_SEED.value}**:** {dropped_so_far['enhanced_crystal_weapon_seed']:,}",
+      f"{Drops.YOUNLLEF.value}**:** {dropped_so_far['younllef']:,}"
+    ])
 
-    embed.add_field(name = "**Your drops:**", value = "\n".join(drops), inline = False)
+    embed.add_field(name = "**Your drops:**", value = drops, inline = False)
     embed.add_field(name = "**Your Saeldor Dryness Score:**", value = self.calculate_dryness(run_count), inline = False)
     embed.set_thumbnail(url = "https://oldschool.runescape.wiki/images/6/6e/The_Corrupted_Gauntlet.png?e621e")
-    embed.set_footer(text = "Your Corrupted Gauntlet completion count is: {:,}".format(run_count))
+    embed.set_footer(text = f"Your Corrupted Gauntlet completion count is: {run_count:,}")
     return embed
 
 
