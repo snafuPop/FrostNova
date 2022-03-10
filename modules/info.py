@@ -179,7 +179,7 @@ class Info(commands.Cog):
       user = ctx.author
 
     embeds = []
-    embeds.append(self.get_non_registered_user_info(ctx)) # Page 1 consists of general information provided by Discord
+    embeds.append(self.get_non_registered_user_info(ctx, user)) # Page 1 consists of general information provided by Discord
 
     user_dict = user_json.get_users()
     if str(user.id) in user_dict:
@@ -190,9 +190,7 @@ class Info(commands.Cog):
       await ctx.send(embed = embeds[0])
 
 
-  def get_non_registered_user_info(self, ctx):
-    user = ctx.author
-
+  def get_non_registered_user_info(self, ctx, user):
     # Gets statistics of unregistered users.
     embed = discord.Embed(title = f"**{str(user)}** {self.get_nickname(user)}", color = user.color)
     embed.set_thumbnail(url = user.avatar_url)
