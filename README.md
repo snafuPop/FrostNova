@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="870" height="550" src="https://i.imgur.com/Lna5vH4.png"><br>
+  <img width="632" height="246" src="https://i.imgur.com/Lna5vH4.png"><br>
 </p>
 
 # FrostNova
