@@ -1,3 +1,7 @@
 *.pyc
 __pycache__
 *.json
+fnenv
+screenlog.0
+FrostNova.log
+cogs/tbd

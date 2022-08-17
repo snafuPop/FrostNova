@@ -10,7 +10,7 @@ cffi==1.15.0
 chardet==3.0.4
 charset-normalizer==2.0.7
 click==8.0.3
-discord==1.7.3
+discord==2.0
 discord-components==2.1.2
 discord-py-interactions==3.0.2
 discord-py-slash-command==3.0.1

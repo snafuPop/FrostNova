@@ -1,6 +1,7 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
-from builtins import bot
+
 import json
 import os
 
@@ -11,13 +12,20 @@ class InvalidArgs(Exception):
   pass
 
 
-file_path = '/home/ec2-user/yvona/modules/_data/'
+file_path = '/home/ec2-user/frostnova/cogs/_data/'
 
 # get dictionary of users
 def get_users():
   with open(file_path + "users.json") as json_data:
     users_dict = json.load(json_data)
   return users_dict
+
+
+# get an individual user
+def get_user(user_id):
+  with open(file_path + "users.json") as json_data:
+    users_dict = json.load(json_data)
+  return users_dict[str(user_id)]
 
 
 # get dictionary of dungeons
@@ -42,11 +50,6 @@ def update_bosses(boss_dict):
 def update(user_dict):
   with open(file_path + "users.json", "w") as json_out:
     json.dump(user_dict, json_out, indent = 2)
-
-
-# returns the name of the currency
-def get_currency_name():
-  return "pennies"
 
 
 # returns the payday value
@@ -162,5 +165,5 @@ def level_up(user):
   return False
 
 
-def get_req_exp(user, user_dict):
-  return int((user_dict[str(user.id)]["level"]**3.9)+100)
+def get_req_exp(user):
+  return int((user["level"]**3.9)+100)
