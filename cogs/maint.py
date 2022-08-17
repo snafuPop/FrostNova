@@ -57,7 +57,7 @@ class Maint(commands.Cog):
     try:
       reaction, user = await self.bot.wait_for("reaction_add", check = check, timeout = 10)
     except asyncio.TimeoutError as error:
-      embed = discord.Embed(title = "", description = f"**{ky.ERROR.value} {type(error).__name__}:** {error}")
+      embed = self.bot.create_error_response(error = error)
       await interaction.followup.send(embed = embed, ephemeral = True)
     else:
       embed = discord.Embed(title = "", description = "Shutting down. Goodbye! :wave:")
@@ -74,6 +74,7 @@ class Maint(commands.Cog):
     try:
       await self.bot.load_extension("cogs." + cog.name[:-3])
     except Exception as error:
+      embed = self.bot.create_error_response(error = error)
       embed = discord.Embed(title = "", description = f"**{ky.ERROR.value} {type(error).__name__}:** {error}")
     else:
       embed = discord.Embed(title = "", description = f"{ky.LOAD.value} `{cog.name}` was loaded.")
@@ -87,7 +88,7 @@ class Maint(commands.Cog):
     try:
       await self.bot.unload_extension("cogs." + cog.name[:-3])
     except Exception as error:
-      embed = discord.Embed(title = "", description = f"**{ky.ERROR.value} {type(error).__name__}:** {error}")
+      embed = self.bot.create_error_response(error = error)
     else:
       embed = discord.Embed(title = "", description = f"{ky.UNLOAD.value} `{cog.name}` was unloaded.")
     await interaction.response.send_message(embed = embed)
@@ -100,7 +101,7 @@ class Maint(commands.Cog):
     try:
       await self.bot.reload_extension("cogs." + cog.name[:-3])
     except Exception as error:
-      embed = discord.Embed(title = "", description = f"**{ky.ERROR.value} {type(error).__name__}:** {error}")
+      embed = self.bot.create_error_response(error = error)
     else:
       embed = discord.Embed(title = "", description = f"{ky.RELOAD.value} `{cog.name}` was reloaded.")
     await interaction.response.send_message(embed = embed)
