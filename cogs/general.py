@@ -7,7 +7,6 @@ import json
 import time
 from datetime import timedelta, datetime
 import boto3
-from botocore.config import Config
 import sys
 import psutil
 
