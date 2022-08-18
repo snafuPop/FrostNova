@@ -48,7 +48,7 @@ class Random(commands.Cog):
     if max_number <= 1:
       message = "Maybe roll a value greater than 1? (｀Д´)"
       embed = self.bot.create_error_response(message = message)
-      await interaction.response.send_message(embed = embed)
+      await interaction.response.send_message(embed = embed, ephemeral = True)
       return
 
     dice_icon = "diamond_shape_with_a_dot_inside:" if 1 == randint(1,1000000) else ":game_die:"
