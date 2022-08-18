@@ -20,15 +20,10 @@ prefix = "░▒▓ (\\_/) "
 class FrostNova(commands.Bot):
   def __init__(self) -> None:
       command_prefix = "fn$",
-      intents = discord.Intents.default()
-      intents.members = True
-      intents.guilds = True
-      intents.emojis = True
-      intents.messages = True
-      intents.guild_messages = True
-      intents.dm_messages = True
-      intents.reactions = True
-      intents.guild_reactions = True
+      intents = discord.Intents.all()
+      intents.typing = False
+      intents.presences = False
+      intents.message_content = False
       super().__init__(command_prefix = command_prefix, intents = intents)
 
 
