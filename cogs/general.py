@@ -46,18 +46,20 @@ class General(commands.Cog):
     ec2 = boto3.client('ec2')
     response = ec2.describe_instances()['Reservations'][0]['Instances'][0]
 
-    statistics = "\n".join([
-      f"{ky.BULLET.value} **Author:** {await self.bot.fetch_user(94236862280892416)}",
-      f"{ky.BULLET.value} **Language:** Python {sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}",
-      f"{ky.BULLET.value} **Discord.py:** v{discord.__version__}",
-      f"{ky.BULLET.value} **Host:** aws ec2 {response['InstanceType']} instance",
-      f"{ky.BULLET.value} **Platform:** {response['Architecture']} {response['PlatformDetails']}",
-      f"{ky.BULLET.value} **Latency:** {self.bot.latency:.4f}ms",
-      f"{ky.BULLET.value} **CPU Usage:** {psutil.cpu_percent()}",
-      f"{ky.BULLET.value} **Memory Usage:** {psutil.virtual_memory()[2]}%",
-      f"{ky.BULLET.value} **Disk Usage:** {psutil.disk_usage('/')[3]}%",
-      f"{ky.BULLET.value} **Current Uptime:** {self.get_uptime()}",
-      f"Currently supporting **{len(self.bot.guilds):,}** guilds."])
+    statistics = f"""
+      {ky.BULLET.value} **Author:** {await self.bot.fetch_user(94236862280892416)}
+      {ky.BULLET.value} **Language:** Python {sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}
+      {ky.BULLET.value} **Discord.py:** v{discord.__version__}
+      {ky.BULLET.value} **Host:** aws ec2 {response['InstanceType']} instance
+      {ky.BULLET.value} **Platform:** {response['Architecture']} {response['PlatformDetails']}
+      {ky.BULLET.value} **Latency:** {self.bot.latency:.4f}ms
+      {ky.BULLET.value} **CPU Usage:** {psutil.cpu_percent()}
+      {ky.BULLET.value} **Memory Usage:** {psutil.virtual_memory()[2]}%
+      {ky.BULLET.value} **Disk Usage:** {psutil.disk_usage('/')[3]}%
+      {ky.BULLET.value} **Current Uptime:** {self.get_uptime()}
+      Currently supporting **{len(self.bot.guilds):,}** guilds.
+    """
+
     embed.add_field(name = "**Statistics**", value = statistics)
     view = discord.ui.View()
     view.add_item(discord.ui.Button(label = "Invite", style = discord.ButtonStyle.link, url = "https://discord.com/api/oauth2/authorize?client_id=547516876851380293&permissions=8&scope=bot"))
@@ -75,24 +77,26 @@ class General(commands.Cog):
     embed = discord.Embed(title = f"**{guild.name}**", description = guild_desc)
     embed.set_author(name = f"Owned by {guild.owner}", icon_url = guild.owner.avatar.url)
 
-    statistics = "\n".join([
-      f"{ky.BULLET.value} **Founded on:** <t:{self.convert_datetime_to_unix(guild.created_at)}:D>",
-      f"{ky.BULLET.value} **Members:** {guild.member_count:,}",
-      f"{ky.BOOST.value} **Boosts:** {guild.premium_subscription_count:,} (Lv. {guild.premium_tier})"])
+    statistics = f"""
+      {ky.BULLET.value} **Founded on:** <t:{self.convert_datetime_to_unix(guild.created_at)}:D>
+      {ky.BULLET.value} **Members:** {guild.member_count:,}
+      {ky.BOOST.value} **Boosts:** {guild.premium_subscription_count:,} (Lv. {guild.premium_tier})
+    """
 
     def get_symbol(feature):
       return ky.YES.value if feature in guild.features else ky.NO.value
 
-    features = "\n".join([
-      f"{get_symbol('COMMUNITY')} Community Server",
-      f"{get_symbol('PARTNERED')} Partnered",
-      f"{get_symbol('VERIFIED')} Verified",
-      f"{get_symbol('DISCOVERABLE')} Featured on Server Discovery",
-      f"{get_symbol('MEMBER_VERIFICATION_GATE_ENABLED')} Membership Screening enabled",
-      f"{get_symbol('MONETIZATION_ENABLED')} Monetization enabled"])
+    features = f"""
+      {get_symbol('COMMUNITY')} Community Server
+      {get_symbol('PARTNERED')} Partnered
+      {get_symbol('VERIFIED')} Verified
+      {get_symbol('DISCOVERABLE')} Featured on Server Discovery
+      {get_symbol('MEMBER_VERIFICATION_GATE_ENABLED')} Membership Screening enabled
+      {get_symbol('MONETIZATION_ENABLED')} Monetization enabled
+    """
 
     embed.set_thumbnail(url = guild.icon.url)
-    embed.add_field(name = "**Statistics:**", value = statistics + "\n\n" + features)
+    embed.add_field(name = "**Statistics:**", value = statistics + features)
     embed.set_footer(text = f"Server ID: {guild.id}")
     await interaction.response.send_message(embed = embed)
 
@@ -129,10 +133,11 @@ class General(commands.Cog):
       flags.append(flag_name)
     flag_list = ", ".join(flags) if flags else None
 
-    statistics = "\n".join([
-      f"{ky.BULLET.value} **Badges:** {flag_list}",
-      f"{ky.BULLET.value} **Joined Discord on:** <t:{self.convert_datetime_to_unix(user.created_at)}:D>",
-      f"{ky.BULLET.value} **Joined {interaction.guild} on:** <t:{self.convert_datetime_to_unix(user.joined_at)}:D>"])
+    statistics = f"""
+      {ky.BULLET.value} **Badges:** {flag_list}
+      {ky.BULLET.value} **Joined Discord on:** <t:{self.convert_datetime_to_unix(user.created_at)}:D>
+      {ky.BULLET.value} **Joined {interaction.guild} on:** <t:{self.convert_datetime_to_unix(user.joined_at)}:D>
+    """
 
     embed.add_field(name = "**Statistics:**", value = statistics)
     embed.set_footer(text = f"User ID:{user.id}")
