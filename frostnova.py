@@ -11,7 +11,6 @@ from typing import List, Optional
 import boto3
 import base64
 import asyncio
-import Paginator
 
 from cogs.utils.keywords import Keyword as ky
 
