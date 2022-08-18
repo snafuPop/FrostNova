@@ -44,13 +44,7 @@ class Random(commands.Cog):
 
   @app_commands.command(name = "roll", description = "Roll some dice!")
   @app_commands.describe(max_number = "The highest number that you can roll", declaration = "A string of text that you can attach to your dice roll")
-  async def rolldice(self, interaction: discord.Interaction, max_number: int = 100, declaration: str = None):
-    if max_number <= 1:
-      message = "Maybe roll a value greater than 1? (｀Д´)"
-      embed = self.bot.create_error_response(message = message)
-      await interaction.response.send_message(embed = embed, ephemeral = True)
-      return
-
+  async def rolldice(self, interaction: discord.Interaction, max_number: app_commands.Range[int, 2], declaration: str = None):
     dice_icon = "diamond_shape_with_a_dot_inside:" if 1 == randint(1,1000000) else ":game_die:"
 
     result = randint(1, max_number)
