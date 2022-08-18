@@ -19,7 +19,7 @@ class CommandErrorHandler(commands.Cog):
       await interaction.response.send_message(embed = embed, ephemeral = True)
 
     else:
-      print('Ignoring exception in command {}:'.format(interaction))
+      print(f"Ignoring exception in command {interaction}:")
       traceback.print_exception(type(error), error, error.__traceback__)
 
 async def setup(bot: commands.Bot) -> None:
