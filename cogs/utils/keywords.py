@@ -2,7 +2,8 @@ from enum import Enum
 
 class Keyword(Enum):
 	SUCCESS = ":white_check_mark:"
-	NO = ":x:"
+	YES = "<:yes:603662870567190597>"
+	NO = "<:no:603662870365995019>"
 	ERROR = ":no_entry:"
 	LOAD = ":record_button:"
 	UNLOAD = ":eject:"
@@ -10,3 +11,4 @@ class Keyword(Enum):
 	BULLET = "▪️"
 	BOOST = "<:boost:907765841771257928>"
 	CURRENCY = "<a:goldbig:888588312254746654>"
+	NAMETAG = "<:nametag:1009939862180352000>"

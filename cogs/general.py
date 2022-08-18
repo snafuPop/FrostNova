@@ -81,7 +81,7 @@ class General(commands.Cog):
       f"{ky.BOOST.value} **Boosts:** {guild.premium_subscription_count:,} (Lv. {guild.premium_tier})"])
 
     def get_symbol(feature):
-      return ky.SUCCESS.value if feature in guild.features else ky.NO.value
+      return ky.YES.value if feature in guild.features else ky.NO.value
 
     features = "\n".join([
       f"{get_symbol('COMMUNITY')} Community Server",
