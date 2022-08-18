@@ -80,6 +80,32 @@ class Random(commands.Cog):
     await interaction.response.send_message(embed = embed)
 
 
+  @app_commands.command(name = "choose", description = "Chooses one thing from a list")
+  @app_commands.describe(choices = "A list of choices, with each separated by a semicolon (;)")
+  async def choose(self, interaction: discord.Interaction, choices: str):
+    if choices.endswith(";"):
+      choices = choices[:-1]
+    choices_list = list(set(choices.split(";")))
+
+    if len(choices_list) <= 1:
+      message = "You need to provide more than one choice"
+      embed = self.bot.create_error_response(message = message)
+      embed.add_field(name = "For example:", value =  "`\\choose vanilla;strawberry;chocolate`")
+      await interaction.response.send_message(embed = embed)
+      return
+
+    chosen_item = choice(choices_list)
+
+    description = f":point_right: I choose **{chosen_item}**!"
+    embed = discord.Embed(title = "", description = description)
+
+    oxford_comma = " and " if len(choices_list) == 2 else ", and "
+    choices_as_sentence = ", ".join(choices_list[:-1]) + oxford_comma + choices_list[len(choices_list) - 1]
+    embed.set_footer(text = f"...out of {choices_as_sentence}")
+    await interaction.response.send_message(embed = embed)
+
+
+
   @app_commands.command(name = "8ball", description = "Ask the mystical 8-Ball a question!")
   @app_commands.describe(question = "A question that you can attach to your 8-Ball reading")
   async def eightball(self, interaction: discord.Interaction, question: str):
