@@ -87,7 +87,7 @@ class General(commands.Cog):
     features = "\n".join([
       f"{get_symbol('COMMUNITY')} Community Server",
       f"{get_symbol('PARTNERED')} Partnered",
-      f"{get_symbol('VERIFIED')} Partnered",
+      f"{get_symbol('VERIFIED')} Verified",
       f"{get_symbol('DISCOVERABLE')} Featured on Server Discovery",
       f"{get_symbol('MEMBER_VERIFICATION_GATE_ENABLED')} Membership Screening enabled",
       f"{get_symbol('MONETIZATION_ENABLED')} Monetization enabled"])
