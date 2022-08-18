@@ -85,8 +85,8 @@ class Random(commands.Cog):
   async def choose(self, interaction: discord.Interaction, choices: str):
     if choices.endswith(";"):
       choices = choices[:-1]
-    choices_list = list(set(choices.split(";")))
 
+    choices_list = list(set(choices.split(";")))
     if len(choices_list) <= 1:
       message = "You need to provide more than one choice"
       embed = self.bot.create_error_response(message = message)
@@ -95,7 +95,6 @@ class Random(commands.Cog):
       return
 
     chosen_item = choice(choices_list)
-
     description = f":point_right: I choose **{chosen_item}**!"
     embed = discord.Embed(title = "", description = description)
 
