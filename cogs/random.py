@@ -46,7 +46,8 @@ class Random(commands.Cog):
   @app_commands.describe(max_number = "The highest number that you can roll", declaration = "A string of text that you can attach to your dice roll")
   async def about(self, interaction: discord.Interaction, max_number: int = 100, declaration: str = None):
     if max_number <= 1:
-      embed = discord.Embed(title = "", description = f"{ky.ERROR.value} Maybe roll a value greater than 1? (｀Д´)")
+      message = "Maybe roll a value greater than 1? (｀Д´)"
+      embed = self.bot.create_error_response(message = message)
       await interaction.response.send_message(embed = embed)
       return
 
@@ -100,7 +101,7 @@ class Random(commands.Cog):
         async with session.get(url) as response:
           tarot_spread = await response.json()
     except Exception as error:
-      embed = discord.Embed(title = "", description = f"**{ky.ERROR.value} {type(error).__name__}:** {error}")
+      embed = self.bot.create_error_response(error = error)
       await interaction.response.send_message(embed = embed)
       return
 
