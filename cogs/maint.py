@@ -58,10 +58,10 @@ class Maint(commands.Cog):
       reaction, user = await self.bot.wait_for("reaction_add", check = check, timeout = 10)
     except asyncio.TimeoutError as error:
       embed = self.bot.create_error_response(error = error)
-      await interaction.followup.send(embed = embed, ephemeral = True)
+      await interaction.edit_original_response(embed = embed)
     else:
       embed = discord.Embed(title = "", description = "Shutting down. Goodbye! :wave:")
-      await interaction.followup.send(embed = embed)
+      await interaction.edit_original_response(embed = embed)
       print("\nTerminated via the /shutdown command.")
       await self.bot.close()
 
@@ -75,7 +75,6 @@ class Maint(commands.Cog):
       await self.bot.load_extension("cogs." + cog.name[:-3])
     except Exception as error:
       embed = self.bot.create_error_response(error = error)
-      embed = discord.Embed(title = "", description = f"**{ky.ERROR.value} {type(error).__name__}:** {error}")
     else:
       embed = discord.Embed(title = "", description = f"{ky.LOAD.value} `{cog.name}` was loaded.")
     await interaction.response.send_message(embed = embed)
