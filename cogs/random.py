@@ -149,7 +149,7 @@ class Random(commands.Cog):
       embed.set_thumbnail(url = f"https://www.trustedtarot.com/img/cards/{card['name'].replace(' ', '-').lower()}.png")
       embeds.append(embed)
 
-    await Paginator.Simple().start(interaction, pages = embeds)
+    await self.bot.create_paginated_embed().start(interaction, pages = embeds)
 
 
 async def setup(bot: commands.Bot) -> None:
