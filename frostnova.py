@@ -36,11 +36,11 @@ class FrostNova(commands.Bot):
     description = message if message else f"**{type(error).__name__}:** {error}"
     embed = discord.Embed(title = "", description = f"{ky.ERROR.value} {description}")
     return embed
-    
+
 
   def create_paginated_embed(self):
-    previous_button = discord.ui.Button(style = discord.ButtonStyle.success, label = "🡸")
-    next_button = discord.ui.Button(style = discord.ButtonStyle.success, label = "🡺")
+    previous_button = discord.ui.Button(style = discord.ButtonStyle.success, emoji = ky.LEFT.value)
+    next_button = discord.ui.Button(style = discord.ButtonStyle.success, emoji = ky.RIGHT.value)
     return Paginator.Simple(PreviousButton = previous_button, NextButton = next_button)
 
 

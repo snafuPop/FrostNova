@@ -1,6 +1,8 @@
 from enum import Enum
 
 class Keyword(Enum):
+	LEFT = "<:left:1011270488326144020>"
+	RIGHT = "<:right:1011270489206952036>"
 	SUCCESS = ":white_check_mark:"
 	YES = "<:yes:603662870567190597>"
 	NO = "<:no:603662870365995019>"
