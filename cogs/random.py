@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from random import randint, choice, getrandbits
+import typing
 from enum import Enum
 import Paginator
 import aiohttp
@@ -44,7 +45,7 @@ class Random(commands.Cog):
 
   @app_commands.command(name = "roll", description = "Roll some dice!")
   @app_commands.describe(max_number = "The highest number that you can roll", declaration = "A string of text that you can attach to your dice roll")
-  async def rolldice(self, interaction: discord.Interaction, max_number: app_commands.Range[int, 2], declaration: str = None):
+  async def rolldice(self, interaction: discord.Interaction, max_number: typing.Optional[app_commands.Range[int, 2]] = 100, declaration: str = None):
     dice_icon = "diamond_shape_with_a_dot_inside:" if 1 == randint(1,1000000) else ":game_die:"
 
     result = randint(1, max_number)
