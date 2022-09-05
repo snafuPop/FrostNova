@@ -86,7 +86,7 @@ class Random(commands.Cog):
       message = "You need to provide more than one choice"
       embed = self.bot.create_error_response(message = message)
       embed.add_field(name = "For example:", value =  "`\\choose vanilla;strawberry;chocolate`")
-      await interaction.response.send_message(embed = embed)
+      await interaction.response.send_message(embed = embed, ephemeral = True)
       return
 
     chosen_item = choice(choices_list)
