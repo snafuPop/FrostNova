@@ -16,7 +16,7 @@ from cogs.utils.keywords import Keyword as ky
 class General(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
-    self.time_alive = time.time()
+
 
   def convert_datetime_to_unix(self, datetime_val):
     # because many of discord's api requests return time as a datetime object,
@@ -25,7 +25,7 @@ class General(commands.Cog):
 
 
   def get_uptime(self):
-    uptime = timedelta(seconds = time.time() - self.time_alive)
+    uptime = timedelta(seconds = time.time() - self.bot.get_start_time())
     uptime = datetime(1,1,1) + uptime
     return f"{uptime.day-1}d {uptime.hour}h {uptime.minute}m {uptime.second}s"
 

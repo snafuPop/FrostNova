@@ -4,6 +4,7 @@ import os
 import importlib
 import inspect
 import discord
+import time
 from discord import app_commands
 from discord.ext import commands
 
@@ -20,16 +21,21 @@ prefix = "░▒▓ (\\_/) "
 
 class FrostNova(commands.Bot):
   def __init__(self) -> None:
-      command_prefix = "fn$",
-      intents = discord.Intents.all()
-      intents.typing = False
-      intents.presences = False
-      intents.message_content = False
-      super().__init__(command_prefix = command_prefix, 
-                       intents = intents,
-                       owner_id = 94236862280892416,
-                       status = discord.Status.online,
-                       activity = discord.Game(name = "明日方舟", type = discord.ActivityType.competing))
+    self.start_time = time.time()
+    command_prefix = "fn$"
+    intents = discord.Intents.all()
+    intents.typing = False
+    intents.presences = False
+    intents.message_content = False
+    super().__init__(command_prefix = command_prefix, 
+                     intents = intents,
+                     owner_id = 94236862280892416,
+                     status = discord.Status.online,
+                     activity = discord.Game(name = "明日方舟", type = discord.ActivityType.competing))
+
+
+  def get_start_time(self):
+    return self.start_time
 
 
   def create_error_response(self, message: str = None, error: Exception = None):
