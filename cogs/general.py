@@ -53,7 +53,7 @@ class General(commands.Cog):
       {ky.BULLET.value} **Host:** aws ec2 {response['InstanceType']} instance
       {ky.BULLET.value} **Platform:** {response['Architecture']} {response['PlatformDetails']}
       {ky.BULLET.value} **Latency:** {self.bot.latency:.4f}ms
-      {ky.BULLET.value} **CPU Usage:** {psutil.cpu_percent()}
+      {ky.BULLET.value} **CPU Usage:** {psutil.cpu_percent()}%
       {ky.BULLET.value} **Memory Usage:** {psutil.virtual_memory()[2]}%
       {ky.BULLET.value} **Disk Usage:** {psutil.disk_usage('/')[3]}%
       {ky.BULLET.value} **Current Uptime:** {self.get_uptime()}
