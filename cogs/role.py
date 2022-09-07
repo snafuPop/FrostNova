@@ -183,5 +183,5 @@ class Roles(commands.Cog):
     await asyncio.sleep(5)
     await interaction.delete_original_response()
 
-async def setup(bot: commands.Bot)  -> None:
+async def setup(bot: commands.Bot) -> None:
   await bot.add_cog(Roles(bot))
