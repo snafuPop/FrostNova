@@ -45,6 +45,8 @@ class DFO(commands.Cog):
     def __get_character_stats(self, embed, server_id, character_id):
         payload = f"https://api.dfoneople.com/df/servers/{server_id}/characters/{character_id}/status?apikey={self.api_key}"
         response = requests.get(payload).json()
+        if not response["status"]:
+            return
 
         base_stats = []
         for i in range(8):
@@ -85,18 +87,23 @@ class DFO(commands.Cog):
         payload = f"https://api.dfoneople.com/df/servers/{server}/characters?characterName={name}&limit=1&apikey={self.api_key}"
         response = requests.get(payload).json()
 
-        if "error" in response or not response["rows"]:
+        if not response or "error" in response or not response["rows"]:
             if server == "all":
                 server = "DFO Global"
             embed = self.bot.create_error_response(message=f"No character named **{name}** on **{server.title()}** was found!")
             embed.set_thumbnail(url=self.error_thumbnail)
             await interaction.response.send_message(embed=embed)
+            return
 
+        print(response)
         response = response["rows"][0]
         server_id = response["serverId"]
         character_id = response["characterId"]
+        description = response["jobGrowName"]
+        if response["fame"]:
+            description = f"{ky.FAME.value} **{response['fame']:,}** " + description
 
-        embed = discord.Embed(title = f"{name}", description = f"{ky.FAME.value} **{response['fame']:,}** {response['jobGrowName']}", color = interaction.user.color)
+        embed = discord.Embed(title = f"{name}", description = description, color = interaction.user.color)
         embed.set_footer(text=f"Character ID: {character_id}")
 
         embeds = [
@@ -104,6 +111,7 @@ class DFO(commands.Cog):
             self.__get_character_equipment(deepcopy(embed), server_id, character_id),
             self.__get_character_stats(deepcopy(embed), server_id, character_id)
         ]
+        embeds = list(filter(None,embeds))
         await self.bot.create_paginated_embed().start(interaction, pages=embeds)
 
 
@@ -135,10 +143,11 @@ class DFO(commands.Cog):
         payload = f"https://api.dfoneople.com/df/items?itemName={name}&wordType={pattern}&limit=1&apikey={self.api_key}"
         response = requests.get(payload).json()
 
-        if "error" in response or not response["rows"]:
+        if not response or "error" in response or not response["rows"]:
             embed = self.bot.create_error_response(message=f"Could not find any search results for **{name}**!")
             embed.set_thumbnail(url=self.error_thumbnail)
             await interaction.response.send_message(embed=embed)
+            return
 
         item_id = response["rows"][0]["itemId"]
         detailed_payload = f"https://api.dfoneople.com/df/items/{item_id}?apikey={self.api_key}"
