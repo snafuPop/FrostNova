@@ -140,7 +140,6 @@ class General(commands.Cog):
         if user_utils.is_registered(user):
             statistics = statistics.rstrip("\n") + f"""
                 {ky.BULLET.value} **Balance:** {user_utils.get_balance(user):,} {ky.CURRENCY.value}
-                {ky.BULLET.value} **Slot Winnings:** {user_utils.get_slot_winnings(user):,} {ky.CURRENCY.value}
             """
 
         embed.add_field(name = "**Statistics:**", value = re.sub(r'\n\s*\n', '\n', statistics))

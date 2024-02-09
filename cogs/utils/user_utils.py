@@ -25,14 +25,18 @@ def is_registered(user):
 def get_default_keys():
     '''Initializes a set of default key-value pairs that each user will be assigned when registering for the first time.'''
     return {
-        "balance": 1000,
-        "slot_winnings": 0
+        "balance": 1000
     }
 
 
 def get_balance(user):
     '''Returns a user's balance.'''
     return get_users()[str(user.id)]["balance"]
+
+
+def can_afford(user, amount):
+    '''Returns true if the amount specified is less than or equal to the user's balance, false otherwise.'''
+    return amount <= get_balance(user)
 
 
 def set_balance(user, balance):
@@ -51,8 +55,3 @@ def add_balance(user, balance):
     user_dict = get_users()
     user_dict[str(user.id)]["balance"] = user_dict[str(user.id)]["balance"] + balance 
     update(user_dict)
-
-
-def get_slot_winnings(user):
-    '''Returns a user's lifetime slot winnings.'''
-    return get_users()[str(user.id)]["slot_winnings"]
