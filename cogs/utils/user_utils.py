@@ -35,6 +35,24 @@ def get_balance(user):
     return get_users()[str(user.id)]["balance"]
 
 
+def set_balance(user, balance):
+    '''Sets a user's balance to the specified amount. This function assumes that the user is properly registered in the dictionary of
+    registered users. Attempting to set the user's balance to a negative number will set it to 0 instead.'''
+    if balance < 0:
+        balance = 0
+    user_dict = get_users()
+    user_dict[str(user.id)]["balance"] = balance
+    update(user_dict)
+    
+    
+def add_balance(user, balance):
+    '''Adds a specified amount to the user's balance. This function assumes that the user is properly registered in the dictionary of
+    registered users.'''
+    user_dict = get_users()
+    user_dict[str(user.id)]["balance"] = user_dict[str(user.id)]["balance"] + balance 
+    update(user_dict)
+
+
 def get_slot_winnings(user):
     '''Returns a user's lifetime slot winnings.'''
     return get_users()[str(user.id)]["slot_winnings"]
