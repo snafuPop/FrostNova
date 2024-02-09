@@ -120,12 +120,8 @@ class General(commands.Cog):
         if not user:
             user = interaction.user
 
-        title = f"{user.name} #{user.discriminator}"
-
-        if user.nick:
-            embed = discord.Embed(title = title, description = f"{ky.NAMETAG.value} {user.display_name}", color = user.color)
-        else:
-            embed = discord.Embed(title = title, color = user.color)
+        title = f"{user.name} ({ky.NAMETAG.value} {user.display_name})" if user.nick else f"{user.name}"
+        embed = discord.Embed(title = title, color = user.color)
         embed.set_thumbnail(url = user.display_avatar.url)
 
         flags = []
