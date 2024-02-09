@@ -16,6 +16,13 @@ class Maint(commands.Cog):
         self.bot = bot
 
 
+    @commands.command(name="sync_to_global")
+    async def sync_to_global(self, ctx):
+        if ctx.author.id == 94236862280892416:
+            synced_commands = await self.bot.tree.sync()
+            await ctx.send(f"Synced {len(synced_commands)} commands to global.")
+
+
     async def is_owner(interaction: discord.Interaction) -> bool:
         return interaction.user.id == 94236862280892416
 
