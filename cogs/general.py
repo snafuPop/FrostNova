@@ -1,7 +1,6 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-
 import os
 import json
 import time
@@ -9,8 +8,9 @@ from datetime import timedelta, datetime
 import boto3
 import sys
 import psutil
-
+import re
 from cogs.utils.keywords import Keyword as ky
+import cogs.utils.user_utils as user_utils
 
 
 class General(commands.Cog):
@@ -140,8 +140,14 @@ class General(commands.Cog):
             {ky.BULLET.value} **Joined Discord on:** <t:{self.convert_datetime_to_unix(user.created_at)}:D>
             {ky.BULLET.value} **Joined {interaction.guild} on:** <t:{self.convert_datetime_to_unix(user.joined_at)}:D>
         """
+        
+        if user_utils.is_registered(user):
+            statistics = statistics.rstrip("\n") + f"""
+                {ky.BULLET.value} **Balance:** {user_utils.get_balance(user):,} {ky.CURRENCY.value}
+                {ky.BULLET.value} **Slot Winnings:** {user_utils.get_slot_winnings(user):,} {ky.CURRENCY.value}
+            """
 
-        embed.add_field(name = "**Statistics:**", value = statistics)
+        embed.add_field(name = "**Statistics:**", value = re.sub(r'\n\s*\n', '\n', statistics))
         embed.set_footer(text = f"User ID:{user.id}")
         await interaction.response.send_message(embed = embed)
 
