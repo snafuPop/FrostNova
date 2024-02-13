@@ -24,9 +24,10 @@ class Reel(dict):
         }
 
 
-    def get_keys(self):
-        """Returns a list of all the keys in the reel dictionary."""
-        return list(self.reel_dictionary.keys())
+    def get_keys(self, sort_keys: bool=False):
+        """Returns a list of all the keys in the reel dictionary. If sort_keys is True, then the keys will be ordered by their payout
+        values in ascending order."""
+        return sorted(self.reel_dictionary.keys(), key=lambda x: self.reel_dictionary[x]["payout"]) if sort_keys else list(self.reel_dictionary.keys())
 
 
     def get_emoji(self, key):
@@ -42,12 +43,6 @@ class Reel(dict):
     def get_count(self, key):
         """Returns the count (i.e., the number of times it appears in a reel) of a specified symbol."""
         return self.reel_dictionary[key]["count"]
-
-    
-    def get_as_ordered_list(self):
-        """Return the dictionary of keys as a sorted list ordered by their payout values in ascending order."""
-        sorted_payouts = sorted(self.reel_dictionary.keys(), key=lambda x: self.reel_dictionary[x]["payout"])
-        return sorted_payouts
 
 
 class SlotGame:
@@ -148,7 +143,7 @@ class Slots(commands.Cog):
     @slots.command(name="payouts", description="Review the different kind of payouts available")
     async def review_payouts(self, interaction: discord.Interaction):
         reel = Reel()
-        ordered_list = reel.get_as_ordered_list()
+        ordered_list = reel.get_keys(sort_keys=True)
         cherry_emoji = reel.get_emoji(ordered_list[0])
         payouts = [f"{ky.EMPTY.value*2}{cherry_emoji} Bet×2", f"{ky.EMPTY.value}{cherry_emoji*2} Bet×5"]
         for key in ordered_list:
