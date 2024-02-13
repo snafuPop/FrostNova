@@ -187,7 +187,7 @@ class Slots(commands.Cog):
         slot_game = SlotGame(interaction, wager)
         embed = slot_game.play()  # create new instance of a slot game
         if slot_game.is_stopped:
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed)  # passing view=None will trigger a CommandInvokeError on send_message
         else:
             await interaction.response.send_message(embed=embed, view=ReplayButton(slot_game))
 
