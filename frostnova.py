@@ -27,7 +27,7 @@ class FrostNova(commands.Bot):
         intents = discord.Intents.all()
         intents.typing = False
         intents.presences = False
-        intents.message_content = False
+        intents.message_content = True
         super().__init__(
             command_prefix = command_prefix, 
             intents = intents,

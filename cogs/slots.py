@@ -3,83 +3,106 @@ from discord import app_commands
 from discord.ext import commands
 from cogs.utils.keywords import Keyword as ky
 import cogs.utils.user_utils as user_utils
+import cogs.utils.bot_utils as bot_utils
 from random import randint, shuffle
 from typing import Optional
 from enum import Enum
 
 
-class Reel(Enum):
-    CHERRY = ":cherries:"
-    BELL = ":bell:"
-    DIAMOND = ":diamond_shape_with_a_dot_inside:"
-    SEVEN = ":seven:"
-    LEMON = ":lemon:"
-    GRAPE = ":grapes:"
-    ORANGE = ":tangerine:"
-    SECRET = "<a:w_:1205606672970686545>"
-    
-
-class Slots(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-
-    def get_payouts(self):
-        '''Returns a dictionary of payouts, where the key is the matched symbol and its value is the bet multiplier.'''
-        return {
-            Reel.CHERRY: 10,
-            Reel.BELL: 10,
-            Reel.DIAMOND: 20,
-            Reel.SEVEN: 30,
-            Reel.LEMON: 40,
-            Reel.GRAPE: 60,
-            Reel.ORANGE: 100,
-            Reel.SECRET: 5000,
+class Reel(dict):
+    def __init__(self, *arg, **kwargs):
+        super(Reel, self).__init__(*arg, **kwargs)
+        self.reel_dictionary = {
+            "cherries": {"emoji": ":cherries:", "payout": 10, "count": 20},
+            "bell": {"emoji": ":bell:", "payout": 10, "count": 30},
+            "diamond": {"emoji": ":diamond_shape_with_a_dot_inside:", "payout": 20, "count": 25},
+            "seven": {"emoji": ":seven:", "payout": 30, "count": 20},
+            "lemon": {"emoji": ":lemon:","payout": 40,"count": 12},
+            "grapes": {"emoji": ":grapes:","payout": 60,"count": 8},
+            "orange": {"emoji": ":tangerine:","payout": 100,"count": 4},
+            "secret": {"emoji": "<a:w_:1205606672970686545>","payout": 1000000,"count": 1}
         }
 
-    def is_not_registered_message(self, user):
-        '''Returns an embed message intended for interactions that cannot be performed because the designated user is not registered.'''
-        return self.bot.create_error_response(message=f"{user.name} is not registered! Use `/register` first to participate in economy-related features!")
+
+    def get_keys(self):
+        """Returns a list of all the keys in the reel dictionary."""
+        return list(self.reel_dictionary.keys())
+
+
+    def get_emoji(self, key):
+        """Returns the emoji of a specified symbol."""
+        return self.reel_dictionary[key]["emoji"]
 
     
-    slots = app_commands.Group(name = "slots", description = "Ring-a-Ding-Ding!")
+    def get_payout(self, key):
+        """Returns the payout value (i.e., the amount the wager is multiplied by) of a specified symbol."""
+        return self.reel_dictionary[key]["payout"]
+
     
-    @slots.command(name="payouts", description="Review the different kind of payouts available")
-    async def review_payouts(self, interaction: discord.Interaction):
-        payouts = self.get_payouts()
-        message = f"""
-            {ky.EMPTY.value*2}{Reel.CHERRY.value} Bet×2
-            {ky.EMPTY.value}{Reel.CHERRY.value*2} Bet×5
-            {Reel.CHERRY.value*3} Bet×{payouts[Reel.CHERRY]}
-            {Reel.BELL.value*3} Bet×{payouts[Reel.BELL]}
-            {Reel.DIAMOND.value*3} Bet×{payouts[Reel.DIAMOND]}
-            {Reel.SEVEN.value*3} Bet×{payouts[Reel.SEVEN]}
-            {Reel.LEMON.value*3} Bet×{payouts[Reel.LEMON]}
-            {Reel.GRAPE.value*3} Bet×{payouts[Reel.GRAPE]}
-            {Reel.ORANGE.value*3} Bet×{payouts[Reel.ORANGE]}
-        """
-        embed = discord.Embed(title="Slot Payouts", description=message)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+    def get_count(self, key):
+        """Returns the count (i.e., the number of times it appears in a reel) of a specified symbol."""
+        return self.reel_dictionary[key]["count"]
+
+    
+    def get_as_ordered_list(self):
+        """Return the dictionary of keys as a sorted list ordered by their payout values in ascending order."""
+        sorted_payouts = sorted(self.reel_dictionary.keys(), key=lambda x: self.reel_dictionary[x]["payout"])
+        return sorted_payouts
+
+
+class SlotGame:
+    def __init__(self, interaction, wager):
+        self.reel = Reel()
+        self.interaction = interaction
+        self.user = interaction.user
+        self.wager = wager
 
 
     def create_reel(self):
-        '''Rather than randomly selecting a symbol, generate an ordered list of random symbols,  then pick a random symbol from that list.
-        This simulates a phyhsical reel, in which symbols are at a fixed location.'''
-        reel = [Reel.CHERRY]*20 + [Reel.BELL]*30 + [Reel.DIAMOND]*25 + [Reel.SEVEN]*20 + [Reel.LEMON]*12 + [Reel.GRAPE]*8 + [Reel.ORANGE]*4 + [Reel.SECRET] * 1
+        """Rather than randomly selecting a symbol, generate an ordered list of random symbols,  then pick a random symbol from that list.
+        This simulates a phyhsical reel, in which symbols are at a fixed location."""
+        reel = [key for key in self.reel.get_keys() for i in range(self.reel.get_count(key))]
         shuffle(reel)
         return reel
-    
-    
+
+
     def pick_random_triplet_in_reel(self, reel):
-        '''Picks a random triplet on the reel, circularly. The 0th index represents the top of the reel, and the 2nd index represents the
-        bottom.'''
+        """Picks a random triplet on the reel, circularly. The 0th index represents the top of the reel, and the 2nd index represents the
+        bottom."""
         index = randint(0, len(reel) - 1)
         return [reel[(index - 1) % len(reel)], reel[index], reel[(index + 1) % len(reel)]]
-    
-    
+
+
+    def determine_payout(self, slot_output, wager):
+        """Given the output of a slot machine play, determine the payout. This is returned as a tuple
+        (payout message, amount to be paid out)."""
+        payout_line = [slot_output[0][1], slot_output[1][1], slot_output[2][1]]
+        if all(value == payout_line[0] for value in payout_line):  # all values are equal
+            matched_value = payout_line[0]
+            emoji = self.reel.get_emoji(matched_value)
+            payout = self.reel.get_payout(matched_value)
+            message = f"Three {emoji}s! You've been paid out {payout:,}× your wager!"
+            payout = wager * payout
+
+        elif payout_line.count("cherries") == 2:  # 2 cherries
+            MULTIPLIER = 5
+            message = f"Two {self.reel.get_emoji('cherries')}s! You've been paid out {MULTIPLIER:,}× your wager!"
+            payout = wager * MULTIPLIER
+
+        elif payout_line.count("cherries") == 1:  # 1 cherry
+            MULTIPLIER = 2
+            message = f"One {self.reel.get_emoji('cherries')}! You've been paid out {MULTIPLIER:,}× your wager!"
+            payout = wager * MULTIPLIER
+
+        else:  # no matches
+            message = f"No matches! Better luck next time..."
+            payout = 0
+        return (message, payout)
+
+
     def format_output_for_message(self, slot_output):
-        '''Given the output of a slot machine play, format it in a human-readable manner before it is returned to the user.'''
-        values = [[enum.value for enum in row] for row in slot_output]
+        """Given the output of a slot machine play, format it in a human-readable manner before it is returned to the user."""
+        values = [[self.reel.get_emoji(key) for key in row] for row in slot_output]
         rotated_values = [list(row) for row in zip(*values)]
         message = f"""
             {ky.EMPTY.value} {"".join(rotated_values[0])}
@@ -87,58 +110,59 @@ class Slots(commands.Cog):
             {ky.EMPTY.value} {"".join(rotated_values[2])}
         """
         return message
-    
-    
-    def determine_payout(self, slot_output, wager):
-        '''Given the output of a slot machine play, determine the payout. This is returned as a tuple
-        (payout message, amount to be paid out).'''
-        payouts = self.get_payouts()
-        payout_line = [slot_output[0][1], slot_output[1][1], slot_output[2][1]]
-        if all(value == payout_line[0] for value in payout_line):  # all values are equal
-            matched_value = payout_line[0]
-            message = f"Three {matched_value.value}s! You've been paid out {payouts[matched_value]:,}× your wager!"
-            payout = wager * payouts[matched_value]
-        elif payout_line.count(Reel.CHERRY) == 2:  # 2 cherries
-            MULTIPLIER = 5
-            message = f"Two {Reel.CHERRY.value}s! You've been paid out {MULTIPLIER:,}× your wager!"
-            payout = wager * MULTIPLIER
-        elif payout_line.count(Reel.CHERRY) == 1:  # 1 cherry
-            MULTIPLIER = 2
-            message = f"One {Reel.CHERRY.value}! You've been paid out {MULTIPLIER:,}× your wager!"
-            payout = wager * MULTIPLIER
-        else:  # no matches
-            message = f"No matches! Better luck next time..."
-            payout = 0
-        return (message, payout)
 
 
-    @slots.command(name="play", description="Gamble your money away!")
-    @app_commands.describe(wager="The amount of money to wager (must be at least 100)")
-    async def slots_play(self, interaction: discord.Interaction, wager: app_commands.Range[int, 100]):
-        if not user_utils.is_registered(interaction.user):
-            await interaction.response.send_message(embed=self.is_not_registered_message(interaction.user), ephemeral=True)
-            return
-        
-        if not user_utils.can_afford(interaction.user, wager):
-            message = f"You can't afford that! Your balance is {user_utils.get_balance(interaction.user):,} {ky.CURRENCY.value}, but you tried to wager {wager:,} {ky.CURRENCY.value}."
-            await interaction.response.send_message(embed=self.bot.create_error_response(message=message), ephemeral=True)
-            return
+    def play(self):
+        """The main slot game mechanism. Runs through the logic of the slot game and returns an discord.Embed message that describes the results of the slot pull."""
+        if not user_utils.is_registered(self.user):
+            return bot_utils.create_error_response(message="You're not registered! Use `/register` first to participate in economy-related features.)")
+
+        if not user_utils.can_afford(self.user, self.wager):
+            return bot_utils.create_error_response(message=f"You can't afford that! Your balance is {user_utils.get_balance(user):,} {ky.CURRENCY.value}, but you tried to wager {self.wager:,} {ky.CURRENCY.value}.")
 
         reel = self.create_reel()
         slot_output = [self.pick_random_triplet_in_reel(reel) for i in range(3)]
         embed = discord.Embed(title="Slot Results:", description=self.format_output_for_message(slot_output))
         
-        payout = self.determine_payout(slot_output, wager)
+        payout = self.determine_payout(slot_output, self.wager)
         payout_message = payout[0]
         payout_winnings = payout[1]
-        new_balance = user_utils.get_balance(interaction.user) + payout_winnings - wager
-        user_utils.set_balance(interaction.user, new_balance)
+        new_balance = user_utils.get_balance(self.user) + payout_winnings - self.wager
+        user_utils.set_balance(self.user, new_balance)
 
         payout_report = f"**New Balance:** {new_balance:,} {ky.CURRENCY.value}"
         if payout_winnings != 0:  # only report winnings if the user had actually won anything
             payout_report = f"**You've won:** {payout_winnings:,} {ky.CURRENCY.value}\n" + payout_report
 
         embed.add_field(name=payout_message, value=payout_report)
+        return embed
+
+
+class Slots(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        
+
+    slots = app_commands.Group(name = "slots", description = "Ring-a-Ding-Ding!")
+    
+    @slots.command(name="payouts", description="Review the different kind of payouts available")
+    async def review_payouts(self, interaction: discord.Interaction):
+        reel = Reel()
+        ordered_list = reel.get_as_ordered_list()
+        cherry_emoji = reel.get_emoji(ordered_list[0])
+        payouts = [f"{ky.EMPTY.value*2}{cherry_emoji} Bet×2", f"{ky.EMPTY.value}{cherry_emoji*2} Bet×5"]
+        for key in ordered_list:
+            emoji, payout = (reel.get_emoji(key), reel.get_payout(key))
+            payouts.append(f"{emoji*3} Bet×{payout}")
+        message = "\n".join(payouts[:-1])  # omit the last, secret payout
+        embed = discord.Embed(title="Slot Payouts", description=message)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+    @slots.command(name="play", description="Gamble your money away!")
+    @app_commands.describe(wager="The amount of money to wager (must be at least 100)")
+    async def slots_command(self, interaction: discord.Interaction, wager: app_commands.Range[int, 100]):
+        embed = SlotGame(interaction, wager).play()  # create new instance of a slot game
         await interaction.response.send_message(embed=embed)
 
 
