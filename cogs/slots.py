@@ -9,6 +9,27 @@ from typing import Optional
 from enum import Enum
 
 
+class ReplayButton(discord.ui.View):
+    def __init__(self, slot_game):
+        super().__init__(timeout=None)
+        self.slot_game = slot_game
+        self.interaction = slot_game.interaction
+        self.wager = slot_game.wager
+        self.play_again.label = f"Play Again (Wager: {self.wager:,})"
+
+    
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        return self.interaction.user.id == interaction.user.id
+
+
+    @discord.ui.button(label="Play Again", emoji="\U0001F501", style=discord.ButtonStyle.success)
+    async def play_again(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # embed = self.play_slots(interaction, wager)
+        # await interaction.response.edit_message(embed=embed)
+        embed = self.slot_game.play()
+        await interaction.response.edit_message(embed=embed)
+
+
 class Reel(dict):
     def __init__(self, *arg, **kwargs):
         super(Reel, self).__init__(*arg, **kwargs)
@@ -157,8 +178,10 @@ class Slots(commands.Cog):
     @slots.command(name="play", description="Gamble your money away!")
     @app_commands.describe(wager="The amount of money to wager (must be at least 100)")
     async def slots_command(self, interaction: discord.Interaction, wager: app_commands.Range[int, 100]):
-        embed = SlotGame(interaction, wager).play()  # create new instance of a slot game
-        await interaction.response.send_message(embed=embed)
+        slot_game = SlotGame(interaction, wager)
+        view = ReplayButton(slot_game)
+        embed = slot_game.play()  # create new instance of a slot game
+        await interaction.response.send_message(embed=embed, view=view)
 
 
 async def setup(bot: commands.Bot) -> None:
