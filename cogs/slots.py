@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from cogs.utils.keywords import Keyword as ky
 import cogs.utils.user_utils as user_utils
-import cogs.utils.bot_utils as bot_utils
+from cogs.utils.bot_utils import Emojis as emoji, create_error_response
 from random import randint, shuffle
 from typing import Optional
 from enum import Enum
@@ -24,8 +24,6 @@ class ReplayButton(discord.ui.View):
 
     @discord.ui.button(label="Play Again", emoji="\U0001F501", style=discord.ButtonStyle.success)
     async def play_again(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # embed = self.play_slots(interaction, wager)
-        # await interaction.response.edit_message(embed=embed)
         embed = self.slot_game.play()
         await interaction.response.edit_message(embed=embed)
 
@@ -72,6 +70,12 @@ class SlotGame:
         self.interaction = interaction
         self.user = interaction.user
         self.wager = wager
+        self.is_stopped = False
+
+
+    def stop_playing(self):
+        """Raises a flag to stop views from appearing if some kind of issue occurs."""
+        self.is_stopped = True
 
 
     def create_reel(self):
@@ -121,9 +125,9 @@ class SlotGame:
         values = [[self.reel.get_emoji(key) for key in row] for row in slot_output]
         rotated_values = [list(row) for row in zip(*values)]
         message = f"""
-            {ky.EMPTY.value} {"".join(rotated_values[0])}
-            {ky.RIGHT.value} {"".join(rotated_values[1])}
-            {ky.EMPTY.value} {"".join(rotated_values[2])}
+            {emoji.EMPTY} {"".join(rotated_values[0])}
+            {emoji.RIGHT} {"".join(rotated_values[1])}
+            {emoji.EMPTY} {"".join(rotated_values[2])}
         """
         return message
 
@@ -131,10 +135,12 @@ class SlotGame:
     def play(self):
         """The main slot game mechanism. Runs through the logic of the slot game and returns an discord.Embed message that describes the results of the slot pull."""
         if not user_utils.is_registered(self.user):
-            return bot_utils.create_error_response(message="You're not registered! Use `/register` first to participate in economy-related features.)")
+            self.stop_playing()
+            return create_error_response(message="You're not registered! Use `/register` first to participate in economy-related features.)")
 
         if not user_utils.can_afford(self.user, self.wager):
-            return bot_utils.create_error_response(message=f"You can't afford that! Your balance is {user_utils.get_balance(user):,} {ky.CURRENCY.value}, but you tried to wager {self.wager:,} {ky.CURRENCY.value}.")
+            self.stop_playing()
+            return create_error_response(message=f"You can't afford that!\nYour balance is {user_utils.get_balance(self.user):,} {emoji.CURRENCY}, but you tried to wager {self.wager:,} {emoji.CURRENCY}.")
 
         reel = self.create_reel()
         slot_output = [self.pick_random_triplet_in_reel(reel) for i in range(3)]
@@ -146,9 +152,9 @@ class SlotGame:
         new_balance = user_utils.get_balance(self.user) + payout_winnings - self.wager
         user_utils.set_balance(self.user, new_balance)
 
-        payout_report = f"**New Balance:** {new_balance:,} {ky.CURRENCY.value}"
+        payout_report = f"**New Balance:** {new_balance:,} {emoji.CURRENCY}"
         if payout_winnings != 0:  # only report winnings if the user had actually won anything
-            payout_report = f"**You've won:** {payout_winnings:,} {ky.CURRENCY.value}\n" + payout_report
+            payout_report = f"**You've won:** {payout_winnings:,} {emoji.CURRENCY}\n" + payout_report
 
         embed.add_field(name=payout_message, value=payout_report)
         return embed
@@ -166,10 +172,10 @@ class Slots(commands.Cog):
         reel = Reel()
         ordered_list = reel.get_keys(sort_keys=True)
         cherry_emoji = reel.get_emoji(ordered_list[0])
-        payouts = [f"{ky.EMPTY.value*2}{cherry_emoji} Bet×2", f"{ky.EMPTY.value}{cherry_emoji*2} Bet×5"]
+        payouts = [f"{emoji.EMPTY*2}{cherry_emoji} Bet×2", f"{emoji.EMPTY}{cherry_emoji*2} Bet×5"]
         for key in ordered_list:
-            emoji, payout = (reel.get_emoji(key), reel.get_payout(key))
-            payouts.append(f"{emoji*3} Bet×{payout}")
+            reel_emoji, payout = (reel.get_emoji(key), reel.get_payout(key))
+            payouts.append(f"{reel_emoji*3} Bet×{payout}")
         message = "\n".join(payouts[:-1])  # omit the last, secret payout
         embed = discord.Embed(title="Slot Payouts", description=message)
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -179,9 +185,11 @@ class Slots(commands.Cog):
     @app_commands.describe(wager="The amount of money to wager (must be at least 100)")
     async def slots_command(self, interaction: discord.Interaction, wager: app_commands.Range[int, 100]):
         slot_game = SlotGame(interaction, wager)
-        view = ReplayButton(slot_game)
         embed = slot_game.play()  # create new instance of a slot game
-        await interaction.response.send_message(embed=embed, view=view)
+        if slot_game.is_stopped:
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message(embed=embed, view=ReplayButton(slot_game))
 
 
 async def setup(bot: commands.Bot) -> None:
