@@ -70,12 +70,7 @@ class SlotGame:
         self.interaction = interaction
         self.user = interaction.user
         self.wager = wager
-        self.is_stopped = False
-
-
-    def stop_playing(self):
-        """Raises a flag to stop views from appearing if some kind of issue occurs."""
-        self.is_stopped = True
+        self.views_enabled = False
 
 
     def create_reel(self):
@@ -135,13 +130,12 @@ class SlotGame:
     def play(self):
         """The main slot game mechanism. Runs through the logic of the slot game and returns an discord.Embed message that describes the results of the slot pull."""
         if not user_utils.is_registered(self.user):
-            self.stop_playing()
             return create_error_response(message="You're not registered! Use `/register` first to participate in economy-related features.)")
 
         if not user_utils.can_afford(self.user, self.wager):
-            self.stop_playing()
             return create_error_response(message=f"You can't afford that!\nYour balance is {user_utils.get_balance(self.user):,} {emoji.CURRENCY}, but you tried to wager {self.wager:,} {emoji.CURRENCY}.")
 
+        self.views_enabled = True
         reel = self.create_reel()
         slot_output = [self.pick_random_triplet_in_reel(reel) for i in range(3)]
         embed = discord.Embed(title="Slot Results:", description=self.format_output_for_message(slot_output))
@@ -186,10 +180,10 @@ class Slots(commands.Cog):
     async def slots_command(self, interaction: discord.Interaction, wager: app_commands.Range[int, 100]):
         slot_game = SlotGame(interaction, wager)
         embed = slot_game.play()  # create new instance of a slot game
-        if slot_game.is_stopped:
-            await interaction.response.send_message(embed=embed)  # passing view=None will trigger a CommandInvokeError on send_message
-        else:
+        if slot_game.views_enabled:  # passing view=None will trigger a CommandInvokeError on send_message, so this needs to be explicitly checked
             await interaction.response.send_message(embed=embed, view=ReplayButton(slot_game))
+        else:
+            await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
