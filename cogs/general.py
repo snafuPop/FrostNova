@@ -11,6 +11,7 @@ import psutil
 import re
 from cogs.utils.keywords import Keyword as ky
 import cogs.utils.user_utils as user_utils
+from cogs.utils.bot_utils import Emojis as emoji
 
 
 class General(commands.Cog):
@@ -65,7 +66,6 @@ class General(commands.Cog):
         view.add_item(discord.ui.Button(label = "Invite", style = discord.ButtonStyle.link, url = "https://discord.com/api/oauth2/authorize?client_id=547516876851380293&permissions=8&scope=bot"))
         view.add_item(discord.ui.Button(label = "Repo", style = discord.ButtonStyle.link, url = "https://github.com/snafuPop/FrostNova"))
         view.add_item(discord.ui.Button(label = "Report an Issue", style = discord.ButtonStyle.link, url = "https://github.com/snafuPop/FrostNova/issues/new"))
-
         await interaction.response.send_message(embed = embed, view = view)
 
 
@@ -120,6 +120,7 @@ class General(commands.Cog):
         if not user:
             user = interaction.user
 
+        is_registered = user_utils.is_registered(user)
         title = f"{user.name} ({ky.NAMETAG.value} {user.display_name})" if user.nick else f"{user.name}"
         embed = discord.Embed(title = title, color = user.color)
         embed.set_thumbnail(url = user.display_avatar.url)
@@ -137,14 +138,36 @@ class General(commands.Cog):
             {ky.BULLET.value} **Joined {interaction.guild} on:** <t:{self.convert_datetime_to_unix(user.joined_at)}:D>
         """
         
-        if user_utils.is_registered(user):
-            statistics = statistics.rstrip("\n") + f"""
-                {ky.BULLET.value} **Balance:** {user_utils.get_balance(user):,} {ky.CURRENCY.value}
-            """
+        inventory = None
+        if is_registered:
+            user_data = user_utils.get_user(user)
+            inventory = user_utils.get_inventory(user)
+            statistics += f"\n{ky.BULLET.value} **Balance:** {user_data['balance']:,} {ky.CURRENCY.value}"
 
         embed.add_field(name = "**Statistics:**", value = re.sub(r'\n\s*\n', '\n', statistics))
-        embed.set_footer(text = f"User ID:{user.id}")
+        if inventory:
+            embed.add_field(name="**Inventory:**", value=inventory, inline=False)
+        embed.set_footer(text=f"User ID:{user.id}")
         await interaction.response.send_message(embed = embed)
+
+
+    @app_commands.command(name="leaderboard", description="Pulls up the economy leaderboard")
+    async def leaderboard1(self, interaction: discord.Interaction):
+        user_dict = user_utils.get_users()
+        richest_user_ids = sorted(user_dict.keys(), key=lambda x: user_dict[x]["balance"], reverse=True)[:5]
+        richest_users = []
+        medals = [":first_place:", ":second_place:", ":third_place:", ":medal:", ":medal:"]
+
+        for i in range(0, len(richest_user_ids)):
+            user_id = richest_user_ids[i]
+            user = await self.bot.fetch_user(int(user_id))
+            name = user.display_name if user else "Unknown"
+            balance = user_dict[user_id]["balance"]
+            medal_emoji = medals[i]
+            richest_users.append(f"{medal_emoji} **{name}:** {balance:,} {emoji.CURRENCY}")
+
+        embed = discord.Embed(title="Economy Rankings", description="\n".join(richest_users))
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
