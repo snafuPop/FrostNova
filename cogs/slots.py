@@ -11,7 +11,7 @@ from enum import Enum
 
 class ReplayButton(discord.ui.View):
     def __init__(self, slot_game):
-        super().__init__(timeout=None)
+        super().__init__(timeout=30)
         self.slot_game = slot_game
         self.interaction = slot_game.interaction
         self.wager = slot_game.wager
@@ -26,6 +26,14 @@ class ReplayButton(discord.ui.View):
     async def play_again(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = self.slot_game.play()
         await interaction.response.edit_message(embed=embed)
+
+
+    async def on_timeout(self):
+        interaction_message = await self.interaction.original_response()
+        for child in self.children:
+            child.disabled = True
+        await interaction_message.edit(view=None)
+        self.stop()
 
 
 class Reel(dict):
