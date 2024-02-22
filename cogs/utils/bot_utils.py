@@ -7,12 +7,7 @@ import discord
 import time
 from discord import app_commands
 from discord.ext import commands
-
 from typing import List, Optional
-import Paginator
-import boto3
-import base64
-import asyncio
 
 from cogs.utils.keywords import Keyword as ky
 
@@ -40,6 +35,12 @@ class Emojis(metaclass=EmojiMeta):  # Store emoji that need to be used in output
     EMPTY = "<:blank:1205612541691035689>"
 
 
+class Item:
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", None)
+        self.icon = kwargs.get("icon", None)
+
+
 def create_error_response(message: str = None, error: Exception = None):
     """Generates and returns an embedded error message, whether the error is triggered by user-input or by an exception."""
     description = message if message else f"**{type(error).__name__}:** {error}"
@@ -52,3 +53,9 @@ def create_paginated_embed():
     previous_button = discord.ui.Button(style = discord.ButtonStyle.success, emoji = Emojis.LEFT)
     next_button = discord.ui.Button(style = discord.ButtonStyle.success, emoji = Emojis.RIGHT)
     return Paginator.Simple(PreviousButton = previous_button, NextButton = next_button)
+
+
+def is_owner_id(user):
+    """Returns True if the user id of the command invoker is equal to the owner ID, False otherwise."""
+    OWNER_ID = 94236862280892416
+    return interaction.user.id == OWNER_ID

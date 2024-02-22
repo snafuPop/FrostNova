@@ -28,6 +28,7 @@ class FrostNova(commands.Bot):
         intents.typing = False
         intents.presences = False
         intents.message_content = True
+        intents.members = True
         super().__init__(
             command_prefix = command_prefix, 
             intents = intents,

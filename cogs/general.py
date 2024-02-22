@@ -143,6 +143,8 @@ class General(commands.Cog):
             user_data = user_utils.get_user(user)
             inventory = user_utils.get_inventory(user)
             statistics += f"\n{ky.BULLET.value} **Balance:** {user_data['balance']:,} {ky.CURRENCY.value}"
+            if "corrupted_gauntlet" in user_data["completion_count"]:
+                statistics += f"\n{emoji.BULLET} **Corrupted Gauntlet Completion Count:** {user_data['completion_count']['corrupted_gauntlet']:,}"
 
         embed.add_field(name = "**Statistics:**", value = re.sub(r'\n\s*\n', '\n', statistics))
         if inventory:

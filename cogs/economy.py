@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from cogs.utils.keywords import Keyword as ky
 import cogs.utils.user_utils as user_utils
+from cogs.utils.bot_utils import Emojis as emoji, create_error_response, is_owner_id
 from typing import Optional
 
 
@@ -12,12 +13,12 @@ class Economy(commands.Cog):
         
         
     async def is_owner(interaction: discord.Interaction) -> bool:
-        return interaction.user.id == 94236862280892416
+        return is_owner_id
 
     
     def is_not_registered_message(self, user):
         '''Returns an embed message intended for interactions that cannot be performed because the designated user is not registered.'''
-        return self.bot.create_error_response(message=f"{user.name} is not registered! Use `/register` first to participate in economy-related features!")
+        return create_error_response(message=f"{user.name} is not registered! Use `/register` first to participate in economy-related features!")
     
     
     def set_balance(self, user, balance):
