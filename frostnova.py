@@ -22,7 +22,6 @@ prefix = "░▒▓ (\\_/) "
 class FrostNova(commands.Bot):
     def __init__(self) -> None:
         self.start_time = time.time()
-        self.api_keys = self.get_secrets_from_aws()
         command_prefix = "fn$"
         intents = discord.Intents.all()
         intents.typing = False
@@ -44,6 +43,10 @@ class FrostNova(commands.Bot):
 
     def get_api_key(self, key_name):
         return self.api_keys.get(key_name, None)
+    
+
+    def authenticate(self):
+        return os.getenv("DISCORD_API_TOKEN")
 
 
     def create_error_response(self, message: str = None, error: Exception = None):
@@ -91,33 +94,5 @@ class FrostNova(commands.Bot):
         print(f"Synced {len(synced)} commands to test guild {guild.id}.")
 
 
-    def get_secrets_from_aws(self):
-        secret_names = ["FrostNova", "DFO-APIKey"]
-        region_name = "us-east-1"
-        api_keys = {}
-
-        # create secrets manager client
-        session = boto3.session.Session()
-        client = session.client(service_name = 'secretsmanager', region_name = region_name)
-
-        try:
-            for secret_name in secret_names:
-                get_secret_value_response = client.get_secret_value(SecretId = secret_name)
-                if 'SecretString' in get_secret_value_response:
-                    # api_keys[secret_name] = get_secret_value_response['SecretString'][18:-2]
-                    api_keys[secret_name] = get_secret_value_response['SecretString']
-                else:
-                    # api_keys[secret_name] = base64.b64decode(get_secret_value_response['SecretBinary'])[18:-2]
-                    api_keys[secret_name] = base64.b64decode(get_secret_value_response['SecretBinary'])
-                print(f"Successfully retrieved AWS secret for {secret_name}.")
-        except ClientError as e:
-            error_code = e.repsonse['Error']['Code']
-            error_https_code = e.response['ResponseMetadata']['HTTPStatusCode']
-            error_msg = e.response['Error']['Message']
-            print("Error Code {} ({}): {}".format(error_code, error_https_code, error_msg))
-            raise e
-        return api_keys
-
-
 bot = FrostNova()
-bot.run(bot.get_api_key("FrostNova")[18:-2])
+bot.run(bot.authenticate())

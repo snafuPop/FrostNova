@@ -1,3 +1,4 @@
+import os
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -11,13 +12,10 @@ from cogs.utils.keywords import Keyword as ky
 class DFO(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.api_key = bot.get_api_key("DFO-APIKey")[15:-2]
+        self.api_key = os.getenv("DFO_API_TOKEN")
         self.error_thumbnail = "https://wiki.dfo-world.com/images/5/5a/Future_content.png"
 
     dfo = app_commands.Group(name = "dfo", description = "Pulls up information using the DFO Global API")
-
-    def get_request(self, type: str):
-        pass
 
 
     def __get_character_base_stats(self, embed, server_id, character_id):
