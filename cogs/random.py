@@ -5,7 +5,7 @@ from discord.ext import commands
 from random import randint, choice, getrandbits
 import typing
 from enum import Enum
-import Paginator
+import requests
 import aiohttp
 
 from cogs.utils.keywords import Keyword as ky
@@ -19,13 +19,11 @@ class EightBall():
             "bad": ["Don't count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"]
         }
 
-
     def get_message(self):
         polarity = choice(list(self.messages))
         reading = choice(self.messages[polarity])
         polarity_color = self.get_polarity_color(polarity)
         return reading, polarity_color
-
 
     def get_polarity_color(self, key):
         match key:
@@ -36,12 +34,13 @@ class EightBall():
             case "bad":
                 return 0xe74c3c
     
-
 class Random(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.eightball = EightBall()
-
+        self.t_words = self.generate_words_that_start_with("t")
+        self.b_words = self.generate_words_that_start_with("b")
+        self.l_words = self.generate_words_that_start_with("l")
 
     @app_commands.command(name = "roll", description = "Roll some dice!")
     @app_commands.describe(max_number = "The highest number that you can roll", declaration = "A string of text that you can attach to your dice roll")
@@ -59,7 +58,6 @@ class Random(commands.Cog):
         embed.set_footer(text = f"...out of {max_number:,}")
         await interaction.response.send_message(embed = embed)
 
-
     @app_commands.command(name = "coinflip", description = "Flip a coin!")
     async def coinflip(self, interaction: discord.Interaction):
         random_num = randint(0,101)
@@ -73,7 +71,6 @@ class Random(commands.Cog):
         message = f":coin: {interaction.user.mention} flipped a coin and it landed on **{result}**!"
         embed = discord.Embed(title = "", description = message, color = interaction.user.color)
         await interaction.response.send_message(embed = embed)
-
 
     @app_commands.command(name = "choose", description = "Chooses one thing from a list")
     @app_commands.describe(choices = "A list of choices, with each separated by a semicolon (;)")
@@ -98,8 +95,6 @@ class Random(commands.Cog):
         embed.set_footer(text = f"...out of {choices_as_sentence}")
         await interaction.response.send_message(embed = embed)
 
-
-
     @app_commands.command(name = "8ball", description = "Ask the mystical 8-Ball a question!")
     @app_commands.describe(question = "A question that you can attach to your 8-Ball reading")
     async def eightball(self, interaction: discord.Interaction, question: str):
@@ -111,7 +106,20 @@ class Random(commands.Cog):
         embed.set_author(name = f"\"{question}\"", icon_url = interaction.user.display_avatar.url)
         await interaction.response.send_message(embed = embed)
 
+    def generate_words_that_start_with(self, letter: str) -> list[dict]:
+        params = {"sp": f"{letter}*", "max": 1000}
+        response = requests.get('https://api.datamuse.com/words', params=params)
+        return response.json()
 
+    @app_commands.command(name = "ttblb", description = "What does ttblb stand for?")
+    async def ttblb(self, interaction: discord.Interaction):
+        ttblb_letters = [self.t_words, self.t_words, self.b_words, self.l_words, self.b_words]
+        for i in range(len(ttblb_letters)):
+            ttblb_letters[i] = choice(ttblb_letters[i])["word"]
+
+        description_msg = "-".join(ttblb_letters)
+        embed = discord.Embed(title = "What does ttblb stand for? That's easy...", description = f"It stands for **{description_msg}**!")
+        await interaction.response.send_message(embed = embed)
 
     @app_commands.command(name = "tarot", description = "Draw a spread of tarot cards!")
     async def tarot(self, interaction: discord.Interaction):
